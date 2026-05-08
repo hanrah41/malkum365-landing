@@ -1,83 +1,47 @@
-const SUPABASE_URL =
-  "https://pziyabogqefxzvinwarg.supabase.co";
+const supabaseUrl =
+  "https://pzjyabogqefxzvinwarg.supabase.co";
 
-const SUPABASE_ANON_KEY =
+const supabaseKey =
   "sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8";
 
 const supabaseClient =
   supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
+    supabaseUrl,
+    supabaseKey
   );
+
+/* =========================
+   상담 신청
+========================= */
 
 const submitBtn =
   document.getElementById("submitBtn");
 
-const privacyDetailBtn =
-  document.getElementById("privacyDetailBtn");
-
-const privacyModal =
-  document.getElementById("privacyModal");
-
-const modalCloseBtn =
-  document.getElementById("modalCloseBtn");
-
-// 자세히 보기
-privacyDetailBtn.addEventListener(
-  "click",
-  function () {
-
-    privacyModal.style.display = "flex";
-  }
-);
-
-// 팝업 닫기
-modalCloseBtn.addEventListener(
-  "click",
-  function () {
-
-    privacyModal.style.display = "none";
-  }
-);
-
-// 팝업 바깥 클릭
-privacyModal.addEventListener(
-  "click",
-  function (event) {
-
-    if (event.target === privacyModal) {
-
-      privacyModal.style.display = "none";
-    }
-  }
-);
-
-// 무료 상담 신청
 submitBtn.addEventListener(
   "click",
   async function () {
 
     const name =
       document
-        .getElementById("userName")
-        .value
-        .trim();
+      .getElementById("userName")
+      .value
+      .trim();
 
     const phone =
       document
-        .getElementById("userPhone")
-        .value
-        .trim();
+      .getElementById("userPhone")
+      .value
+      .trim();
 
     const ageAgree =
       document
-        .getElementById("ageAgree")
-        .checked;
+      .getElementById("ageAgree")
+      .checked;
 
     const privacyAgree =
       document
-        .getElementById("privacyAgree")
-        .checked;
+      .getElementById("privacyAgree")
+      .checked;
 
     if (!name) {
 
@@ -95,64 +59,144 @@ submitBtn.addEventListener(
 
     if (!ageAgree) {
 
-      alert(
-        "만 14세 이상 동의가 필요합니다."
-      );
+      alert("만 14세 이상 동의가 필요합니다.");
 
       return;
     }
 
     if (!privacyAgree) {
 
-      alert(
-        "개인정보 수집·이용 동의가 필요합니다."
-      );
+      alert("개인정보 동의가 필요합니다.");
 
       return;
     }
 
-    const leadData = {
+    submitBtn.disabled = true;
 
-      name: name,
+    submitBtn.innerText =
+      "접수 중입니다...";
 
-      phone: phone,
+    try {
 
-      score:
-        window.memoryGameScore || 0
-    };
+      const leadData = {
 
-    // Supabase 저장
-    const { error } =
-      await supabaseClient
+        name: name,
+
+        phone: phone,
+
+        score:
+          window.memoryGameScore || 0,
+
+        created_at:
+          new Date().toISOString()
+
+      };
+
+      const { error } =
+        await supabaseClient
         .from("leads")
         .insert([leadData]);
 
-    if (error) {
+      if (error) {
 
-      console.error(error);
+        console.error(error);
 
-      alert("상담 신청 저장 실패");
+        alert(
+          "서버 저장 실패"
+        );
 
-      return;
-    }
+        submitBtn.disabled = false;
 
-    alert("무료 상담 신청 완료");
+        submitBtn.innerText =
+          "무료 상담 신청하기";
 
-    // 입력 초기화
-    document
+        return;
+      }
+
+      alert(
+        "상담 신청이 접수되었습니다."
+      );
+
+      document
       .getElementById("userName")
       .value = "";
 
-    document
+      document
       .getElementById("userPhone")
       .value = "";
 
-    document
+      document
       .getElementById("ageAgree")
       .checked = false;
 
-    document
+      document
       .getElementById("privacyAgree")
       .checked = false;
+
+    } catch (err) {
+
+      console.error(err);
+
+      alert(
+        "오류가 발생했습니다."
+      );
+    }
+
+    submitBtn.disabled = false;
+
+    submitBtn.innerText =
+      "무료 상담 신청하기";
+
+  }
+);
+
+/* =========================
+   개인정보 팝업
+========================= */
+
+const privacyBtn =
+  document.getElementById(
+    "privacyDetailBtn"
+  );
+
+const privacyModal =
+  document.getElementById(
+    "privacyModal"
+  );
+
+const modalCloseBtn =
+  document.getElementById(
+    "modalCloseBtn"
+  );
+
+privacyBtn.addEventListener(
+  "click",
+  function () {
+
+    privacyModal.style.display =
+      "flex";
+  }
+);
+
+modalCloseBtn.addEventListener(
+  "click",
+  function () {
+
+    privacyModal.style.display =
+      "none";
+  }
+);
+
+privacyModal.addEventListener(
+  "click",
+  function (e) {
+
+    if (
+      e.target === privacyModal
+    ) {
+
+      privacyModal.style.display =
+        "none";
+    }
   }
 );
