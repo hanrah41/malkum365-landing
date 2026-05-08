@@ -187,24 +187,33 @@ window.addEventListener(
               phone: phone,
 
               score:
-                window.memoryGameScore || 0,
-
-              created_at:
-                new Date().toISOString()
+                Number(
+                  window.memoryGameScore || 0
+                )
 
             };
 
-            const { error } =
+            console.log(
+              "전송 데이터:",
+              leadData
+            );
+
+            const response =
               await supabaseClient
               .from("leads")
               .insert([
                 leadData
               ]);
 
-            if (error) {
+            console.log(
+              "응답:",
+              response
+            );
+
+            if (response.error) {
 
               console.error(
-                error
+                response.error
               );
 
               alert(
@@ -245,7 +254,7 @@ window.addEventListener(
             console.error(err);
 
             alert(
-              "오류가 발생했습니다."
+              "서버 연결 오류"
             );
           }
 
