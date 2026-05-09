@@ -203,11 +203,6 @@ window.addEventListener(
 
               phone: phone,
 
-              score:
-                Number(
-                  window.memoryGameScore || 0
-                ),
-
               created_text:
                 koreaTime
 
