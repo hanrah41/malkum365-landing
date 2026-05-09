@@ -8,7 +8,7 @@
 // Supabase 실제 연결값 입력
 // ============================================
 
-// 반드시 본인 프로젝트 실제값으로 변경하세요
+// 반드시 본인 프로젝트 실제값 입력
 
 const SUPABASE_URL =
 'https://YOUR_PROJECT.supabase.co';
@@ -93,6 +93,10 @@ async function createLead(){
 
         .replace(',', '');
 
+        console.log(
+            'INSERT 시작'
+        );
+
         // ====================================
         // leads 저장
         // ====================================
@@ -119,11 +123,20 @@ async function createLead(){
 
         .single();
 
+        // ====================================
+        // 오류 출력
+        // ====================================
+
         if(error){
 
             console.error(
                 'INSERT 오류:',
                 error
+            );
+
+            alert(
+                'DB 저장 실패\n\n' +
+                JSON.stringify(error)
             );
 
             isCreating = false;
@@ -140,7 +153,15 @@ async function createLead(){
 
     }catch(err){
 
-        console.error(err);
+        console.error(
+            '전체 오류:',
+            err
+        );
+
+        alert(
+            '전체 오류 발생\n\n' +
+            err.message
+        );
     }
 
     isCreating = false;
@@ -223,7 +244,7 @@ async function startRealtimeSave(){
         await createLead();
     }
 
-    // 중복 타이머 방지
+    // 타이머 중복 방지
     if(autoSaveTimer){
 
         return;
