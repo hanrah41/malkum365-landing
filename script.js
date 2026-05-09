@@ -7,7 +7,7 @@ window.addEventListener(
     ========================= */
 
     const supabaseUrl =
-      "https://pzjyabogqefxzvinwarg.supabase.co";
+      "https://pziyabogqefxzvinwarg.supabase.co";
 
     const supabaseKey =
       "sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8";
@@ -198,7 +198,7 @@ window.addEventListener(
               leadData
             );
 
-            const response =
+            const { data, error } =
               await supabaseClient
               .from("leads")
               .insert([
@@ -206,15 +206,16 @@ window.addEventListener(
               ]);
 
             console.log(
-              "응답:",
-              response
+              "응답 데이터:",
+              data
             );
 
-            if (response.error) {
+            console.log(
+              "응답 에러:",
+              error
+            );
 
-              console.error(
-                response.error
-              );
+            if (error) {
 
               alert(
                 "서버 저장 실패"
@@ -251,7 +252,10 @@ window.addEventListener(
 
           } catch (err) {
 
-            console.error(err);
+            console.error(
+              "catch 오류:",
+              err
+            );
 
             alert(
               "서버 연결 오류"
