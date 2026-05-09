@@ -1,0 +1,128 @@
+<!-- 파일명 : C:\malkum365-landing\crm.html -->
+
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>맑음365 CRM</title>
+
+<link
+rel="stylesheet"
+href="crm.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+
+<div class="crm-wrap">
+
+
+    <!-- =========================
+         좌측 고객목록
+    ========================= -->
+
+    <div class="crm-left">
+
+        <div class="crm-title">
+            실시간 고객 목록
+        </div>
+
+        <div id="customerList">
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         우측 상담관리
+    ========================= -->
+
+    <div class="crm-right">
+
+        <div class="crm-title">
+            고객 상담 관리
+        </div>
+
+
+        <div class="info-box">
+
+            <div>
+                이름 :
+                <span id="viewName">
+                    선택 없음
+                </span>
+            </div>
+
+            <div>
+                연락처 :
+                <span id="viewPhone">
+                    -
+                </span>
+            </div>
+
+        </div>
+
+
+        <textarea
+        id="consultation"
+        placeholder="상담 내용을 입력하세요"></textarea>
+
+
+        <input
+        id="schedule"
+        type="text"
+        placeholder="상담 예정일">
+
+
+        <select id="purchase">
+
+            <option value="">
+                구매 여부 선택
+            </option>
+
+            <option value="구매완료">
+                구매완료
+            </option>
+
+            <option value="상담중">
+                상담중
+            </option>
+
+            <option value="보류">
+                보류
+            </option>
+
+        </select>
+
+
+        <textarea
+        id="etc"
+        placeholder="기타 메모"></textarea>
+
+
+        <button id="saveBtn">
+            저장하기
+        </button>
+
+    </div>
+
+</div>
+
+
+<script src="crm.js"></script>
+
+</body>
+</html>
