@@ -1,0 +1,244 @@
+/* 파일명 : C:\malkum365-landing\crm.css */
+
+
+*{
+
+    box-sizing:border-box;
+
+}
+
+
+body{
+
+    margin:0;
+    padding:20px;
+
+    background:#f3f5f7;
+
+    font-family:
+    "Malgun Gothic",
+    sans-serif;
+
+}
+
+
+.crm-wrap{
+
+    width:100%;
+    height:calc(100vh - 40px);
+
+    display:flex;
+
+    gap:20px;
+
+}
+
+
+/* =========================
+   좌측
+========================= */
+
+.crm-left{
+
+    width:350px;
+
+    background:#ffffff;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    overflow-y:auto;
+
+}
+
+
+/* =========================
+   우측
+========================= */
+
+.crm-right{
+
+    flex:1;
+
+    background:#ffffff;
+
+    border-radius:15px;
+
+    padding:20px;
+
+}
+
+
+/* =========================
+   타이틀
+========================= */
+
+.crm-title{
+
+    font-size:28px;
+
+    font-weight:bold;
+
+    margin-bottom:20px;
+
+}
+
+
+/* =========================
+   고객 아이템
+========================= */
+
+.customer-item{
+
+    padding:15px;
+
+    border:1px solid #dddddd;
+
+    border-radius:10px;
+
+    margin-bottom:10px;
+
+    cursor:pointer;
+
+    transition:0.2s;
+
+}
+
+
+.customer-item:hover{
+
+    background:#f1f5ff;
+
+}
+
+
+.customer-name{
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    margin-bottom:8px;
+
+}
+
+
+.customer-phone{
+
+    color:#666666;
+
+}
+
+
+/* =========================
+   정보박스
+========================= */
+
+.info-box{
+
+    margin-bottom:20px;
+
+    line-height:2;
+
+    font-size:18px;
+
+}
+
+
+/* =========================
+   textarea
+========================= */
+
+textarea{
+
+    width:100%;
+
+    height:160px;
+
+    padding:15px;
+
+    margin-bottom:20px;
+
+    resize:none;
+
+    border-radius:10px;
+
+    border:1px solid #cccccc;
+
+    font-size:16px;
+
+}
+
+
+/* =========================
+   input
+========================= */
+
+input{
+
+    width:100%;
+
+    height:50px;
+
+    padding:10px;
+
+    margin-bottom:20px;
+
+    border-radius:10px;
+
+    border:1px solid #cccccc;
+
+    font-size:16px;
+
+}
+
+
+/* =========================
+   select
+========================= */
+
+select{
+
+    width:100%;
+
+    height:50px;
+
+    padding:10px;
+
+    margin-bottom:20px;
+
+    border-radius:10px;
+
+    border:1px solid #cccccc;
+
+    font-size:16px;
+
+}
+
+
+/* =========================
+   저장버튼
+========================= */
+
+#saveBtn{
+
+    width:100%;
+
+    height:60px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#ff7a00;
+
+    color:#ffffff;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
