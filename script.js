@@ -1,4 +1,4 @@
-// 파일명 : C:\malkum365-landing\admin.js
+// 파일명 : C:\malkum365-landing\script.js
 
 
 /* =========================
@@ -20,124 +20,233 @@ window.supabase.createClient(
 
 
 /* =========================
-   고객 리스트 영역
+   버튼
 ========================= */
 
-const customerList =
-document.getElementById(
-    "customerList"
-);
+const submitBtn =
+document.getElementById("submitBtn");
 
 
 /* =========================
-   고객 목록 불러오기
+   무료상담 신청
 ========================= */
 
-async function loadCustomers(){
+if(submitBtn){
+
+    submitBtn.addEventListener(
+
+        "click",
+
+        async ()=>{
 
 
-    const {
+            /* =========================
+               이름
+            ========================= */
 
-        data,
-        error
+            const nameInput =
 
-    } =
+            document.getElementById(
+                "customerName"
+            );
 
-    await supabaseClient
 
-    .from("notes")
+            /* =========================
+               전화번호
+            ========================= */
 
-    .select("*")
+            const phoneInput =
 
-    .order(
-        "id",
-        { ascending:false }
+            document.getElementById(
+                "customerPhone"
+            );
+
+
+            if(
+                !nameInput ||
+                !phoneInput
+            ){
+
+                alert(
+                    "input id 확인 필요"
+                );
+
+                return;
+            }
+
+
+            const name =
+
+            nameInput
+            .value
+            .trim();
+
+
+            const phone =
+
+            phoneInput
+            .value
+            .trim();
+
+
+            /* =========================
+               입력 확인
+            ========================= */
+
+            if(!name || !phone){
+
+                alert(
+                    "이름과 전화번호 입력"
+                );
+
+                return;
+            }
+
+
+            /* =========================
+               시간 생성
+            ========================= */
+
+            const createdText =
+
+            new Date()
+
+            .toLocaleString("ko-KR");
+
+
+            /* =========================
+               leads 저장
+            ========================= */
+
+            const {
+
+                data:leadData,
+
+                error:leadError
+
+            } =
+
+            await supabaseClient
+
+            .from("leads")
+
+            .insert({
+
+                created_text :
+                createdText,
+
+                name :
+                name,
+
+                phone :
+                phone
+
+            })
+
+            .select("*")
+
+            .single();
+
+
+            console.log(
+                "leads 데이터 : ",
+                leadData
+            );
+
+            console.log(
+                "leads 에러 : ",
+                leadError
+            );
+
+
+            if(leadError){
+
+                alert(
+                    "leads 저장 실패"
+                );
+
+                return;
+            }
+
+
+            /* =========================
+               notes 자동 생성
+            ========================= */
+
+            const {
+
+                data:notesData,
+
+                error:notesError
+
+            } =
+
+            await supabaseClient
+
+            .from("notes")
+
+            .insert({
+
+                created_text :
+                createdText,
+
+                name :
+                name,
+
+                phone :
+                phone,
+
+                consultation : "",
+
+                schedule : "",
+
+                purchase : "",
+
+                etc : ""
+
+            })
+
+            .select("*")
+
+            .single();
+
+
+            console.log(
+                "notes 데이터 : ",
+                notesData
+            );
+
+            console.log(
+                "notes 에러 : ",
+                notesError
+            );
+
+
+            if(notesError){
+
+                alert(
+                    "notes 저장 실패"
+                );
+
+                return;
+            }
+
+
+            /* =========================
+               입력 초기화
+            ========================= */
+
+            nameInput.value = "";
+
+            phoneInput.value = "";
+
+
+            alert(
+                "상담 신청 완료"
+            );
+
+        }
+
     );
 
-
-    if(error){
-
-        console.log(error);
-
-        return;
-    }
-
-
-    customerList.innerHTML = "";
-
-
-    data.forEach((customer)=>{
-
-
-        const item =
-        document.createElement("div");
-
-
-        item.className =
-        "customer-item";
-
-
-        item.innerHTML = `
-
-            <div class="customer-name">
-                ${customer.name}
-            </div>
-
-            <div class="customer-phone">
-                ${customer.phone}
-            </div>
-
-        `;
-
-
-        customerList.appendChild(
-            item
-        );
-
-    });
-
 }
-
-
-/* =========================
-   최초 로딩
-========================= */
-
-loadCustomers();
-
-
-/* =========================
-   실시간 자동 갱신
-========================= */
-
-supabaseClient
-
-.channel("notes-realtime")
-
-.on(
-
-    "postgres_changes",
-
-    {
-
-        event : "*",
-
-        schema : "public",
-
-        table : "notes"
-
-    },
-
-    ()=>{
-
-        console.log(
-            "실시간 데이터 변경 감지"
-        );
-
-        loadCustomers();
-
-    }
-
-)
-
-.subscribe();
