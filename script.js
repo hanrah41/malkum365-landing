@@ -1,25 +1,21 @@
 // ============================================
-// 파일 경로
 // C:\malkum365-landing\script.js
 // ============================================
 
 
 // ============================================
-// Supabase 실제 연결값
+// 전역값 가져오기
 // ============================================
 
 const SUPABASE_URL =
-'https://pziyabogqefxzvinwarg.supabase.co';
-
-
-// crm.js 에 있는 anon key 그대로 붙여넣기
+window.SUPABASE_URL_GLOBAL;
 
 const SUPABASE_ANON_KEY =
-'여기에 crm.js 의 anon key 입력';
+window.SUPABASE_ANON_KEY_GLOBAL;
 
 
 // ============================================
-// Supabase Client 생성
+// Supabase 생성
 // ============================================
 
 const supabaseClient =
@@ -44,7 +40,7 @@ document.getElementById('submitBtn');
 
 
 // ============================================
-// 상태값
+// 상태
 // ============================================
 
 let currentLeadId = null;
@@ -53,21 +49,12 @@ let autoSaveTimer = null;
 
 let isCompleted = false;
 
-let isCreating = false;
-
 
 // ============================================
-// 최초 INSERT
+// INSERT
 // ============================================
 
 async function createLead(){
-
-    if(isCreating){
-
-        return;
-    }
-
-    isCreating = true;
 
     try{
 
@@ -77,13 +64,8 @@ async function createLead(){
         const phone =
         phoneInput.value.trim();
 
-        // 둘 다 비어있으면 저장 안함
-        if(
-            !name &&
-            !phone
-        ){
+        if(!name || !phone){
 
-            isCreating = false;
             return;
         }
 
@@ -93,14 +75,6 @@ async function createLead(){
         .toLocaleString('sv-SE')
 
         .replace(',', '');
-
-        console.log(
-            'INSERT 시작'
-        );
-
-        // ====================================
-        // leads 저장
-        // ====================================
 
         const {
             data,
@@ -124,23 +98,13 @@ async function createLead(){
 
         .single();
 
-        // ====================================
-        // 오류 처리
-        // ====================================
-
         if(error){
 
-            console.error(
-                'INSERT 오류:',
-                error
-            );
+            console.error(error);
 
             alert(
-                'DB 저장 실패\n\n' +
-                JSON.stringify(error)
+                'DB 저장 실패'
             );
-
-            isCreating = false;
 
             return;
         }
@@ -148,123 +112,42 @@ async function createLead(){
         currentLeadId = data.id;
 
         console.log(
-            '최초 저장 완료:',
-            currentLeadId
-        );
-
-    }catch(err){
-
-        console.error(
-            '전체 오류:',
-            err
-        );
-
-        alert(
-            '전체 오류 발생\n\n' +
-            err.message
-        );
-    }
-
-    isCreating = false;
-}
-
-
-// ============================================
-// UPDATE
-// ============================================
-
-async function updateLead(){
-
-    if(currentLeadId === null){
-
-        return;
-    }
-
-    try{
-
-        const name =
-        nameInput.value.trim();
-
-        const phone =
-        phoneInput.value.trim();
-
-        const {
-            error
-        } = await supabaseClient
-
-        .from('leads')
-
-        .update({
-
-            name:name,
-
-            phone:phone
-
-        })
-
-        .eq(
-            'id',
-            currentLeadId
-        );
-
-        if(error){
-
-            console.error(
-                'UPDATE 오류:',
-                error
-            );
-
-            return;
-        }
-
-        console.log(
-            '실시간 업데이트 완료'
+            '저장 완료'
         );
 
     }catch(err){
 
         console.error(err);
+
+        alert(err.message);
     }
 }
 
 
 // ============================================
-// 실시간 저장 시작
+// 실시간 저장
 // ============================================
 
-async function startRealtimeSave(){
+function startRealtimeSave(){
 
     if(isCompleted){
 
         return;
     }
 
-    // 최초 생성
-    if(currentLeadId === null){
-
-        await createLead();
-    }
-
-    // 타이머 중복 방지
     if(autoSaveTimer){
 
-        return;
+        clearTimeout(
+            autoSaveTimer
+        );
     }
 
-    autoSaveTimer = setInterval(
+    autoSaveTimer =
+    setTimeout(
 
         async()=>{
 
-            if(isCompleted){
-
-                clearInterval(
-                    autoSaveTimer
-                );
-
-                return;
-            }
-
-            await updateLead();
+            await createLead();
 
         },
 
@@ -289,7 +172,7 @@ phoneInput.addEventListener(
 
 
 // ============================================
-// 버튼 클릭
+// 버튼
 // ============================================
 
 submitBtn.addEventListener(
@@ -300,24 +183,8 @@ submitBtn.addEventListener(
 
         isCompleted = true;
 
-        clearInterval(
-            autoSaveTimer
-        );
-
-        submitBtn.disabled = true;
-
-        submitBtn.innerText =
-        '신청 완료';
-
-        submitBtn.style.opacity =
-        '0.7';
-
         alert(
             '무료 상담 신청이 완료되었습니다.'
-        );
-
-        console.log(
-            '상담 신청 완료'
         );
     }
 );
