@@ -1,34 +1,145 @@
+<!-- 파일 경로 -->
+<!-- C:\malkum365-landing\index.html -->
+
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>무료상담</title>
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>랜딩페이지</title>
 
 <style>
 
-body{
+*{
     margin:0;
     padding:0;
-    background:#f5f5f5;
-    font-family:'Pretendard',sans-serif;
-}
-
-.wrap{
-    width:100%;
-    max-width:600px;
-    margin:0 auto;
-    padding:40px 20px;
     box-sizing:border-box;
 }
 
-.title{
-    font-size:32px;
-    font-weight:700;
-    text-align:center;
-    margin-bottom:40px;
+body{
+
+    width:100%;
+    min-height:100vh;
+
+    background:#f4f4f4;
+
+    font-family:
+    "Pretendard",
+    "Noto Sans KR",
+    sans-serif;
+
+    overflow-x:hidden;
 }
+
+/* =====================================
+   전체 레이아웃
+===================================== */
+
+.game-layout{
+
+    width:100%;
+    max-width:1400px;
+
+    margin:0 auto;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:flex-start;
+
+    gap:30px;
+
+    padding:30px;
+}
+
+/* =====================================
+   좌측 게임영역
+===================================== */
+
+.left-area{
+
+    flex:1;
+
+    min-height:800px;
+
+    background:#ffffff;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.08);
+}
+
+.game-box{
+
+    width:100%;
+    height:740px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #1f2937,
+        #111827
+    );
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    color:#fff;
+
+    font-size:40px;
+    font-weight:800;
+}
+
+/* =====================================
+   우측 상담영역
+===================================== */
+
+.right-area{
+
+    width:420px;
+
+    background:#ffffff;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.08);
+
+    position:sticky;
+    top:20px;
+}
+
+.consult-title{
+
+    font-size:32px;
+    font-weight:800;
+
+    margin-bottom:30px;
+
+    text-align:center;
+
+    color:#111;
+}
+
+/* =====================================
+   입력창
+===================================== */
 
 .input-box{
     margin-bottom:20px;
@@ -38,34 +149,53 @@ body{
 .input-box textarea{
 
     width:100%;
-    padding:16px;
-    box-sizing:border-box;
 
     border:1px solid #ddd;
-    border-radius:10px;
+    border-radius:14px;
 
-    font-size:16px;
+    padding:18px;
+
+    font-size:17px;
+
     outline:none;
+
+    transition:0.2s;
+}
+
+.input-box input:focus,
+.input-box textarea:focus{
+
+    border-color:#F5D545;
+
+    box-shadow:
+    0 0 0 4px rgba(245,213,69,0.2);
 }
 
 .input-box textarea{
-    height:140px;
+
+    height:180px;
+
     resize:none;
 }
+
+/* =====================================
+   버튼
+===================================== */
 
 .submit-btn{
 
     width:100%;
-    height:60px;
+    height:68px;
 
     border:none;
-    border-radius:12px;
+    border-radius:16px;
 
     background:#F5D545;
-    color:#000;
 
-    font-size:20px;
-    font-weight:700;
+    font-size:28px;
+    font-weight:800;
+
+    color:#111;
 
     cursor:pointer;
 
@@ -73,51 +203,97 @@ body{
 }
 
 .submit-btn:hover{
-    opacity:0.9;
+    transform:translateY(-2px);
+}
+
+/* =====================================
+   모바일
+===================================== */
+
+@media(max-width:1100px){
+
+    .game-layout{
+
+        flex-direction:column;
+
+        align-items:center;
+    }
+
+    .right-area{
+
+        width:100%;
+        max-width:700px;
+
+        position:relative;
+        top:auto;
+    }
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="wrap">
+<div class="game-layout">
 
-    <div class="title">
-        무료 상담 신청
+    <!-- 좌측 게임영역 -->
+
+    <div class="left-area">
+
+        <div class="game-box">
+            GAME AREA
+        </div>
+
     </div>
 
-    <div class="input-box">
-        <input
-            type="text"
-            id="name"
-            placeholder="이름 입력"
+    <!-- 우측 상담영역 -->
+
+    <div class="right-area">
+
+        <div class="consult-title">
+            무료 상담 신청
+        </div>
+
+        <div class="input-box">
+
+            <input
+                type="text"
+                id="name"
+                placeholder="이름 입력"
+            >
+
+        </div>
+
+        <div class="input-box">
+
+            <input
+                type="tel"
+                id="phone"
+                placeholder="연락처 입력"
+            >
+
+        </div>
+
+        <div class="input-box">
+
+            <textarea
+                id="content"
+                placeholder="상담 내용을 입력해주세요"
+            ></textarea>
+
+        </div>
+
+        <button
+            type="button"
+            class="submit-btn"
+            id="submitBtn"
+            onclick="submitConsultation()"
         >
-    </div>
+            무료 상담 신청하기
+        </button>
 
-    <div class="input-box">
-        <input
-            type="tel"
-            id="phone"
-            placeholder="연락처 입력"
-        >
     </div>
-
-    <div class="input-box">
-        <textarea
-            id="content"
-            placeholder="상담 내용을 입력해주세요"
-        ></textarea>
-    </div>
-
-    <button
-        type="button"
-        class="submit-btn"
-        id="submitBtn"
-        onclick="submitConsultation()"
-    >
-        무료 상담 신청하기
-    </button>
 
 </div>
 
