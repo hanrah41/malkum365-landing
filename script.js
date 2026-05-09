@@ -1,252 +1,67 @@
-// 파일명 : C:\malkum365-landing\script.js
-
-
-/* =========================
-   Supabase 연결
-========================= */
-
-const supabaseUrl =
+const SUPABASE_URL =
 "https://pziyabogqefxzvinwarg.supabase.co";
 
-const supabaseKey =
+const SUPABASE_KEY =
 "sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8";
 
+async function saveLead(name, phone){
 
-const supabaseClient =
-window.supabase.createClient(
-    supabaseUrl,
-    supabaseKey
-);
+    const now = new Date();
 
+    const createdText =
+        now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") + "-" +
+        String(now.getDate()).padStart(2, "0") + " " +
+        String(now.getHours()).padStart(2, "0") + ":" +
+        String(now.getMinutes()).padStart(2, "0") + ":" +
+        String(now.getSeconds()).padStart(2, "0");
 
-/* =========================
-   버튼
-========================= */
+    const data = {
 
-const submitBtn =
-document.getElementById("submitBtn");
+        created_text: createdText,
+        name: name,
+        phone: phone
+    };
 
+    console.log("전송 데이터:", data);
 
-/* =========================
-   무료상담 신청
-========================= */
+    try{
 
-if(submitBtn){
+        const response = await fetch(
+            `${SUPABASE_URL}/rest/v1/leads`,
+            {
 
-    submitBtn.addEventListener(
+                method: "POST",
 
-        "click",
+                headers: {
 
-        async ()=>{
+                    "Content-Type": "application/json",
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`,
+                    "Prefer": "return=minimal"
+                },
 
-
-            /* =========================
-               이름
-            ========================= */
-
-            const nameInput =
-
-            document.getElementById(
-                "customerName"
-            );
-
-
-            /* =========================
-               전화번호
-            ========================= */
-
-            const phoneInput =
-
-            document.getElementById(
-                "customerPhone"
-            );
-
-
-            if(
-                !nameInput ||
-                !phoneInput
-            ){
-
-                alert(
-                    "input id 확인 필요"
-                );
-
-                return;
+                body: JSON.stringify(data)
             }
+        );
 
+        if(response.ok){
 
-            const name =
+            alert("상담 신청 완료");
 
-            nameInput
-            .value
-            .trim();
+        }else{
 
+            const errorText = await response.text();
 
-            const phone =
+            console.log(errorText);
 
-            phoneInput
-            .value
-            .trim();
-
-
-            /* =========================
-               입력 확인
-            ========================= */
-
-            if(!name || !phone){
-
-                alert(
-                    "이름과 전화번호 입력"
-                );
-
-                return;
-            }
-
-
-            /* =========================
-               시간 생성
-            ========================= */
-
-            const createdText =
-
-            new Date()
-
-            .toLocaleString("ko-KR");
-
-
-            /* =========================
-               leads 저장
-            ========================= */
-
-            const {
-
-                data:leadData,
-
-                error:leadError
-
-            } =
-
-            await supabaseClient
-
-            .from("leads")
-
-            .insert({
-
-                created_text :
-                createdText,
-
-                name :
-                name,
-
-                phone :
-                phone
-
-            })
-
-            .select("*")
-
-            .single();
-
-
-            console.log(
-                "leads 데이터 : ",
-                leadData
-            );
-
-            console.log(
-                "leads 에러 : ",
-                leadError
-            );
-
-
-            if(leadError){
-
-                alert(
-                    "leads 저장 실패"
-                );
-
-                return;
-            }
-
-
-            /* =========================
-               notes 자동 생성
-            ========================= */
-
-            const {
-
-                data:notesData,
-
-                error:notesError
-
-            } =
-
-            await supabaseClient
-
-            .from("notes")
-
-            .insert({
-
-                created_text :
-                createdText,
-
-                name :
-                name,
-
-                phone :
-                phone,
-
-                consultation : "",
-
-                schedule : "",
-
-                purchase : "",
-
-                etc : ""
-
-            })
-
-            .select("*")
-
-            .single();
-
-
-            console.log(
-                "notes 데이터 : ",
-                notesData
-            );
-
-            console.log(
-                "notes 에러 : ",
-                notesError
-            );
-
-
-            if(notesError){
-
-                alert(
-                    "notes 저장 실패"
-                );
-
-                return;
-            }
-
-
-            /* =========================
-               입력 초기화
-            ========================= */
-
-            nameInput.value = "";
-
-            phoneInput.value = "";
-
-
-            alert(
-                "상담 신청 완료"
-            );
-
+            alert("서버 저장 실패");
         }
 
-    );
+    }catch(error){
 
+        console.log(error);
+
+        alert("연결 실패");
+    }
 }
