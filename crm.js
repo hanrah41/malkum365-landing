@@ -11,11 +11,8 @@
 const SUPABASE_URL =
 "https://pziyabogqefxzvinwarg.supabase.co";
 
-
-// ↓↓↓ 여기에 실제 anon public key 붙여넣기 ↓↓↓
-
 const SUPABASE_ANON_KEY =
-"여기에실제anonkey";
+"sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8";
 
 
 // ============================================
