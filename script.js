@@ -1,4 +1,5 @@
 // ============================================
+// 파일 경로
 // C:\malkum365-landing\script.js
 // ============================================
 
@@ -7,11 +8,20 @@
 // Supabase 연결
 // ============================================
 
+// ↓↓↓ 실제 본인 프로젝트 값으로 교체 ↓↓↓
+
 const SUPABASE_URL =
 'https://YOUR_PROJECT.supabase.co';
 
 const SUPABASE_ANON_KEY =
-'YOUR_ANON_KEY';
+'YOUR_ANON_PUBLIC_KEY';
+
+// ↑↑↑ 실제 본인 프로젝트 값으로 교체 ↑↑↑
+
+
+// ============================================
+// Supabase Client 생성
+// ============================================
 
 const supabaseClient =
 window.supabase.createClient(
@@ -68,6 +78,7 @@ async function createLead(){
         const phone =
         phoneInput.value.trim();
 
+        // 둘 다 비어있으면 저장 안함
         if(
             !name &&
             !phone
@@ -76,6 +87,17 @@ async function createLead(){
             isCreating = false;
             return;
         }
+
+        const createdText =
+        new Date()
+
+        .toLocaleString('sv-SE')
+
+        .replace(',', '');
+
+        // ====================================
+        // leads 저장
+        // ====================================
 
         const {
             data,
@@ -86,16 +108,12 @@ async function createLead(){
 
         .insert([
             {
+                created_text:
+                createdText,
+
                 name:name,
 
-                phone:phone,
-
-                created_text:
-                new Date()
-
-                .toLocaleString('sv-SE')
-
-                .replace(',', '')
+                phone:phone
             }
         ])
 
@@ -105,7 +123,10 @@ async function createLead(){
 
         if(error){
 
-            console.error(error);
+            console.error(
+                'leads 저장 오류:',
+                error
+            );
 
             isCreating = false;
 
@@ -115,7 +136,8 @@ async function createLead(){
         currentLeadId = data.id;
 
         console.log(
-            '최초 저장 완료'
+            '최초 저장 완료:',
+            currentLeadId
         );
 
     }catch(err){
@@ -155,6 +177,7 @@ async function updateLead(){
         .update({
 
             name:name,
+
             phone:phone
 
         })
@@ -166,7 +189,11 @@ async function updateLead(){
 
         if(error){
 
-            console.error(error);
+            console.error(
+                '업데이트 오류:',
+                error
+            );
+
             return;
         }
 
@@ -198,7 +225,7 @@ async function startRealtimeSave(){
         await createLead();
     }
 
-    // 중복 생성 방지
+    // 타이머 중복 방지
     if(autoSaveTimer){
 
         return;
