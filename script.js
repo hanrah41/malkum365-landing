@@ -12,29 +12,15 @@ const supabaseKey =
 "여기에_ANON_PUBLIC_KEY";
 
 
-let supabaseClient = null;
+const supabaseClient =
+window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+);
 
 
 /* =========================
-   Supabase 연결 시도
-========================= */
-
-if(
-    supabaseUrl !== "" &&
-    supabaseKey !== ""
-){
-
-    supabaseClient =
-    window.supabase.createClient(
-        supabaseUrl,
-        supabaseKey
-    );
-
-}
-
-
-/* =========================
-   버튼 찾기
+   버튼
 ========================= */
 
 const submitBtn =
@@ -42,7 +28,7 @@ document.getElementById("submitBtn");
 
 
 /* =========================
-   버튼 없을 경우
+   버튼 존재 체크
 ========================= */
 
 if(!submitBtn){
@@ -61,6 +47,7 @@ if(!submitBtn){
 if(submitBtn){
 
     submitBtn.addEventListener(
+
         "click",
 
         async ()=>{
@@ -96,7 +83,7 @@ if(submitBtn){
 
 
             /* =========================
-               입력 체크
+               입력 확인
             ========================= */
 
             if(!name || !phone){
@@ -110,18 +97,8 @@ if(submitBtn){
 
 
             /* =========================
-               Supabase OFF 상태
+               시간 생성
             ========================= */
-
-            if(!supabaseClient){
-
-                alert(
-                    "Supabase 연결 필요"
-                );
-
-                return;
-            }
-
 
             const createdText =
 
@@ -174,7 +151,7 @@ if(submitBtn){
 
 
             /* =========================
-               notes 자동 생성
+               customer id 추출
             ========================= */
 
             const leadData =
@@ -184,6 +161,10 @@ if(submitBtn){
             const customerId =
             leadData.id;
 
+
+            /* =========================
+               notes 자동 생성
+            ========================= */
 
             const { error:noteError } =
 
@@ -196,6 +177,18 @@ if(submitBtn){
                 customer_id :
                 customerId,
 
+                name :
+                name,
+
+                phone :
+                phone,
+
+                status : "",
+
+                schedule : "",
+
+                purchase : "",
+
                 memo : "",
 
                 next_call_at :
@@ -207,6 +200,10 @@ if(submitBtn){
             if(noteError){
 
                 console.log(noteError);
+
+                alert(
+                    "notes 저장 실패"
+                );
 
             }
 
@@ -224,6 +221,7 @@ if(submitBtn){
             ========================= */
 
             inputs[0].value = "";
+
             inputs[1].value = "";
 
 
