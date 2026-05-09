@@ -1,4 +1,4 @@
-<!-- 파일명: C:\malkum365-landing\admin.html -->
+<!-- 파일명 : C:\malkum365-landing\admin.html -->
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -11,16 +11,18 @@
 </head>
 <body>
 
-<div class="admin-container">
+<div class="admin-wrap">
 
+    <!-- 상단 -->
     <div class="top-bar">
         <h1>맑음365 고객관리</h1>
     </div>
 
-    <div class="content-wrap">
+    <!-- 본문 -->
+    <div class="main-layout">
 
-        <!-- 고객 목록 -->
-        <div class="customer-panel">
+        <!-- 좌측 고객 리스트 -->
+        <div class="left-panel">
 
             <div class="panel-title">
                 상담 신청 고객
@@ -32,35 +34,94 @@
 
         </div>
 
-        <!-- 메모 -->
-        <div class="note-panel">
+        <!-- 우측 고객 관리 -->
+        <div class="right-panel">
 
             <div class="panel-title">
-                상담 메모
+                고객 관리
             </div>
 
-            <div class="customer-info">
-                <div>
-                    <strong>이름 :</strong>
-                    <span id="customerName">선택 없음</span>
+            <div class="form-area">
+
+                <div class="form-group">
+                    <label>이름</label>
+                    <input type="text" id="customerName" readonly>
                 </div>
 
-                <div>
-                    <strong>연락처 :</strong>
-                    <span id="customerPhone">-</span>
+                <div class="form-group">
+                    <label>전화번호</label>
+                    <input type="text" id="customerPhone" readonly>
                 </div>
+
+                <div class="form-group">
+                    <label>상담 상태</label>
+
+                    <select id="customerStatus">
+
+                        <option value="">선택</option>
+
+                        <option value="신규">
+                            신규
+                        </option>
+
+                        <option value="상담중">
+                            상담중
+                        </option>
+
+                        <option value="예약완료">
+                            예약완료
+                        </option>
+
+                        <option value="구매완료">
+                            구매완료
+                        </option>
+
+                        <option value="보류">
+                            보류
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>예약 일정</label>
+                    <input type="date" id="customerSchedule">
+                </div>
+
+                <div class="form-group">
+                    <label>구매 여부</label>
+
+                    <select id="customerPurchase">
+
+                        <option value="">선택</option>
+
+                        <option value="미구매">
+                            미구매
+                        </option>
+
+                        <option value="구매완료">
+                            구매완료
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>상담 메모</label>
+
+                    <textarea
+                        id="customerMemo"
+                        placeholder="상담 메모를 입력하세요..."
+                    ></textarea>
+                </div>
+
+                <button id="saveBtn">
+                    고객 정보 저장
+                </button>
+
+                <div id="saveMessage"></div>
+
             </div>
-
-            <textarea
-                id="noteInput"
-                placeholder="상담 내용을 입력하세요..."
-            ></textarea>
-
-            <button id="saveNoteBtn">
-                메모 저장
-            </button>
-
-            <div id="saveMessage"></div>
 
         </div>
 
