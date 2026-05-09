@@ -5,16 +5,17 @@
 
 
 // ============================================
-// Supabase 실제 연결값 입력
+// Supabase 실제 연결값
 // ============================================
 
-// 반드시 본인 프로젝트 실제값 입력
-
 const SUPABASE_URL =
-'https://YOUR_PROJECT.supabase.co';
+'https://pziyabogqefxzvinwarg.supabase.co';
+
+
+// crm.js 에 있는 anon key 그대로 붙여넣기
 
 const SUPABASE_ANON_KEY =
-'YOUR_REAL_ANON_PUBLIC_KEY';
+'여기에 crm.js 의 anon key 입력';
 
 
 // ============================================
@@ -76,7 +77,7 @@ async function createLead(){
         const phone =
         phoneInput.value.trim();
 
-        // 입력 없으면 저장 안함
+        // 둘 다 비어있으면 저장 안함
         if(
             !name &&
             !phone
@@ -124,7 +125,7 @@ async function createLead(){
         .single();
 
         // ====================================
-        // 오류 출력
+        // 오류 처리
         // ====================================
 
         if(error){
