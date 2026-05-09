@@ -130,7 +130,20 @@ if(submitBtn){
 
             })
 
-            .select();
+            .select("*")
+
+            .single();
+
+
+            console.log(
+                "응답 데이터 : ",
+                data
+            );
+
+            console.log(
+                "응답 에러 : ",
+                error
+            );
 
 
             if(error){
@@ -155,18 +168,30 @@ if(submitBtn){
             ========================= */
 
             const leadData =
-            data[0];
+            data;
 
 
             const customerId =
             leadData.id;
 
 
+            console.log(
+                "customerId : ",
+                customerId
+            );
+
+
             /* =========================
                notes 자동 생성
             ========================= */
 
-            const { error:noteError } =
+            const {
+
+                data:noteData,
+
+                error:noteError
+
+            } =
 
             await supabaseClient
 
@@ -194,7 +219,22 @@ if(submitBtn){
                 next_call_at :
                 null
 
-            });
+            })
+
+            .select("*")
+
+            .single();
+
+
+            console.log(
+                "notes 응답 데이터 : ",
+                noteData
+            );
+
+            console.log(
+                "notes 응답 에러 : ",
+                noteError
+            );
 
 
             if(noteError){
