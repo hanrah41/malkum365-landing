@@ -1,5 +1,7 @@
+<!-- ========================================= -->
 <!-- 파일 경로 -->
 <!-- C:\malkum365-landing\index.html -->
+<!-- ========================================= -->
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -13,7 +15,7 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>랜딩페이지</title>
+<title>무료상담신청</title>
 
 <style>
 
@@ -28,38 +30,39 @@ body{
     width:100%;
     min-height:100vh;
 
-    background:#d9dddd;
-
     display:flex;
     justify-content:center;
     align-items:center;
 
+    background:#dfe3e1;
+
     font-family:
-    "Pretendard",
     "Noto Sans KR",
     sans-serif;
 }
 
+
 /* =========================================
-   상담 박스
+   박스
 ========================================= */
 
 .consult-wrap{
 
-    width:440px;
+    width:450px;
 
-    background:#f4f4f4;
+    background:#f7f7f7;
 
-    border-radius:36px;
+    border-radius:38px;
 
     padding:
-    40px
+    42px
     30px
-    40px;
+    42px;
 
     box-shadow:
     0 10px 30px rgba(0,0,0,0.08);
 }
+
 
 /* =========================================
    타이틀
@@ -69,57 +72,56 @@ body{
 
     text-align:center;
 
-    font-size:64px;
-    font-weight:800;
+    font-size:66px;
 
-    color:#003b4d;
+    font-weight:900;
 
-    line-height:1.2;
+    color:#00384a;
 
-    margin-bottom:40px;
+    line-height:1.15;
+
+    margin-bottom:42px;
 }
+
 
 /* =========================================
    입력창
 ========================================= */
 
 .input-box{
-    margin-bottom:22px;
+
+    margin-bottom:24px;
 }
 
 .input-box input{
 
     width:100%;
-    height:78px;
+
+    height:82px;
 
     border:
-    5px solid #c8ccd4;
+    5px solid #c4cad3;
 
     border-radius:24px;
 
-    background:#dfe4ee;
+    background:#dfe5f1;
 
-    padding:0 26px;
+    padding:0 24px;
 
     font-size:28px;
 
     outline:none;
-
-    color:#111;
 }
 
-.input-box input::placeholder{
-    color:#666;
-}
 
 /* =========================================
-   체크박스
+   체크
 ========================================= */
 
 .check-area{
 
-    margin-top:10px;
-    margin-bottom:28px;
+    margin-top:8px;
+    margin-bottom:30px;
 }
 
 .check-item{
@@ -133,7 +135,7 @@ body{
 
     font-size:22px;
 
-    color:#003b4d;
+    color:#00384a;
 }
 
 .check-item input{
@@ -148,6 +150,7 @@ body{
     font-weight:700;
 }
 
+
 /* =========================================
    버튼
 ========================================= */
@@ -155,6 +158,7 @@ body{
 .submit-btn{
 
     width:100%;
+
     height:112px;
 
     border:none;
@@ -166,7 +170,7 @@ body{
     color:#fff;
 
     font-size:34px;
-    font-weight:800;
+    font-weight:900;
 
     cursor:pointer;
 
@@ -174,16 +178,18 @@ body{
 }
 
 .submit-btn:hover{
+
     opacity:0.92;
 }
 
+
 /* =========================================
-   하단 문구
+   하단문구
 ========================================= */
 
 .bottom-text{
 
-    margin-top:34px;
+    margin-top:36px;
 
     text-align:center;
 
@@ -191,7 +197,7 @@ body{
 
     color:#6f7480;
 
-    line-height:1.6;
+    line-height:1.5;
 }
 
 </style>
@@ -200,11 +206,13 @@ body{
 
 <body>
 
+
 <div class="consult-wrap">
 
     <div class="title">
         무료 상담 신청
     </div>
+
 
     <div class="input-box">
 
@@ -216,6 +224,7 @@ body{
 
     </div>
 
+
     <div class="input-box">
 
         <input
@@ -225,6 +234,7 @@ body{
         >
 
     </div>
+
 
     <div class="check-area">
 
@@ -242,6 +252,7 @@ body{
 
         </label>
 
+
         <label class="check-item">
 
             <input
@@ -258,8 +269,6 @@ body{
 
     </div>
 
-    <!-- 핵심 수정 완료 -->
-    <!-- onclick 삭제 -->
 
     <button
         type="button"
@@ -269,6 +278,7 @@ body{
         무료 상담 신청하기
     </button>
 
+
     <div class="bottom-text">
         입력하신 정보는 상담 목적으로만 사용됩니다.
     </div>
@@ -276,13 +286,26 @@ body{
 </div>
 
 
-<!-- Supabase CDN -->
+<!-- ========================================= -->
+<!-- Supabase -->
+<!-- ========================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
+<!-- ========================================= -->
+<!-- crm.js -->
+<!-- ========================================= -->
+
+<script src="crm.js"></script>
+
+
+<!-- ========================================= -->
 <!-- script.js -->
+<!-- ========================================= -->
 
 <script src="script.js"></script>
+
 
 </body>
 </html>
