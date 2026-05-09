@@ -1,5 +1,4 @@
 // ============================================
-// 파일 경로
 // C:\malkum365-landing\script.js
 // ============================================
 
@@ -22,7 +21,7 @@ supabase.createClient(
 
 
 // ============================================
-// 입력 요소
+// 요소
 // ============================================
 
 const nameInput =
@@ -33,7 +32,7 @@ document.getElementById('phone');
 
 
 // ============================================
-// 실시간 저장 변수
+// 상태 변수
 // ============================================
 
 let autoSaveTimer = null;
@@ -49,107 +48,130 @@ let completed = false;
 
 function startRealtimeSave(){
 
-    if(autoSaveTimer){
+    if(completed){
 
-        clearInterval(autoSaveTimer);
+        return;
     }
 
-    autoSaveTimer = setInterval(async()=>{
+    // 이미 실행중이면 중복 생성 금지
+    if(autoSaveTimer){
 
-        if(completed) return;
+        return;
+    }
 
-        const name =
-        nameInput.value.trim();
+    autoSaveTimer = setInterval(
 
-        const phone =
-        phoneInput.value.trim();
+        async()=>{
 
-        // 아무것도 없으면 저장 안함
-        if(!name && !phone){
+            if(completed){
 
-            return;
-        }
+                clearInterval(
+                    autoSaveTimer
+                );
 
-        try{
+                return;
+            }
 
-            // ====================================
-            // 최초 INSERT
-            // ====================================
+            const name =
+            nameInput.value.trim();
 
-            if(currentLeadId === null){
+            const phone =
+            phoneInput.value.trim();
 
-                const { data, error } =
-                await supabaseClient
+            // 둘다 비어있으면 저장 안함
+            if(
+                !name &&
+                !phone
+            ){
+                return;
+            }
 
-                .from('leads')
+            try{
 
-                .insert([
-                    {
+                // ============================
+                // 최초 저장
+                // ============================
+
+                if(currentLeadId === null){
+
+                    const {
+                        data,
+                        error
+                    } = await supabaseClient
+
+                    .from('leads')
+
+                    .insert([
+                        {
+                            name:name,
+                            phone:phone
+                        }
+                    ])
+
+                    .select()
+
+                    .single();
+
+                    if(error){
+
+                        console.error(error);
+                        return;
+                    }
+
+                    currentLeadId = data.id;
+
+                    console.log(
+                        '최초 저장 완료'
+                    );
+                }
+
+                // ============================
+                // 이후 수정
+                // ============================
+
+                else{
+
+                    const {
+                        error
+                    } = await supabaseClient
+
+                    .from('leads')
+
+                    .update({
                         name:name,
                         phone:phone
+                    })
+
+                    .eq(
+                        'id',
+                        currentLeadId
+                    );
+
+                    if(error){
+
+                        console.error(error);
+                        return;
                     }
-                ])
 
-                .select()
-                .single();
-
-                if(error){
-
-                    console.error(error);
-                    return;
+                    console.log(
+                        '실시간 업데이트 완료'
+                    );
                 }
 
-                currentLeadId = data.id;
+            }catch(err){
 
-                console.log(
-                    '최초 저장 완료:',
-                    currentLeadId
-                );
+                console.error(err);
             }
 
-            // ====================================
-            // 이후 UPDATE
-            // ====================================
+        },
 
-            else{
-
-                const { error } =
-                await supabaseClient
-
-                .from('leads')
-
-                .update({
-                    name:name,
-                    phone:phone
-                })
-
-                .eq(
-                    'id',
-                    currentLeadId
-                );
-
-                if(error){
-
-                    console.error(error);
-                    return;
-                }
-
-                console.log(
-                    '실시간 업데이트 완료'
-                );
-            }
-
-        }catch(err){
-
-            console.error(err);
-        }
-
-    },1000);
+        1000
+    );
 }
 
 
 // ============================================
-// 입력 감지 시 자동 저장 시작
+// 입력 시작 감지
 // ============================================
 
 nameInput.addEventListener(
@@ -164,17 +186,19 @@ phoneInput.addEventListener(
 
 
 // ============================================
-// 최종 신청 버튼
+// 신청 완료
 // ============================================
 
-async function submitConsultation(){
+function submitConsultation(){
 
     completed = true;
 
-    clearInterval(autoSaveTimer);
+    clearInterval(
+        autoSaveTimer
+    );
 
     alert(
-        '무료 상담 신청이 완료되었습니다.'
+        '무료 상담 신청 완료'
     );
 
     console.log(
