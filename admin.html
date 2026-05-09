@@ -1,0 +1,74 @@
+<!-- 파일명: C:\malkum365-landing\admin.html -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맑음365 고객관리</title>
+
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-container">
+
+    <div class="top-bar">
+        <h1>맑음365 고객관리</h1>
+    </div>
+
+    <div class="content-wrap">
+
+        <!-- 고객 목록 -->
+        <div class="customer-panel">
+
+            <div class="panel-title">
+                상담 신청 고객
+            </div>
+
+            <div id="customerList" class="customer-list">
+
+            </div>
+
+        </div>
+
+        <!-- 메모 -->
+        <div class="note-panel">
+
+            <div class="panel-title">
+                상담 메모
+            </div>
+
+            <div class="customer-info">
+                <div>
+                    <strong>이름 :</strong>
+                    <span id="customerName">선택 없음</span>
+                </div>
+
+                <div>
+                    <strong>연락처 :</strong>
+                    <span id="customerPhone">-</span>
+                </div>
+            </div>
+
+            <textarea
+                id="noteInput"
+                placeholder="상담 내용을 입력하세요..."
+            ></textarea>
+
+            <button id="saveNoteBtn">
+                메모 저장
+            </button>
+
+            <div id="saveMessage"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="admin.js"></script>
+
+</body>
+</html>
