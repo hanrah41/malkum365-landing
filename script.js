@@ -180,6 +180,23 @@ window.addEventListener(
 
           try {
 
+            const now =
+              new Date();
+
+            const koreaTime =
+              now
+              .toLocaleString(
+                "sv-SE",
+                {
+                  timeZone:
+                    "Asia/Seoul"
+                }
+              )
+              .replace(
+                " ",
+                "        "
+              );
+
             const leadData = {
 
               name: name,
@@ -189,7 +206,10 @@ window.addEventListener(
               score:
                 Number(
                   window.memoryGameScore || 0
-                )
+                ),
+
+              created_text:
+                koreaTime
 
             };
 
@@ -198,7 +218,10 @@ window.addEventListener(
               leadData
             );
 
-            const { data, error } =
+            const {
+              data,
+              error
+            } =
               await supabaseClient
               .from("leads")
               .insert([
