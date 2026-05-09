@@ -4,11 +4,36 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8";
 
-async function saveLead(name, phone){
+const submitBtn =
+document.getElementById("submitBtn");
+
+submitBtn.addEventListener("click", async () => {
+
+    const nameInput =
+    document.getElementById("name");
+
+    const phoneInput =
+    document.getElementById("phone");
+
+    if(!nameInput || !phoneInput){
+
+        alert("input id 확인 필요");
+        return;
+    }
+
+    const name = nameInput.value.trim();
+    const phone = phoneInput.value.trim();
+
+    if(name === "" || phone === ""){
+
+        alert("이름과 전화번호 입력");
+        return;
+    }
 
     const now = new Date();
 
     const createdText =
+
         now.getFullYear() + "-" +
         String(now.getMonth() + 1).padStart(2, "0") + "-" +
         String(now.getDate()).padStart(2, "0") + " " +
@@ -23,12 +48,14 @@ async function saveLead(name, phone){
         phone: phone
     };
 
-    console.log("전송 데이터:", data);
+    console.log(data);
 
     try{
 
         const response = await fetch(
+
             `${SUPABASE_URL}/rest/v1/leads`,
+
             {
 
                 method: "POST",
@@ -37,7 +64,9 @@ async function saveLead(name, phone){
 
                     "Content-Type": "application/json",
                     "apikey": SUPABASE_KEY,
-                    "Authorization": `Bearer ${SUPABASE_KEY}`,
+                    "Authorization":
+                    `Bearer ${SUPABASE_KEY}`,
+
                     "Prefer": "return=minimal"
                 },
 
@@ -49,9 +78,13 @@ async function saveLead(name, phone){
 
             alert("상담 신청 완료");
 
+            nameInput.value = "";
+            phoneInput.value = "";
+
         }else{
 
-            const errorText = await response.text();
+            const errorText =
+            await response.text();
 
             console.log(errorText);
 
@@ -64,4 +97,4 @@ async function saveLead(name, phone){
 
         alert("연결 실패");
     }
-}
+});
