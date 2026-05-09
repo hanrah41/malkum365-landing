@@ -12,7 +12,7 @@ const SUPABASE_URL =
 "https://pziyabogqefxzvinwarg.supabase.co";
 
 const SUPABASE_ANON_KEY =
-"sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8";
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6aXlhYm9ncWVmeHp2aW53YXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODQ2MjEsImV4cCI6MjA5Mzc2MDYyMX0.lNRssXB660yZxOzIIXEl3JoBAvY-0MHjsrPKsc4Q2_0";
 
 
 // ============================================
