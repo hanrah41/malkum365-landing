@@ -3,62 +3,100 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>맑음365 고객관리</title>
 
     <link rel="stylesheet" href="admin.css">
+
 </head>
+
 <body>
 
 <div class="admin-wrap">
 
     <!-- 상단 -->
+
     <div class="top-bar">
+
         <h1>맑음365 고객관리</h1>
+
     </div>
 
     <!-- 본문 -->
+
     <div class="main-layout">
 
-        <!-- 좌측 고객 리스트 -->
+        <!-- 좌측 고객 -->
+
         <div class="left-panel">
 
             <div class="panel-title">
+
                 상담 신청 고객
+
             </div>
 
-            <div id="customerList" class="customer-list">
+            <div
+                id="customerList"
+                class="customer-list"
+            >
 
             </div>
 
         </div>
 
-        <!-- 우측 고객 관리 -->
+        <!-- 우측 고객관리 -->
+
         <div class="right-panel">
 
             <div class="panel-title">
+
                 고객 관리
+
             </div>
 
             <div class="form-area">
 
                 <div class="form-group">
+
                     <label>이름</label>
-                    <input type="text" id="customerName" readonly>
+
+                    <input
+                        type="text"
+                        id="customerName"
+                        readonly
+                    >
+
                 </div>
 
                 <div class="form-group">
+
                     <label>전화번호</label>
-                    <input type="text" id="customerPhone" readonly>
+
+                    <input
+                        type="text"
+                        id="customerPhone"
+                        readonly
+                    >
+
                 </div>
 
                 <div class="form-group">
+
                     <label>상담 상태</label>
 
                     <select id="customerStatus">
 
-                        <option value="">선택</option>
+                        <option value="">
+                            선택
+                        </option>
 
                         <option value="신규">
                             신규
@@ -81,19 +119,29 @@
                         </option>
 
                     </select>
+
                 </div>
 
                 <div class="form-group">
+
                     <label>예약 일정</label>
-                    <input type="date" id="customerSchedule">
+
+                    <input
+                        type="date"
+                        id="customerSchedule"
+                    >
+
                 </div>
 
                 <div class="form-group">
+
                     <label>구매 여부</label>
 
                     <select id="customerPurchase">
 
-                        <option value="">선택</option>
+                        <option value="">
+                            선택
+                        </option>
 
                         <option value="미구매">
                             미구매
@@ -104,19 +152,24 @@
                         </option>
 
                     </select>
+
                 </div>
 
                 <div class="form-group">
+
                     <label>상담 메모</label>
 
                     <textarea
                         id="customerMemo"
-                        placeholder="상담 메모를 입력하세요..."
+                        placeholder="상담 메모 입력..."
                     ></textarea>
+
                 </div>
 
                 <button id="saveBtn">
+
                     고객 정보 저장
+
                 </button>
 
                 <div id="saveMessage"></div>
@@ -128,6 +181,10 @@
     </div>
 
 </div>
+
+<!-- Supabase CDN -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script src="admin.js"></script>
 
