@@ -1,10 +1,11 @@
 // ============================================
+// 파일 경로
 // C:\malkum365-landing\script.js
 // ============================================
 
 
 // ============================================
-// Supabase
+// Supabase 설정
 // ============================================
 
 const SUPABASE_URL =
@@ -30,9 +31,12 @@ document.getElementById('name');
 const phoneInput =
 document.getElementById('phone');
 
+const submitBtn =
+document.getElementById('submitBtn');
+
 
 // ============================================
-// 상태
+// 상태값
 // ============================================
 
 let autoSaveTimer = null;
@@ -45,7 +49,7 @@ let isSaving = false;
 
 
 // ============================================
-// 최초 저장
+// 최초 생성
 // ============================================
 
 async function createLead(){
@@ -65,7 +69,11 @@ async function createLead(){
         const phone =
         phoneInput.value.trim();
 
-        if(!name && !phone){
+        // 둘 다 비어있으면 저장 안함
+        if(
+            !name &&
+            !phone
+        ){
 
             isSaving = false;
             return;
@@ -81,7 +89,15 @@ async function createLead(){
         .insert([
             {
                 name:name,
-                phone:phone
+
+                phone:phone,
+
+                created_text:
+                new Date()
+
+                .toLocaleString('sv-SE')
+
+                .replace(',', '')
             }
         ])
 
@@ -100,8 +116,7 @@ async function createLead(){
         currentLeadId = data.id;
 
         console.log(
-            '최초 생성:',
-            currentLeadId
+            '최초 생성 완료'
         );
 
     }catch(err){
@@ -177,13 +192,13 @@ async function startRealtimeSave(){
         return;
     }
 
-    // 최초 1회 생성
+    // 최초 생성
     if(currentLeadId === null){
 
         await createLead();
     }
 
-    // 이미 타이머 실행중이면 종료
+    // 중복 타이머 방지
     if(autoSaveTimer){
 
         return;
@@ -230,7 +245,7 @@ phoneInput.addEventListener(
 // 상담 신청 완료
 // ============================================
 
-function submitConsultation(){
+window.submitConsultation = function(){
 
     isCompleted = true;
 
@@ -238,11 +253,19 @@ function submitConsultation(){
         autoSaveTimer
     );
 
+    submitBtn.disabled = true;
+
+    submitBtn.innerText =
+    '신청 완료';
+
+    submitBtn.style.opacity =
+    '0.7';
+
     alert(
-        '무료 상담 신청 완료'
+        '무료 상담 신청이 완료되었습니다.'
     );
 
     console.log(
-        '실시간 저장 종료'
+        '상담 신청 완료'
     );
-}
+};
