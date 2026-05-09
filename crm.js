@@ -1,8 +1,23 @@
+// ============================================
+// 파일 경로
+// C:\malkum365-landing\crm.js
+// ============================================
+
+
+// ============================================
+// Supabase 설정
+// ============================================
+
 const SUPABASE_URL =
 "https://pziyabogqefxzvinwarg.supabase.co";
 
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6aXlhYm9ncWVmeHp2aW53YXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODQ2MjEsImV4cCI6MjA5Mzc2MDYyMX0.lNRssXB660yZxOzIIXEl3JoBAvY-0MHjsrPKsc4Q2_0";
+
+
+// ============================================
+// 전역 등록
+// ============================================
 
 window.SUPABASE_URL_GLOBAL =
 SUPABASE_URL;
