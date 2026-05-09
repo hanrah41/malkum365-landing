@@ -1,25 +1,35 @@
-// 파일명: C:\malkum365-landing\admin.js
+// 파일명 : C:\malkum365-landing\admin.js
 
 const customerList = document.getElementById("customerList");
+
 const customerName = document.getElementById("customerName");
 const customerPhone = document.getElementById("customerPhone");
-const noteInput = document.getElementById("noteInput");
-const saveNoteBtn = document.getElementById("saveNoteBtn");
+
+const customerStatus = document.getElementById("customerStatus");
+const customerSchedule = document.getElementById("customerSchedule");
+const customerPurchase = document.getElementById("customerPurchase");
+const customerMemo = document.getElementById("customerMemo");
+
+const saveBtn = document.getElementById("saveBtn");
 const saveMessage = document.getElementById("saveMessage");
 
-let selectedCustomer = null;
-
 /* =========================
-   샘플 leads 데이터
+   leads 데이터
 ========================= */
 
-let leads = JSON.parse(localStorage.getItem("malkum_leads")) || [];
+let leads = JSON.parse(
+    localStorage.getItem("malkum_leads")
+) || [];
 
 /* =========================
    notes 데이터
 ========================= */
 
-let notes = JSON.parse(localStorage.getItem("malkum_notes")) || [];
+let notes = JSON.parse(
+    localStorage.getItem("malkum_notes")
+) || [];
+
+let selectedCustomer = null;
 
 /* =========================
    고객 리스트 출력
@@ -33,22 +43,23 @@ function renderCustomerList(){
 
         customerList.innerHTML = `
             <div class="customer-item">
-                등록된 상담 신청이 없습니다.
+                등록된 고객이 없습니다.
             </div>
         `;
 
         return;
     }
 
-    leads.forEach((customer, index)=>{
+    leads.forEach((customer)=>{
 
         const div = document.createElement("div");
 
         div.className = "customer-item";
 
         div.innerHTML = `
+
             <div class="customer-name">
-                ${customer.name || "이름 없음"}
+                ${customer.name || "-"}
             </div>
 
             <div class="customer-phone">
@@ -58,22 +69,25 @@ function renderCustomerList(){
             <div class="customer-date">
                 ${customer.date || ""}
             </div>
+
         `;
 
         div.addEventListener("click", ()=>{
 
             document
                 .querySelectorAll(".customer-item")
-                .forEach(item=>item.classList.remove("active"));
+                .forEach(item=>{
+
+                    item.classList.remove("active");
+
+                });
 
             div.classList.add("active");
 
             selectedCustomer = customer;
 
-            customerName.textContent = customer.name || "-";
-            customerPhone.textContent = customer.phone || "-";
+            loadCustomer(customer);
 
-            loadCustomerNote(customer.id);
         });
 
         customerList.appendChild(div);
@@ -83,35 +97,45 @@ function renderCustomerList(){
 }
 
 /* =========================
-   메모 불러오기
+   고객 정보 출력
 ========================= */
 
-function loadCustomerNote(customerId){
+function loadCustomer(customer){
 
-    const note = notes.find(
-        item => item.customer_id === customerId
+    customerName.value = customer.name || "";
+    customerPhone.value = customer.phone || "";
+
+    const noteData = notes.find(
+        item => item.customer_id === customer.id
     );
 
-    if(note){
+    if(noteData){
 
-        noteInput.value = note.memo;
+        customerStatus.value = noteData.status || "";
+        customerSchedule.value = noteData.schedule || "";
+        customerPurchase.value = noteData.purchase || "";
+        customerMemo.value = noteData.memo || "";
 
     }else{
 
-        noteInput.value = "";
+        customerStatus.value = "";
+        customerSchedule.value = "";
+        customerPurchase.value = "";
+        customerMemo.value = "";
+
     }
 
 }
 
 /* =========================
-   메모 저장
+   저장
 ========================= */
 
-saveNoteBtn.addEventListener("click", ()=>{
+saveBtn.addEventListener("click", ()=>{
 
     if(!selectedCustomer){
 
-        alert("고객을 먼저 선택하세요.");
+        alert("고객을 선택하세요.");
         return;
     }
 
@@ -121,16 +145,28 @@ saveNoteBtn.addEventListener("click", ()=>{
 
     if(existingNote){
 
-        existingNote.memo = noteInput.value;
+        existingNote.status = customerStatus.value;
+        existingNote.schedule = customerSchedule.value;
+        existingNote.purchase = customerPurchase.value;
+        existingNote.memo = customerMemo.value;
 
     }else{
 
         notes.push({
 
             customer_id : selectedCustomer.id,
+
             name : selectedCustomer.name,
+
             phone : selectedCustomer.phone,
-            memo : noteInput.value
+
+            status : customerStatus.value,
+
+            schedule : customerSchedule.value,
+
+            purchase : customerPurchase.value,
+
+            memo : customerMemo.value
 
         });
 
@@ -141,7 +177,8 @@ saveNoteBtn.addEventListener("click", ()=>{
         JSON.stringify(notes)
     );
 
-    saveMessage.textContent = "메모 저장 완료";
+    saveMessage.textContent =
+        "고객 정보 저장 완료";
 
     setTimeout(()=>{
 
@@ -152,7 +189,7 @@ saveNoteBtn.addEventListener("click", ()=>{
 });
 
 /* =========================
-   최초 실행
+   실행
 ========================= */
 
 renderCustomerList();
