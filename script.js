@@ -6,10 +6,11 @@
 ========================= */
 
 const supabaseUrl =
-"여기에_SUPABASE_URL";
+"https://여기에프로젝트URL.supabase.co";
 
 const supabaseKey =
-"여기에_SUPABASE_ANON_KEY";
+"여기에_ANON_PUBLIC_KEY";
+
 
 const supabaseClient =
 window.supabase.createClient(
@@ -19,12 +20,16 @@ window.supabase.createClient(
 
 
 /* =========================
-   무료상담 신청
+   버튼
 ========================= */
 
 const submitBtn =
 document.getElementById("submitBtn");
 
+
+/* =========================
+   무료상담 신청
+========================= */
 
 submitBtn.addEventListener("click", async ()=>{
 
@@ -33,6 +38,7 @@ submitBtn.addEventListener("click", async ()=>{
     .getElementById("name")
     .value
     .trim();
+
 
     const phone =
     document
@@ -43,19 +49,24 @@ submitBtn.addEventListener("click", async ()=>{
 
     if(!name || !phone){
 
-        alert("이름과 전화번호를 입력하세요.");
+        alert(
+            "이름과 전화번호를 입력하세요."
+        );
 
         return;
     }
 
 
+    const createdText =
+
+    new Date()
+
+    .toLocaleString("ko-KR");
+
+
     /* =========================
        leads 저장
     ========================= */
-
-    const createdText =
-    new Date().toLocaleString("ko-KR");
-
 
     const { data, error } =
 
@@ -73,27 +84,31 @@ submitBtn.addEventListener("click", async ()=>{
 
     })
 
-    .select()
+    .select();
 
 
     if(error){
 
         console.log(error);
 
-        alert("저장 실패");
+        alert("leads 저장 실패");
 
         return;
     }
 
 
-    console.log("leads 저장 완료");
+    console.log(
+        "leads 저장 완료"
+    );
 
 
     /* =========================
        leads id 가져오기
     ========================= */
 
-    const leadData = data[0];
+    const leadData =
+    data[0];
+
 
     const customerId =
     leadData.id;
@@ -136,18 +151,21 @@ submitBtn.addEventListener("click", async ()=>{
 
 
     /* =========================
-       입력창 초기화
+       입력 초기화
     ========================= */
 
     document
     .getElementById("name")
     .value = "";
 
+
     document
     .getElementById("phone")
     .value = "";
 
 
-    alert("상담 신청 완료");
+    alert(
+        "상담 신청 완료"
+    );
 
 });
