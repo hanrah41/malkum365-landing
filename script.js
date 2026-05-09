@@ -5,18 +5,16 @@
 
 
 // ============================================
-// Supabase 연결
+// Supabase 실제 연결값 입력
 // ============================================
 
-// ↓↓↓ 실제 본인 프로젝트 값으로 교체 ↓↓↓
+// 반드시 본인 프로젝트 실제값으로 변경하세요
 
 const SUPABASE_URL =
 'https://YOUR_PROJECT.supabase.co';
 
 const SUPABASE_ANON_KEY =
-'YOUR_ANON_PUBLIC_KEY';
-
-// ↑↑↑ 실제 본인 프로젝트 값으로 교체 ↑↑↑
+'YOUR_REAL_ANON_PUBLIC_KEY';
 
 
 // ============================================
@@ -45,7 +43,7 @@ document.getElementById('submitBtn');
 
 
 // ============================================
-// 상태
+// 상태값
 // ============================================
 
 let currentLeadId = null;
@@ -58,7 +56,7 @@ let isCreating = false;
 
 
 // ============================================
-// 최초 생성
+// 최초 INSERT
 // ============================================
 
 async function createLead(){
@@ -78,7 +76,7 @@ async function createLead(){
         const phone =
         phoneInput.value.trim();
 
-        // 둘 다 비어있으면 저장 안함
+        // 입력 없으면 저장 안함
         if(
             !name &&
             !phone
@@ -124,7 +122,7 @@ async function createLead(){
         if(error){
 
             console.error(
-                'leads 저장 오류:',
+                'INSERT 오류:',
                 error
             );
 
@@ -190,7 +188,7 @@ async function updateLead(){
         if(error){
 
             console.error(
-                '업데이트 오류:',
+                'UPDATE 오류:',
                 error
             );
 
@@ -219,13 +217,13 @@ async function startRealtimeSave(){
         return;
     }
 
-    // 최초 저장
+    // 최초 생성
     if(currentLeadId === null){
 
         await createLead();
     }
 
-    // 타이머 중복 방지
+    // 중복 타이머 방지
     if(autoSaveTimer){
 
         return;
