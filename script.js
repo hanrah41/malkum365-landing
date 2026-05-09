@@ -28,19 +28,6 @@ document.getElementById("submitBtn");
 
 
 /* =========================
-   버튼 체크
-========================= */
-
-if(!submitBtn){
-
-    console.log(
-        "submitBtn 없음"
-    );
-
-}
-
-
-/* =========================
    무료상담 신청
 ========================= */
 
@@ -52,10 +39,6 @@ if(submitBtn){
 
         async ()=>{
 
-            /* =========================
-               input 자동 찾기
-            ========================= */
-
             const inputs =
             document.querySelectorAll("input");
 
@@ -63,7 +46,7 @@ if(submitBtn){
             if(inputs.length < 2){
 
                 alert(
-                    "input 찾기 실패"
+                    "input 오류"
                 );
 
                 return;
@@ -82,10 +65,6 @@ if(submitBtn){
             .trim();
 
 
-            /* =========================
-               입력 확인
-            ========================= */
-
             if(!name || !phone){
 
                 alert(
@@ -95,10 +74,6 @@ if(submitBtn){
                 return;
             }
 
-
-            /* =========================
-               시간 생성
-            ========================= */
 
             const createdText =
 
@@ -111,7 +86,13 @@ if(submitBtn){
                leads 저장
             ========================= */
 
-            const { data, error } =
+            const {
+
+                data:leadData,
+
+                error:leadError
+
+            } =
 
             await supabaseClient
 
@@ -136,19 +117,17 @@ if(submitBtn){
 
 
             console.log(
-                "응답 데이터 : ",
-                data
+                "leads 데이터 : ",
+                leadData
             );
 
             console.log(
-                "응답 에러 : ",
-                error
+                "leads 에러 : ",
+                leadError
             );
 
 
-            if(error){
-
-                console.log(error);
+            if(leadError){
 
                 alert(
                     "leads 저장 실패"
@@ -158,38 +137,15 @@ if(submitBtn){
             }
 
 
-            console.log(
-                "leads 저장 완료"
-            );
-
-
-            /* =========================
-               customer id 추출
-            ========================= */
-
-            const leadData =
-            data;
-
-
-            const customerId =
-            leadData.id;
-
-
-            console.log(
-                "customerId : ",
-                customerId
-            );
-
-
             /* =========================
                notes 자동 생성
             ========================= */
 
             const {
 
-                data:noteData,
+                data:notesData,
 
-                error:noteError
+                error:notesError
 
             } =
 
@@ -199,8 +155,8 @@ if(submitBtn){
 
             .insert({
 
-                customer_id :
-                customerId,
+                created_text :
+                createdText,
 
                 name :
                 name,
@@ -208,16 +164,13 @@ if(submitBtn){
                 phone :
                 phone,
 
-                status : "",
+                consultation : "",
 
                 schedule : "",
 
                 purchase : "",
 
-                memo : "",
-
-                next_call_at :
-                null
+                etc : ""
 
             })
 
@@ -227,32 +180,23 @@ if(submitBtn){
 
 
             console.log(
-                "notes 응답 데이터 : ",
-                noteData
+                "notes 데이터 : ",
+                notesData
             );
 
             console.log(
-                "notes 응답 에러 : ",
-                noteError
+                "notes 에러 : ",
+                notesError
             );
 
 
-            if(noteError){
-
-                console.log(noteError);
+            if(notesError){
 
                 alert(
                     "notes 저장 실패"
                 );
 
-            }
-
-            else{
-
-                console.log(
-                    "notes 자동 생성 완료"
-                );
-
+                return;
             }
 
 
