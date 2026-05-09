@@ -2,35 +2,6 @@
 
 
 /* =========================
-   임시 복구용
-========================= */
-
-const supabaseUrl = "";
-
-const supabaseKey = "";
-
-
-/* =========================
-   Supabase OFF 상태
-========================= */
-
-let supabaseClient = null;
-
-if(
-    supabaseUrl !== "" &&
-    supabaseKey !== ""
-){
-
-    supabaseClient =
-    window.supabase.createClient(
-        supabaseUrl,
-        supabaseKey
-    );
-
-}
-
-
-/* =========================
    버튼
 ========================= */
 
@@ -39,154 +10,55 @@ document.getElementById("submitBtn");
 
 
 /* =========================
-   무료상담 신청
+   무료 상담 신청
 ========================= */
 
-submitBtn.addEventListener("click", async ()=>{
+submitBtn.addEventListener("click", ()=>{
+
+    const nameInput =
+    document.getElementById("name");
+
+    const phoneInput =
+    document.getElementById("phone");
+
+
+    /* =========================
+       input 존재 체크
+    ========================= */
+
+    if(!nameInput || !phoneInput){
+
+        alert(
+            "HTML input id 확인 필요"
+        );
+
+        console.log(
+            "name 또는 phone input 없음"
+        );
+
+        return;
+    }
+
 
     const name =
-    document
-    .getElementById("name")
-    .value
-    .trim();
-
+    nameInput.value.trim();
 
     const phone =
-    document
-    .getElementById("phone")
-    .value
-    .trim();
+    phoneInput.value.trim();
 
 
     if(!name || !phone){
 
         alert(
-            "이름과 전화번호를 입력하세요."
+            "이름과 전화번호 입력"
         );
 
         return;
     }
-
-
-    /* =========================
-       Supabase 미연결 상태
-    ========================= */
-
-    if(!supabaseClient){
-
-        alert(
-            "Supabase 연결 전 상태입니다."
-        );
-
-        return;
-    }
-
-
-    const createdText =
-
-    new Date()
-
-    .toLocaleString("ko-KR");
-
-
-    /* =========================
-       leads 저장
-    ========================= */
-
-    const { data, error } =
-
-    await supabaseClient
-
-    .from("leads")
-
-    .insert({
-
-        created_text : createdText,
-
-        name : name,
-
-        phone : phone
-
-    })
-
-    .select();
-
-
-    if(error){
-
-        console.log(error);
-
-        alert("leads 저장 실패");
-
-        return;
-    }
-
-
-    console.log(
-        "leads 저장 완료"
-    );
-
-
-    /* =========================
-       notes 자동 생성
-    ========================= */
-
-    const leadData =
-    data[0];
-
-
-    const customerId =
-    leadData.id;
-
-
-    const { error:noteError } =
-
-    await supabaseClient
-
-    .from("notes")
-
-    .insert({
-
-        customer_id : customerId,
-
-        memo : "",
-
-        next_call_at : null
-
-    });
-
-
-    if(noteError){
-
-        console.log(noteError);
-
-    }
-
-    else{
-
-        console.log(
-            "notes 자동 생성 완료"
-        );
-
-    }
-
-
-    /* =========================
-       입력 초기화
-    ========================= */
-
-    document
-    .getElementById("name")
-    .value = "";
-
-
-    document
-    .getElementById("phone")
-    .value = "";
 
 
     alert(
-        "상담 신청 완료"
+        "버튼 정상 작동"
     );
 
 });
