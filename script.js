@@ -1,118 +1,103 @@
-// ============================================
-// Supabase
-// ============================================
+window.onload = function(){
 
-const supabaseClient =
-window.supabase.createClient(
+    const submitBtn =
+    document.getElementById('submitBtn');
 
-    window.SUPABASE_URL_GLOBAL,
+    submitBtn.onclick =
+    async function(){
 
-    window.SUPABASE_ANON_KEY_GLOBAL
-);
+        const name =
+        document
+        .getElementById('name')
+        .value
+        .trim();
 
+        const phone =
+        document
+        .getElementById('phone')
+        .value
+        .trim();
 
-// ============================================
-// 버튼
-// ============================================
+        if(!name || !phone){
 
-const submitBtn =
-document.getElementById('submitBtn');
+            alert(
+                '이름/전화번호 입력'
+            );
 
+            return;
+        }
 
-// ============================================
-// 클릭
-// ============================================
+        const supabaseClient =
+        window.supabase.createClient(
 
-submitBtn.onclick =
-async function(){
+            window.SUPABASE_URL_GLOBAL,
 
-    const name =
-    document
-    .getElementById('name')
-    .value
-    .trim();
-
-    const phone =
-    document
-    .getElementById('phone')
-    .value
-    .trim();
-
-    if(!name || !phone){
-
-        alert(
-            '이름과 전화번호 입력'
+            window.SUPABASE_ANON_KEY_GLOBAL
         );
 
-        return;
-    }
+        const createdText =
+        new Date()
 
-    const createdText =
-    new Date()
+        .toLocaleString('sv-SE')
 
-    .toLocaleString('sv-SE')
+        .replace(',', '');
 
-    .replace(',', '');
+        // leads 저장
 
-    // =====================================
-    // leads 저장
-    // =====================================
+        const {
+            data,
+            error
+        } = await supabaseClient
 
-    const {
-        data,
-        error
-    } = await supabaseClient
+        .from('leads')
 
-    .from('leads')
+        .insert([
+            {
+                created_text:
+                createdText,
 
-    .insert([
-        {
-            created_text:
-            createdText,
+                name:name,
 
-            name:name,
+                phone:phone
+            }
+        ])
 
-            phone:phone
+        .select()
+
+        .single();
+
+        if(error){
+
+            console.error(error);
+
+            alert(
+                'DB 저장 실패'
+            );
+
+            return;
         }
-    ])
 
-    .select()
+        // notes 저장
 
-    .single();
+        await supabaseClient
 
-    if(error){
+        .from('notes')
 
-        console.error(error);
+        .insert([
+            {
+                id:data.id,
+
+                created_text:
+                createdText,
+
+                name:name,
+
+                phone:phone
+            }
+        ]);
 
         alert(
-            'DB 저장 실패'
+            '무료 상담 신청 완료'
         );
-
-        return;
-    }
-
-    // =====================================
-    // notes 저장
-    // =====================================
-
-    await supabaseClient
-
-    .from('notes')
-
-    .insert([
-        {
-            id:data.id,
-
-            created_text:
-            createdText,
-
-            name:name,
-
-            phone:phone
-        }
-    ]);
-
-    alert(
-        '무료 상담 신청이 완료되었습니다.'
-    );
+    };
 };
