@@ -5,14 +5,17 @@
 
 
 // ============================================
-// Supabase 실제 설정
+// Supabase 설정
 // ============================================
 
 const SUPABASE_URL =
 "https://pziyabogqefxzvinwarg.supabase.co";
 
+
+// ↓↓↓ 여기에 실제 anon public key 붙여넣기 ↓↓↓
+
 const SUPABASE_ANON_KEY =
-"여기에 기존 crm.js 의 정상 anon key 그대로 유지";
+"여기에실제anonkey";
 
 
 // ============================================
