@@ -2,21 +2,32 @@
 
 
 /* =========================
-   Supabase 연결
+   임시 복구용
 ========================= */
 
-const supabaseUrl =
-"https://여기에프로젝트URL.supabase.co";
+const supabaseUrl = "";
 
-const supabaseKey =
-"여기에_ANON_PUBLIC_KEY";
+const supabaseKey = "";
 
 
-const supabaseClient =
-window.supabase.createClient(
-    supabaseUrl,
-    supabaseKey
-);
+/* =========================
+   Supabase OFF 상태
+========================= */
+
+let supabaseClient = null;
+
+if(
+    supabaseUrl !== "" &&
+    supabaseKey !== ""
+){
+
+    supabaseClient =
+    window.supabase.createClient(
+        supabaseUrl,
+        supabaseKey
+    );
+
+}
 
 
 /* =========================
@@ -51,6 +62,20 @@ submitBtn.addEventListener("click", async ()=>{
 
         alert(
             "이름과 전화번호를 입력하세요."
+        );
+
+        return;
+    }
+
+
+    /* =========================
+       Supabase 미연결 상태
+    ========================= */
+
+    if(!supabaseClient){
+
+        alert(
+            "Supabase 연결 전 상태입니다."
         );
 
         return;
@@ -103,7 +128,7 @@ submitBtn.addEventListener("click", async ()=>{
 
 
     /* =========================
-       leads id 가져오기
+       notes 자동 생성
     ========================= */
 
     const leadData =
@@ -113,10 +138,6 @@ submitBtn.addEventListener("click", async ()=>{
     const customerId =
     leadData.id;
 
-
-    /* =========================
-       notes 자동 생성
-    ========================= */
 
     const { error:noteError } =
 
