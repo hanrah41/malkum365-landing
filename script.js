@@ -1,11 +1,10 @@
 // ============================================
-// 파일 경로
 // C:\malkum365-landing\script.js
 // ============================================
 
 
 // ============================================
-// Supabase 설정
+// Supabase 연결
 // ============================================
 
 const SUPABASE_URL =
@@ -36,16 +35,16 @@ document.getElementById('submitBtn');
 
 
 // ============================================
-// 상태값
+// 상태
 // ============================================
-
-let autoSaveTimer = null;
 
 let currentLeadId = null;
 
+let autoSaveTimer = null;
+
 let isCompleted = false;
 
-let isSaving = false;
+let isCreating = false;
 
 
 // ============================================
@@ -54,12 +53,12 @@ let isSaving = false;
 
 async function createLead(){
 
-    if(isSaving){
+    if(isCreating){
 
         return;
     }
 
-    isSaving = true;
+    isCreating = true;
 
     try{
 
@@ -69,13 +68,12 @@ async function createLead(){
         const phone =
         phoneInput.value.trim();
 
-        // 둘 다 비어있으면 저장 안함
         if(
             !name &&
             !phone
         ){
 
-            isSaving = false;
+            isCreating = false;
             return;
         }
 
@@ -109,14 +107,15 @@ async function createLead(){
 
             console.error(error);
 
-            isSaving = false;
+            isCreating = false;
+
             return;
         }
 
         currentLeadId = data.id;
 
         console.log(
-            '최초 생성 완료'
+            '최초 저장 완료'
         );
 
     }catch(err){
@@ -124,7 +123,7 @@ async function createLead(){
         console.error(err);
     }
 
-    isSaving = false;
+    isCreating = false;
 }
 
 
@@ -134,9 +133,8 @@ async function createLead(){
 
 async function updateLead(){
 
-    if(
-        currentLeadId === null
-    ){
+    if(currentLeadId === null){
+
         return;
     }
 
@@ -155,8 +153,10 @@ async function updateLead(){
         .from('leads')
 
         .update({
+
             name:name,
             phone:phone
+
         })
 
         .eq(
@@ -192,13 +192,13 @@ async function startRealtimeSave(){
         return;
     }
 
-    // 최초 생성
+    // 최초 저장
     if(currentLeadId === null){
 
         await createLead();
     }
 
-    // 중복 타이머 방지
+    // 중복 생성 방지
     if(autoSaveTimer){
 
         return;
@@ -242,30 +242,35 @@ phoneInput.addEventListener(
 
 
 // ============================================
-// 상담 신청 완료
+// 버튼 클릭
 // ============================================
 
-window.submitConsultation = function(){
+submitBtn.addEventListener(
 
-    isCompleted = true;
+    'click',
 
-    clearInterval(
-        autoSaveTimer
-    );
+    function(){
 
-    submitBtn.disabled = true;
+        isCompleted = true;
 
-    submitBtn.innerText =
-    '신청 완료';
+        clearInterval(
+            autoSaveTimer
+        );
 
-    submitBtn.style.opacity =
-    '0.7';
+        submitBtn.disabled = true;
 
-    alert(
-        '무료 상담 신청이 완료되었습니다.'
-    );
+        submitBtn.innerText =
+        '신청 완료';
 
-    console.log(
-        '상담 신청 완료'
-    );
-};
+        submitBtn.style.opacity =
+        '0.7';
+
+        alert(
+            '무료 상담 신청이 완료되었습니다.'
+        );
+
+        console.log(
+            '상담 신청 완료'
+        );
+    }
+);
