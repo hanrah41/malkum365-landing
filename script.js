@@ -6,10 +6,10 @@
 ========================= */
 
 const supabaseUrl =
-"https://여기에프로젝트URL.supabase.co";
+"https://pziyabogqefxzvinwarg.supabase.co";
 
 const supabaseKey =
-"여기에_ANON_PUBLIC_KEY";
+"sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8";
 
 
 const supabaseClient =
@@ -28,7 +28,7 @@ document.getElementById("submitBtn");
 
 
 /* =========================
-   버튼 존재 체크
+   버튼 체크
 ========================= */
 
 if(!submitBtn){
