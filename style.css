@@ -1,563 +1,149 @@
-@font-face{
-
-    font-family:'NotoSansKR';
-
-    src:url('assets/fonts/NotoSansKR-Regular.woff2')
-    format('woff2');
-
-    font-weight:400;
-}
-
-@font-face{
-
-    font-family:'NotoSansKR';
-
-    src:url('assets/fonts/NotoSansKR-Bold.woff2')
-    format('woff2');
-
-    font-weight:700;
-}
+/* 파일명 : style.css */
 
 *{
-
     margin:0;
-
     padding:0;
-
     box-sizing:border-box;
 }
 
 body{
 
-    background:#edf3f0;
+    background:#edf3ef;
 
-    font-family:'NotoSansKR', sans-serif;
-
-    color:#083b3d;
+    font-family:
+    "Malgun Gothic",
+    sans-serif;
 }
 
-.page{
+.consult-wrap{
 
     width:100%;
-
-    max-width:600px;
-
-    margin:0 auto;
-
-    padding:24px 16px 80px;
-}
-
-/* =========================
-   상단
-========================= */
-
-.hero{
-
-    background:#ffffff;
-
-    border-radius:28px;
-
-    padding:32px 24px;
-
-    margin-bottom:24px;
-
-    text-align:center;
-}
-
-.badge{
-
-    font-size:20px;
-
-    font-weight:700;
-
-    margin-bottom:24px;
-}
-
-.hero h1{
-
-    font-size:56px;
-
-    font-weight:700;
-
-    margin-bottom:28px;
-
-    line-height:1.2;
-}
-
-.hero-text{
-
-    font-size:28px;
-
-    line-height:1.5;
-
-    color:#52606d;
-}
-
-/* =========================
-   게임
-========================= */
-
-.game-box{
-
-    background:#ffffff;
-
-    border-radius:28px;
-
-    padding:24px;
-
-    margin-bottom:24px;
-}
-
-.number-display{
-
-    width:100%;
-
-    height:180px;
-
-    border:5px dashed #14945d;
-
-    border-radius:32px;
-
-    background:#eef7f1;
 
     display:flex;
-
-    align-items:center;
 
     justify-content:center;
 
-    font-size:92px;
-
-    font-weight:700;
-
-    color:#065941;
-
-    letter-spacing:18px;
-
-    margin-bottom:24px;
+    padding-top:40px;
 }
 
-.answer-input{
+.consult-box{
 
-    width:100%;
-
-    height:82px;
-
-    border-radius:24px;
-
-    border:3px solid #d2d8dc;
-
-    font-size:46px;
-
-    text-align:center;
-
-    margin-bottom:24px;
-
-    outline:none;
-}
-
-.main-btn,
-.sub-btn{
-
-    width:100%;
-
-    height:90px;
-
-    border:none;
-
-    border-radius:24px;
-
-    background:#16945d;
-
-    color:#ffffff;
-
-    font-size:38px;
-
-    font-weight:700;
-
-    cursor:pointer;
-
-    margin-bottom:20px;
-}
-
-.restart-btn{
-
-    display:block;
-
-    width:320px;
-
-    height:92px;
-
-    margin:0 auto 20px;
-
-    border:none;
-
-    border-radius:26px;
-
-    background:#f4de7f;
-
-    color:#7a4d00;
-
-    font-size:40px;
-
-    font-weight:700;
-
-    cursor:pointer;
-
-    box-shadow:0 10px 20px rgba(0,0,0,0.12);
-}
-
-.game-result{
-
-    text-align:center;
-
-    font-size:34px;
-
-    font-weight:700;
-
-    line-height:1.4;
-
-    color:#083b3d;
-}
-
-/* =========================
-   설명
-========================= */
-
-.info-box{
+    width:420px;
 
     background:#ffffff;
 
-    border-radius:28px;
+    border-radius:30px;
 
-    padding:36px 24px;
+    padding:40px 30px;
 
-    margin-bottom:24px;
-
-    text-align:center;
+    box-shadow:
+    0 5px 20px rgba(0,0,0,0.08);
 }
 
-.info-box h2{
+.title{
 
-    font-size:42px;
+    font-size:56px;
 
-    margin-bottom:24px;
+    font-weight:800;
 
-    line-height:1.4;
-}
-
-.info-box p{
-
-    font-size:28px;
-
-    line-height:1.7;
-
-    color:#52606d;
-}
-
-/* =========================
-   상담 신청
-========================= */
-
-.form-box{
-
-    background:#ffffff;
-
-    border-radius:28px;
-
-    padding:36px 24px;
-}
-
-.form-box h2{
+    color:#003f53;
 
     text-align:center;
 
-    font-size:48px;
-
-    margin-bottom:32px;
+    margin-bottom:40px;
 }
 
-.form-box input[type="text"],
-.form-box input[type="tel"]{
+.input-box{
 
     width:100%;
 
-    height:82px;
+    height:78px;
 
     border-radius:24px;
 
-    border:3px solid #d2d8dc;
+    border:4px solid #d1d7df;
 
-    font-size:34px;
+    background:#eef4ff;
 
     padding:0 24px;
 
-    margin-bottom:20px;
+    font-size:28px;
+
+    margin-bottom:22px;
 
     outline:none;
 }
 
-.agree-line{
+.agree-wrap{
 
-    display:flex;
+    margin-top:10px;
 
-    align-items:center;
-
-    gap:12px;
-
-    font-size:28px;
-
-    margin-bottom:18px;
-
-    line-height:1.4;
+    margin-bottom:35px;
 }
 
-.agree-line span{
-
-    color:#ff4b4b;
-
-    font-weight:700;
-}
-
-.agree-line input{
-
-    width:26px;
-
-    height:26px;
-}
-
-.detail-btn{
+.agree-item{
 
     display:block;
 
-    margin:8px 0 24px auto;
+    font-size:22px;
 
-    border:none;
+    color:#003f53;
 
-    background:#f1f1f1;
+    margin-bottom:18px;
+}
 
-    border-radius:12px;
+.agree-item input{
 
-    padding:10px 20px;
+    width:22px;
+    height:22px;
 
-    font-size:20px;
+    margin-right:10px;
+}
 
-    cursor:pointer;
+.agree-item span{
+
+    color:#ff4d4d;
+
+    font-weight:bold;
 }
 
 .submit-btn{
 
     width:100%;
 
-    height:96px;
+    height:110px;
 
     border:none;
 
-    border-radius:26px;
+    border-radius:30px;
 
-    background:#ff8300;
+    background:#ff8800;
 
     color:#ffffff;
 
-    font-size:42px;
+    font-size:34px;
 
-    font-weight:700;
+    font-weight:800;
 
     cursor:pointer;
 
-    margin-bottom:24px;
+    transition:0.2s;
 }
 
-.privacy{
+.submit-btn:hover{
+
+    opacity:0.9;
+}
+
+.bottom-text{
+
+    margin-top:35px;
 
     text-align:center;
 
-    font-size:24px;
+    font-size:20px;
 
-    color:#6c757d;
+    color:#68727c;
 
-    line-height:1.5;
-}
-
-/* =========================
-   팝업
-========================= */
-
-.modal-overlay{
-
-    display:none;
-
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(0,0,0,0.45);
-
-    z-index:9999;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:20px;
-}
-
-.modal-box{
-
-    position:relative;
-
-    width:100%;
-
-    max-width:500px;
-
-    background:#ffffff;
-
-    border-radius:28px;
-
-    padding:42px 30px;
-}
-
-.modal-close{
-
-    position:absolute;
-
-    top:16px;
-
-    right:20px;
-
-    border:none;
-
-    background:none;
-
-    font-size:42px;
-
-    cursor:pointer;
-}
-
-.modal-box h3{
-
-    font-size:36px;
-
-    margin-bottom:28px;
-}
-
-.modal-box ul{
-
-    padding-left:24px;
-
-    margin-bottom:24px;
-}
-
-.modal-box li{
-
-    font-size:24px;
-
-    line-height:1.8;
-
-    margin-bottom:14px;
-}
-
-.modal-notice{
-
-    background:#f5f5f5;
-
-    border-radius:20px;
-
-    padding:24px;
-
-    font-size:22px;
-
-    line-height:1.7;
-
-    color:#666666;
-}
-
-/* =========================
-   모바일
-========================= */
-
-@media(max-width:768px){
-
-    .hero h1{
-
-        font-size:30px;
-    }
-
-    .hero-text{
-
-        font-size:18px;
-    }
-
-    .number-display{
-
-        height:140px;
-
-        font-size:64px;
-
-        letter-spacing:10px;
-    }
-
-    .answer-input{
-
-        height:70px;
-
-        font-size:32px;
-    }
-
-    .main-btn,
-    .sub-btn{
-
-        height:76px;
-
-        font-size:28px;
-    }
-
-    .restart-btn{
-
-        width:240px;
-
-        height:76px;
-
-        font-size:28px;
-    }
-
-    .info-box h2{
-
-        font-size:28px;
-    }
-
-    .info-box p{
-
-        font-size:18px;
-    }
-
-    .form-box h2{
-
-        font-size:34px;
-    }
-
-    .form-box input[type="text"],
-    .form-box input[type="tel"]{
-
-        height:70px;
-
-        font-size:24px;
-    }
-
-    .agree-line{
-
-        font-size:18px;
-    }
-
-    .submit-btn{
-
-        height:84px;
-
-        font-size:30px;
-    }
-
-    .privacy{
-
-        font-size:16px;
-    }
+    line-height:1.6;
 }
