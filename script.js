@@ -1,103 +1,68 @@
-window.onload = function(){
+// ============================================
+// 실시간 새로고침
+// ============================================
 
-    const submitBtn =
-    document.getElementById('submitBtn');
+const leadsChannel =
 
-    submitBtn.onclick =
-    async function(){
+supabaseClient
 
-        const name =
-        document
-        .getElementById('name')
-        .value
-        .trim();
+.channel('realtime-leads')
 
-        const phone =
-        document
-        .getElementById('phone')
-        .value
-        .trim();
+.on(
 
-        if(!name || !phone){
+    'postgres_changes',
 
-            alert(
-                '이름/전화번호 입력'
-            );
+    {
+        event:'INSERT',
 
-            return;
-        }
+        schema:'public',
 
-        const supabaseClient =
-        window.supabase.createClient(
+        table:'leads'
+    },
 
-            window.SUPABASE_URL_GLOBAL,
+    payload=>{
 
-            window.SUPABASE_ANON_KEY_GLOBAL
+        console.log(
+            '실시간 leads:',
+            payload
         );
 
-        const createdText =
-        new Date()
+        location.reload();
+    }
+)
 
-        .toLocaleString('sv-SE')
+.subscribe();
 
-        .replace(',', '');
 
-        // leads 저장
 
-        const {
-            data,
-            error
-        } = await supabaseClient
 
-        .from('leads')
+const notesChannel =
 
-        .insert([
-            {
-                created_text:
-                createdText,
+supabaseClient
 
-                name:name,
+.channel('realtime-notes')
 
-                phone:phone
-            }
-        ])
+.on(
 
-        .select()
+    'postgres_changes',
 
-        .single();
+    {
+        event:'INSERT',
 
-        if(error){
+        schema:'public',
 
-            console.error(error);
+        table:'notes'
+    },
 
-            alert(
-                'DB 저장 실패'
-            );
+    payload=>{
 
-            return;
-        }
-
-        // notes 저장
-
-        await supabaseClient
-
-        .from('notes')
-
-        .insert([
-            {
-                id:data.id,
-
-                created_text:
-                createdText,
-
-                name:name,
-
-                phone:phone
-            }
-        ]);
-
-        alert(
-            '무료 상담 신청 완료'
+        console.log(
+            '실시간 notes:',
+            payload
         );
-    };
-};
+
+        location.reload();
+    }
+)
+
+.subscribe();
