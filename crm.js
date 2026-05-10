@@ -289,7 +289,7 @@ function(){
 };
 
 /* =========================
-   소개등록 / 상담예정
+   상담예정
 ========================= */
 
 reserveBtn.onclick =
@@ -302,7 +302,16 @@ async function(){
         reserveBtn
     );
 
-    const result =
+    loadReserveList();
+};
+
+/* =========================
+   상담예정 통합 로드
+========================= */
+
+async function loadReserveList(){
+
+    const notesResult =
     await supabaseClient
 
     .from('notes')
@@ -313,28 +322,58 @@ async function(){
         'reserve_date',
         'is',
         null
-    )
-
-    .order(
-        'reserve_date',
-        {
-            ascending:true
-        }
     );
 
-    if(result.error){
+    const crmResult =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .not(
+        'reserve_date',
+        'is',
+        null
+    );
+
+    if(notesResult.error){
 
         console.error(
-            result.error
+            notesResult.error
         );
 
         return;
     }
 
+    if(crmResult.error){
+
+        console.error(
+            crmResult.error
+        );
+
+        return;
+    }
+
+    const merged = [
+
+        ...notesResult.data,
+
+        ...crmResult.data
+
+    ];
+
+    merged.sort((a,b)=>{
+
+        return new Date(a.reserve_date)
+        -
+        new Date(b.reserve_date);
+    });
+
     renderNotesTable(
-        result.data
+        merged
     );
-};
+}
 
 /* =========================
    진행중
@@ -478,7 +517,7 @@ function renderNotesTable(data){
             </td>
 
             <td>
-                ${item.created_text || ''}
+                ${item.created_text || item.created_at || ''}
             </td>
 
             <td class="editable-big-note"
@@ -532,8 +571,37 @@ function bindNoteBigEditor(){
             const current =
             this.innerText.trim();
 
+            let tableName =
+            'notes';
+
+            if(
+                currentMode === 'new' ||
+                currentMode === 'process' ||
+                currentMode === 'done'
+            ){
+
+                tableName =
+                'crm_customers';
+            }
+
+            if(currentMode === 'reserve'){
+
+                const row =
+                this.parentElement;
+
+                const created =
+                row.children[3]
+                .innerText;
+
+                if(created.includes(':')){
+
+                    tableName =
+                    'crm_customers';
+                }
+            }
+
             openBigEditor(
-                'notes',
+                tableName,
                 id,
                 field,
                 current
@@ -604,6 +672,22 @@ function bindReserveDateEditor(){
 
                 tableName =
                 'crm_customers';
+            }
+
+            if(currentMode === 'reserve'){
+
+                const row =
+                this.parentElement;
+
+                const created =
+                row.children[3]
+                .innerText;
+
+                if(created.includes(':')){
+
+                    tableName =
+                    'crm_customers';
+                }
             }
 
             if(raw.trim() === ''){
@@ -1144,7 +1228,7 @@ function refreshCurrentMode(){
 
     if(currentMode === 'reserve'){
 
-        reserveBtn.click();
+        loadReserveList();
 
         return;
     }
@@ -1197,13 +1281,7 @@ supabaseClient
 
     ()=>{
 
-        if(
-            currentMode === 'customer' ||
-            currentMode === 'reserve'
-        ){
-
-            refreshCurrentMode();
-        }
+        refreshCurrentMode();
     }
 )
 
@@ -1229,10 +1307,7 @@ supabaseClient
 
     ()=>{
 
-        if(currentMode !== 'customer'){
-
-            refreshCurrentMode();
-        }
+        refreshCurrentMode();
     }
 )
 
