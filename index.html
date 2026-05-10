@@ -1,311 +1,126 @@
-<!-- ========================================= -->
-<!-- 파일 경로 -->
-<!-- C:\malkum365-landing\index.html -->
-<!-- ========================================= -->
-
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+<title>CUSTOMER MANAGEMENT</title>
 
-<title>무료상담신청</title>
+<link rel="stylesheet" href="crm.css">
 
-<style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-
-    width:100%;
-    min-height:100vh;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    background:#dfe3e1;
-
-    font-family:
-    "Noto Sans KR",
-    sans-serif;
-}
-
-
-/* =========================================
-   박스
-========================================= */
-
-.consult-wrap{
-
-    width:450px;
-
-    background:#f7f7f7;
-
-    border-radius:38px;
-
-    padding:
-    42px
-    30px
-    42px;
-
-    box-shadow:
-    0 10px 30px rgba(0,0,0,0.08);
-}
-
-
-/* =========================================
-   타이틀
-========================================= */
-
-.title{
-
-    text-align:center;
-
-    font-size:66px;
-
-    font-weight:900;
-
-    color:#00384a;
-
-    line-height:1.15;
-
-    margin-bottom:42px;
-}
-
-
-/* =========================================
-   입력창
-========================================= */
-
-.input-box{
-
-    margin-bottom:24px;
-}
-
-.input-box input{
-
-    width:100%;
-
-    height:82px;
-
-    border:
-    5px solid #c4cad3;
-
-    border-radius:24px;
-
-    background:#dfe5f1;
-
-    padding:0 24px;
-
-    font-size:28px;
-
-    outline:none;
-}
-
-
-/* =========================================
-   체크
-========================================= */
-
-.check-area{
-
-    margin-top:8px;
-    margin-bottom:30px;
-}
-
-.check-item{
-
-    display:flex;
-    align-items:center;
-
-    gap:14px;
-
-    margin-bottom:16px;
-
-    font-size:22px;
-
-    color:#00384a;
-}
-
-.check-item input{
-
-    width:24px;
-    height:24px;
-}
-
-.required{
-
-    color:red;
-    font-weight:700;
-}
-
-
-/* =========================================
-   버튼
-========================================= */
-
-.submit-btn{
-
-    width:100%;
-
-    height:112px;
-
-    border:none;
-
-    border-radius:32px;
-
-    background:#ff8a00;
-
-    color:#fff;
-
-    font-size:34px;
-    font-weight:900;
-
-    cursor:pointer;
-
-    transition:0.2s;
-}
-
-.submit-btn:hover{
-
-    opacity:0.92;
-}
-
-
-/* =========================================
-   하단문구
-========================================= */
-
-.bottom-text{
-
-    margin-top:36px;
-
-    text-align:center;
-
-    font-size:20px;
-
-    color:#6f7480;
-
-    line-height:1.5;
-}
-
-</style>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
+<div class="crm-wrap">
 
-<div class="consult-wrap">
+    <div class="sidebar">
 
-    <div class="title">
-        무료 상담 신청
-    </div>
+        <div class="logo-box">
+            <h1>CUSTOMER</h1>
+            <p>MANAGEMENT</p>
+        </div>
 
+        <div class="menu-list">
 
-    <div class="input-box">
+            <button class="menu-btn active" data-mode="new">
+                소개등록
+            </button>
 
-        <input
-            type="text"
-            id="name"
-            placeholder="이름 입력"
-        >
-
-    </div>
-
-
-    <div class="input-box">
-
-        <input
-            type="tel"
-            id="phone"
-            placeholder="전화번호 입력"
-        >
-
-    </div>
+             <button class="menu-btn" data-mode="customer">
+                명단
+            </button>
 
 
-    <div class="check-area">
+            <button class="menu-btn" data-mode="customer">
+                고객명단
+            </button>
 
-        <label class="check-item">
+            <button class="menu-btn" data-mode="reserve">
+                상담예정
+            </button>
 
-            <input
-                type="checkbox"
-                checked
-            >
+            <button class="menu-btn" data-mode="process">
+                진행중
+            </button>
 
-            <span>
-                만 14세 이상입니다.
-                <span class="required">[필수]</span>
-            </span>
+            <button class="menu-btn" data-mode="done">
+                완료
+            </button>
 
-        </label>
+            <button class="menu-btn" data-mode="memo">
+                고객메모
+            </button>
 
+            <button class="menu-btn" data-mode="alarm">
+                알람설정
+            </button>
 
-        <label class="check-item">
-
-            <input
-                type="checkbox"
-                checked
-            >
-
-            <span>
-                개인정보 수집·이용 동의
-                <span class="required">[필수]</span>
-            </span>
-
-        </label>
+        </div>
 
     </div>
 
+    <div class="main-area">
 
-    <button
-        type="button"
-        class="submit-btn"
-        id="submitBtn"
-    >
-        무료 상담 신청하기
-    </button>
+        <div class="top-bar">
+            <div class="top-title">CUSTOMER CRM</div>
+        </div>
 
+        <div class="table-wrap">
 
-    <div class="bottom-text">
-        입력하신 정보는 상담 목적으로만 사용됩니다.
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>이름</th>
+                        <th>연락처</th>
+                        <th>상담 및 신청일</th>
+                        <th>상태</th>
+                        <th>상담 예정일</th>
+                    </tr>
+                </thead>
+
+                <tbody id="crmBody"></tbody>
+            </table>
+
+        </div>
+
     </div>
 
 </div>
 
+<!-- =========================
+     A4 1/4 대형 편집창
+========================= -->
 
-<!-- ========================================= -->
-<!-- Supabase -->
-<!-- ========================================= -->
+<div id="editorModal">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div id="editorBox">
 
+        <div id="editorTitle">
+            CRM 편집창
+        </div>
 
-<!-- ========================================= -->
-<!-- crm.js -->
-<!-- ========================================= -->
+        <textarea id="editorTextarea"></textarea>
+
+        <div id="editorButtons">
+
+            <button id="saveEditorBtn">
+                저장
+            </button>
+
+            <button id="closeEditorBtn">
+                닫기
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 <script src="crm.js"></script>
-
-
-<!-- ========================================= -->
-<!-- script.js -->
-<!-- ========================================= -->
-
-<script src="script.js"></script>
-
 
 </body>
 </html>
