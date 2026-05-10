@@ -15,7 +15,7 @@ window.supabase.createClient(
 );
 
 /* =========================
-   버튼 찾기
+   버튼
 ========================= */
 
 const buttons =
@@ -36,25 +36,15 @@ async function(){
         const name =
         prompt('고객명 입력');
 
-        if(!name){
-
-            return;
-        }
+        if(!name) return;
 
         const phone =
         prompt('연락처 입력');
 
-        if(!phone){
-
-            return;
-        }
+        if(!phone) return;
 
         const memo =
         prompt('메모 입력');
-
-        console.log(
-            'insert 시작'
-        );
 
         const result =
         await supabaseClient
@@ -95,12 +85,6 @@ async function(){
             return;
         }
 
-        alert(
-            '저장 완료'
-        );
-
-        loadLeads();
-
     }catch(err){
 
         console.error(err);
@@ -110,6 +94,44 @@ async function(){
         );
     }
 };
+
+/* =========================
+   데이터 출력
+========================= */
+
+function renderTable(data){
+
+    const body =
+    document.getElementById(
+        'crmBody'
+    );
+
+    body.innerHTML = '';
+
+    data.forEach(item=>{
+
+        const tr =
+        document.createElement('tr');
+
+        tr.innerHTML = `
+
+            <td>${item.id || ''}</td>
+
+            <td>${item.name || ''}</td>
+
+            <td>${item.phone || ''}</td>
+
+            <td>${item.created_text || ''}</td>
+
+            <td>${item.status || ''}</td>
+
+            <td>${item.memo || ''}</td>
+
+        `;
+
+        body.appendChild(tr);
+    });
+}
 
 /* =========================
    데이터 불러오기
@@ -142,35 +164,44 @@ async function loadLeads(){
         return;
     }
 
-    const body =
-    document.getElementById(
-        'crmBody'
+    renderTable(
+        result.data
     );
-
-    body.innerHTML = '';
-
-    result.data.forEach(item=>{
-
-        const tr =
-        document.createElement('tr');
-
-        tr.innerHTML = `
-
-            <td>${item.name || ''}</td>
-
-            <td>${item.phone || ''}</td>
-
-            <td>${item.created_text || ''}</td>
-
-            <td>${item.status || ''}</td>
-
-            <td>${item.memo || ''}</td>
-
-        `;
-
-        body.appendChild(tr);
-    });
 }
+
+/* =========================
+   실시간 반영
+========================= */
+
+supabaseClient
+
+.channel('realtime-leads')
+
+.on(
+
+    'postgres_changes',
+
+    {
+
+        event:'INSERT',
+
+        schema:'public',
+
+        table:'leads'
+    },
+
+    async payload=>{
+
+        console.log(
+            '실시간 데이터:',
+            payload
+        );
+
+        loadLeads();
+    }
+)
+
+.subscribe();
 
 /* =========================
    시작
