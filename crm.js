@@ -56,6 +56,36 @@ const alarmBtn =
 document.querySelector('[data-mode="alarm"]');
 
 /* =========================
+   전화번호 자동 하이픈
+========================= */
+
+function formatPhoneNumber(value){
+
+    const numbers =
+    value.replace(/\D/g,'');
+
+    /* 01012345678 */
+    if(numbers.length === 11){
+
+        return numbers.replace(
+            /(\d{3})(\d{4})(\d{4})/,
+            '$1-$2-$3'
+        );
+    }
+
+    /* 0101234567 */
+    if(numbers.length === 10){
+
+        return numbers.replace(
+            /(\d{3})(\d{3})(\d{4})/,
+            '$1-$2-$3'
+        );
+    }
+
+    return value;
+}
+
+/* =========================
    공통 버튼 템플릿
 ========================= */
 
@@ -1107,7 +1137,7 @@ function bindCellEvents(){
             const current =
             this.innerText.trim();
 
-            const value =
+            let value =
             prompt(
                 `${field} 입력`,
                 current
@@ -1115,6 +1145,16 @@ function bindCellEvents(){
 
             if(value === null)
             return;
+
+            /* 전화번호 자동 하이픈 */
+
+            if(field === 'phone'){
+
+                value =
+                formatPhoneNumber(
+                    value
+                );
+            }
 
             const result =
             await supabaseClient
