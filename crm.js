@@ -75,7 +75,9 @@ async function(){
 
             phone:'',
 
-            status:'상담예정',
+            created_at:'',
+
+            status:'',
 
             memo:''
 
@@ -111,52 +113,6 @@ async function(){
 };
 
 /* =========================
-   시간 포맷
-========================= */
-
-function formatKoreaTime(dateString){
-
-    return new Date(dateString)
-
-    .toLocaleString(
-
-        'ko-KR',
-
-        {
-
-            timeZone:'Asia/Seoul',
-
-            year:'numeric',
-
-            month:'2-digit',
-
-            day:'2-digit',
-
-            hour:'2-digit',
-
-            minute:'2-digit',
-
-            second:'2-digit',
-
-            hour12:false
-        }
-
-    )
-
-    .replace(/\./g,'-')
-
-    .replace(
-        /-\s/g,
-        '-'
-    )
-
-    .replace(
-        /\s/g,
-        ' '
-    );
-}
-
-/* =========================
    테이블 출력
 ========================= */
 
@@ -171,67 +127,115 @@ function renderTable(data){
 
     data.forEach(item=>{
 
-        let rowColor = '';
-
-        if(
-            item.status === '상담예정'
-        ){
-
-            rowColor =
-            '#F5D545';
-        }
-
-        if(
-            item.status === '진행중'
-        ){
-
-            rowColor =
-            '#B9D19E';
-        }
-
-        if(
-            item.status === '완료'
-        ){
-
-            rowColor =
-            '#D5D5D5';
-        }
-
         const tr =
         document.createElement('tr');
-
-        tr.style.background =
-        rowColor;
 
         tr.innerHTML = `
 
             <td>${item.id || ''}</td>
 
-            <td>${item.name || ''}</td>
+            <td class="editable"
+                data-id="${item.id}"
+                data-field="name">
 
-            <td>${item.phone || ''}</td>
-
-            <td>
-
-                ${
-                    item.created_at
-                    ?
-                    formatKoreaTime(
-                        item.created_at
-                    )
-                    :
-                    ''
-                }
+                ${item.name || ''}
 
             </td>
 
-            <td>${item.status || ''}</td>
+            <td class="editable"
+                data-id="${item.id}"
+                data-field="phone">
 
-            <td>${item.memo || ''}</td>
+                ${item.phone || ''}
+
+            </td>
+
+            <td class="editable"
+                data-id="${item.id}"
+                data-field="created_at">
+
+                ${item.created_at || ''}
+
+            </td>
+
+            <td class="editable"
+                data-id="${item.id}"
+                data-field="status">
+
+                ${item.status || ''}
+
+            </td>
+
+            <td class="editable"
+                data-id="${item.id}"
+                data-field="memo">
+
+                ${item.memo || ''}
+
+            </td>
 
         `;
 
         body.appendChild(tr);
+    });
+
+    bindEditable();
+}
+
+/* =========================
+   셀 수정
+========================= */
+
+function bindEditable(){
+
+    const editableCells =
+    document.querySelectorAll(
+        '.editable'
+    );
+
+    editableCells.forEach(cell=>{
+
+        cell.onclick =
+        async function(){
+
+            const id =
+            this.dataset.id;
+
+            const field =
+            this.dataset.field;
+
+            const current =
+            this.innerText.trim();
+
+            const value =
+            prompt(
+                `${field} 입력`,
+                current
+            );
+
+            if(value === null)
+            return;
+
+            const result =
+            await supabaseClient
+
+            .from('crm_customers')
+
+            .update({
+
+                [field]:value
+
+            })
+
+            .eq(
+                'id',
+                id
+            );
+
+            console.log(result);
+
+            loadAll();
+        };
     });
 }
 
@@ -442,7 +446,7 @@ supabaseClient
 
     {
 
-        event:'INSERT',
+        event:'*',
 
         schema:'public',
 
