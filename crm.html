@@ -5,13 +5,19 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
+<meta
+name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>CUSTOMER MANAGEMENT</title>
+<title>
+CUSTOMER MANAGEMENT
+</title>
 
-<link rel="stylesheet"
+<link
+rel="stylesheet"
 href="crm.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 </head>
 
@@ -21,21 +27,25 @@ href="crm.css">
 
     <!-- =========================
          좌측 메뉴
-    ========================== -->
+    ========================= -->
 
-    <aside class="sidebar">
+    <div class="sidebar">
 
         <div class="logo-box">
 
-            <h1>CUSTOMER</h1>
+            <h1>
+                CUSTOMER
+            </h1>
 
-            <p>MANAGEMENT</p>
+            <p>
+                MANAGEMENT
+            </p>
 
         </div>
 
         <div class="menu-list">
 
-            <button class="menu-btn">
+            <button class="menu-btn active">
                 신규등록
             </button>
 
@@ -55,21 +65,19 @@ href="crm.css">
                 고객메모
             </button>
 
-            <button class="menu-btn active">
+            <button class="menu-btn">
                 알람설정
             </button>
 
         </div>
 
-    </aside>
+    </div>
 
     <!-- =========================
          메인
-    ========================== -->
+    ========================= -->
 
-    <main class="main-area">
-
-        <!-- 상단 -->
+    <div class="main-area">
 
         <div class="top-bar">
 
@@ -81,7 +89,9 @@ href="crm.css">
 
         </div>
 
-        <!-- 테이블 -->
+        <!-- =========================
+             테이블
+        ========================= -->
 
         <div class="table-wrap">
 
@@ -115,22 +125,48 @@ href="crm.css">
 
         </div>
 
-    </main>
+    </div>
 
 </div>
 
 <!-- =========================
-     Supabase CDN
+     대형 편집창
 ========================= -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div id="editorModal">
 
-<!-- =========================
-     CRM JS
-========================= -->
+    <div id="editorBox">
+
+        <div id="editorTitle">
+
+            CRM 편집창
+
+        </div>
+
+        <textarea
+            id="editorTextarea"></textarea>
+
+        <div id="editorButtons">
+
+            <button id="saveEditorBtn">
+
+                저장
+
+            </button>
+
+            <button id="closeEditorBtn">
+
+                닫기
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 <script src="crm.js"></script>
 
 </body>
-
 </html>
