@@ -248,7 +248,8 @@ async function(){
 
         status:'',
 
-        memo:''
+        memo:'',
+        reserve_date:''
 
     }])
 
@@ -330,27 +331,8 @@ async function(){
         return;
     }
 
-    const formatted =
-    result.data.map(item=>({
-
-        ...item,
-
-        reserve_date:
-
-        item.reserve_date
-
-        ?
-
-        item.reserve_date
-
-        :
-
-        ''
-
-    }));
-
     renderNotesTable(
-        formatted
+        result.data
     );
 };
 
@@ -642,10 +624,23 @@ function bindReserveDateEditor(){
             const formatted =
 `20${yy}-${mm}-${dd} ${hh}:${mi}`;
 
+            let tableName =
+            'notes';
+
+            if(
+                currentMode === 'new' ||
+                currentMode === 'process' ||
+                currentMode === 'done'
+            ){
+
+                tableName =
+                'crm_customers';
+            }
+
             const result =
             await supabaseClient
 
-            .from('notes')
+            .from(tableName)
 
             .update({
 
@@ -848,11 +843,10 @@ function renderCRMTable(data){
 
             </td>
 
-            <td class="editable-big"
-                data-id="${item.id}"
-                data-field="memo">
+            <td class="editable-reserve"
+                data-id="${item.id}">
 
-                ${item.memo || ''}
+                ${item.reserve_date || ''}
 
             </td>
 
@@ -864,6 +858,7 @@ function renderCRMTable(data){
     });
 
     bindCellEvents();
+    bindReserveDateEditor();
 }
 
 /* =========================
