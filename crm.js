@@ -22,15 +22,14 @@ const buttons =
 document.querySelectorAll('.menu-btn');
 
 const newBtn      = buttons[0];
-const freeBtn     = buttons[1];
-const reserveBtn  = buttons[2];
-const processBtn  = buttons[3];
-const doneBtn     = buttons[4];
-const memoBtn     = buttons[5];
-const alarmBtn    = buttons[6];
+const reserveBtn  = buttons[1];
+const processBtn  = buttons[2];
+const doneBtn     = buttons[3];
+const memoBtn     = buttons[4];
+const alarmBtn    = buttons[5];
 
 /* =========================
-   활성 버튼 표시
+   활성 버튼
 ========================= */
 
 function activeButton(target){
@@ -54,95 +53,78 @@ function activeButton(target){
 newBtn.onclick =
 async function(){
 
-    activeButton(newBtn);
+    activeButton(
+        newBtn
+    );
 
-    const name =
-    prompt('고객명');
+    try{
 
-    if(!name) return;
+        const name =
+        prompt('성명 입력');
 
-    const phone =
-    prompt('연락처');
+        if(!name) return;
 
-    if(!phone) return;
+        const phone =
+        prompt('연락처 입력');
 
-    const memo =
-    prompt('메모');
+        if(!phone) return;
 
-    const result =
-    await supabaseClient
+        const memo =
+        prompt('메모 입력');
 
-    .from('leads')
+        const result =
+        await supabaseClient
 
-    .insert([{
+        .from('leads')
 
-        name:name,
+        .insert([{
 
-        phone:phone,
+            name:name,
 
-        memo:memo,
+            phone:phone,
 
-        status:'신규등록',
+            memo:memo,
 
-        created_text:
-        new Date()
+            status:'상담예정',
 
-        .toLocaleString()
+            created_text:
+            new Date()
 
-    }])
+            .toLocaleString()
 
-    .select();
+        }])
 
-    console.log(result);
-};
+        .select();
 
-/* =========================
-   무료신청
-========================= */
+        console.log(result);
 
-freeBtn.onclick =
-async function(){
+        if(result.error){
 
-    activeButton(freeBtn);
+            console.error(
+                result.error
+            );
 
-    const name =
-    prompt('고객명');
+            alert(
+                'DB 저장 실패'
+            );
 
-    if(!name) return;
+            return;
+        }
 
-    const phone =
-    prompt('연락처');
+        alert(
+            '신규등록 완료'
+        );
 
-    if(!phone) return;
+        loadAll();
 
-    const memo =
-    prompt('메모');
+    }catch(err){
 
-    const result =
-    await supabaseClient
+        console.error(err);
 
-    .from('leads')
-
-    .insert([{
-
-        name:name,
-
-        phone:phone,
-
-        memo:memo,
-
-        status:'무료신청',
-
-        created_text:
-        new Date()
-
-        .toLocaleString()
-
-    }])
-
-    .select();
-
-    console.log(result);
+        alert(
+            '오류 발생'
+        );
+    }
 };
 
 /* =========================
@@ -161,10 +143,6 @@ function renderTable(data){
     data.forEach(item=>{
 
         let rowColor = '';
-
-        /* =========================
-           상태 색상
-        ========================== */
 
         if(
             item.status === '상담예정'
@@ -217,7 +195,7 @@ function renderTable(data){
 }
 
 /* =========================
-   전체 불러오기
+   전체 로드
 ========================= */
 
 async function loadAll(){
@@ -236,6 +214,8 @@ async function loadAll(){
         }
     );
 
+    console.log(result);
+
     if(result.error){
 
         console.error(
@@ -251,7 +231,7 @@ async function loadAll(){
 }
 
 /* =========================
-   상태별 필터
+   상태 필터
 ========================= */
 
 async function loadByStatus(status){
@@ -399,7 +379,7 @@ function(){
 };
 
 /* =========================
-   실시간 반영
+   실시간
 ========================= */
 
 supabaseClient
