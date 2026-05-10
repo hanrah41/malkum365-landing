@@ -15,6 +15,13 @@ window.supabase.createClient(
 );
 
 /* =========================
+   대형 편집창 상태
+========================= */
+
+let currentEditId = null;
+let currentEditField = null;
+
+/* =========================
    버튼
 ========================= */
 
@@ -53,65 +60,50 @@ function activeButton(target){
 newBtn.onclick =
 async function(){
 
-    activeButton(
-        newBtn
-    );
+    activeButton(newBtn);
 
-    try{
+    const name =
+    prompt('성명 입력');
 
-        const name =
-        prompt(
-            '성명 입력'
+    if(!name) return;
+
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .insert([{
+
+        name:name,
+
+        phone:'',
+
+        created_at:'',
+
+        status:'',
+
+        memo:''
+
+    }])
+
+    .select();
+
+    console.log(result);
+
+    if(result.error){
+
+        console.error(
+            result.error
         );
-
-        if(!name) return;
-
-        const result =
-        await supabaseClient
-
-        .from('crm_customers')
-
-        .insert([{
-
-            name:name,
-
-            phone:'',
-
-            created_at:'',
-
-            status:'',
-
-            memo:''
-
-        }])
-
-        .select();
-
-        console.log(result);
-
-        if(result.error){
-
-            console.error(
-                result.error
-            );
-
-            alert(
-                'DB 저장 실패'
-            );
-
-            return;
-        }
-
-        loadAll();
-
-    }catch(err){
-
-        console.error(err);
 
         alert(
-            '오류 발생'
+            'DB 저장 실패'
         );
+
+        return;
     }
+
+    loadAll();
 };
 
 /* =========================
@@ -120,8 +112,9 @@ async function(){
 
 function formatDate(value){
 
+    if(!value) return '';
+
     if(
-        !value ||
         value === 'null'
     ){
 
@@ -177,8 +170,7 @@ function renderTable(data){
             </td>
 
             <td class="editable-date"
-                data-id="${item.id}"
-                data-field="created_at">
+                data-id="${item.id}">
 
                 ${formatDate(item.created_at)}
 
@@ -214,10 +206,6 @@ function renderTable(data){
 
 function bindEditable(){
 
-    /* =====================
-       일반 입력
-    ===================== */
-
     const editableCells =
     document.querySelectorAll(
         '.editable'
@@ -237,33 +225,48 @@ function bindEditable(){
             const current =
             this.innerText.trim();
 
-            let message =
-            `${field} 입력`;
-
             /* =====================
                상태 / 메모
             ===================== */
 
             if(
-                field === 'status'
-            ){
-
-                message =
-                '상태 전체 입력';
-            }
-
-            if(
+                field === 'status' ||
                 field === 'memo'
             ){
 
-                message =
-                '메모 전체 입력';
+                currentEditId =
+                id;
+
+                currentEditField =
+                field;
+
+                const modal =
+                document.getElementById(
+                    'editorModal'
+                );
+
+                const textarea =
+                document.getElementById(
+                    'editorTextarea'
+                );
+
+                textarea.value =
+                current;
+
+                modal.style.display =
+                'flex';
+
+                return;
             }
+
+            /* =====================
+               일반 입력
+            ===================== */
 
             const value =
             prompt(
 
-                message,
+                `${field} 입력`,
 
                 current
 
@@ -381,6 +384,95 @@ function bindEditable(){
         };
     });
 }
+
+/* =========================
+   대형 편집창 저장
+========================= */
+
+document
+.getElementById(
+    'saveEditorBtn'
+)
+
+.onclick =
+
+async function(){
+
+    const value =
+
+    document
+    .getElementById(
+        'editorTextarea'
+    )
+    .value;
+
+    const result =
+
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .update({
+
+        [currentEditField]:
+        value
+
+    })
+
+    .eq(
+        'id',
+        currentEditId
+    )
+
+    .select();
+
+    console.log(result);
+
+    if(result.error){
+
+        console.error(
+            result.error
+        );
+
+        alert(
+            'DB 저장 실패'
+        );
+
+        return;
+    }
+
+    document
+    .getElementById(
+        'editorModal'
+    )
+
+    .style.display =
+    'none';
+
+    loadAll();
+};
+
+/* =========================
+   닫기
+========================= */
+
+document
+.getElementById(
+    'closeEditorBtn'
+)
+
+.onclick =
+
+function(){
+
+    document
+    .getElementById(
+        'editorModal'
+    )
+
+    .style.display =
+    'none';
+};
 
 /* =========================
    전체 로드
@@ -596,12 +688,7 @@ supabaseClient
         table:'crm_customers'
     },
 
-    payload=>{
-
-        console.log(
-            '실시간:',
-            payload
-        );
+    ()=>{
 
         loadAll();
     }
