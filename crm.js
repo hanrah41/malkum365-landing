@@ -350,7 +350,7 @@ function(){
 ========================= */
 
 reserveBtn.onclick =
-async function(){
+function(){
 
     currentMode =
     'reserve';
@@ -368,7 +368,9 @@ async function(){
 
 async function loadReserveList(){
 
-    const result =
+    /* 소개명단 */
+
+    const crmResult =
     await supabaseClient
 
     .from('crm_customers')
@@ -389,17 +391,64 @@ async function loadReserveList(){
     .neq(
         'status',
         '완료'
-    )
-
-    .order(
-        'reserve_date',
-        {
-            ascending:true
-        }
     );
 
+    /* 고객명단 */
+
+    const notesResult =
+    await supabaseClient
+
+    .from('notes')
+
+    .select('*')
+
+    .not(
+        'reserve_date',
+        'is',
+        null
+    )
+
+    .neq(
+        'reserve_date',
+        ''
+    );
+
+    const crmData =
+    (crmResult.data || []).map(item=>({
+
+        ...item,
+
+        source_table:
+        'crm_customers'
+
+    }));
+
+    const notesData =
+    (notesResult.data || []).map(item=>({
+
+        ...item,
+
+        source_table:
+        'notes'
+
+    }));
+
+    const merged = [
+
+        ...crmData,
+        ...notesData
+
+    ];
+
+    merged.sort((a,b)=>{
+
+        return new Date(a.reserve_date)
+        -
+        new Date(b.reserve_date);
+    });
+
     renderCRMTable(
-        result.data || []
+        merged
     );
 }
 
@@ -490,54 +539,9 @@ async function loadNotes(){
         }
     );
 
-    renderNotesTable(
+    renderCRMTable(
         result.data || []
     );
-}
-
-/* =========================
-   notes 출력
-========================= */
-
-function renderNotesTable(data){
-
-    const body =
-    document.getElementById(
-        'crmBody'
-    );
-
-    body.innerHTML =
-    '';
-
-    data.forEach(item=>{
-
-        const tr =
-        document.createElement(
-            'tr'
-        );
-
-        tr.innerHTML = `
-
-            <td>${item.id || ''}</td>
-
-            <td>${item.name || ''}</td>
-
-            <td>${item.phone || ''}</td>
-
-            <td>${item.created_at || ''}</td>
-
-            <td>${item.status || ''}</td>
-
-            <td>${item.reserve_date || ''}</td>
-
-            <td></td>
-
-        `;
-
-        body.appendChild(
-            tr
-        );
-    });
 }
 
 /* =========================
@@ -645,6 +649,14 @@ function bindDoneChecks(){
             const id =
             this.dataset.id;
 
+            const table =
+            this.dataset.table;
+
+            if(table !== 'crm_customers'){
+
+                return;
+            }
+
             if(this.checked){
 
                 await supabaseClient
@@ -706,6 +718,9 @@ function renderCRMTable(data){
         ? 'checked'
         : '';
 
+        const tableName =
+        item.source_table || 'crm_customers';
+
         const tr =
         document.createElement(
             'tr'
@@ -717,7 +732,8 @@ function renderCRMTable(data){
 
             <td class="editable"
                 data-id="${item.id}"
-                data-field="name">
+                data-field="name"
+                data-table="${tableName}">
 
                 ${item.name || ''}
 
@@ -725,14 +741,16 @@ function renderCRMTable(data){
 
             <td class="editable"
                 data-id="${item.id}"
-                data-field="phone">
+                data-field="phone"
+                data-table="${tableName}">
 
                 ${item.phone || ''}
 
             </td>
 
             <td class="editable-date"
-                data-id="${item.id}">
+                data-id="${item.id}"
+                data-table="${tableName}">
 
                 ${item.created_at || ''}
 
@@ -740,14 +758,16 @@ function renderCRMTable(data){
 
             <td class="editable-big"
                 data-id="${item.id}"
-                data-field="status">
+                data-field="status"
+                data-table="${tableName}">
 
                 ${item.status || ''}
 
             </td>
 
             <td class="editable-reserve"
-                data-id="${item.id}">
+                data-id="${item.id}"
+                data-table="${tableName}">
 
                 ${item.reserve_date || ''}
 
@@ -755,12 +775,22 @@ function renderCRMTable(data){
 
             <td>
 
-                <input
-                    type="checkbox"
-                    class="done-check"
-                    data-id="${item.id}"
-                    ${checked}
-                >
+                ${
+                    tableName === 'crm_customers'
+                    ?
+
+                    `<input
+                        type="checkbox"
+                        class="done-check"
+                        data-id="${item.id}"
+                        data-table="${tableName}"
+                        ${checked}
+                    >`
+
+                    :
+
+                    ''
+                }
 
             </td>
 
@@ -797,6 +827,9 @@ function bindCellEvents(){
             const field =
             this.dataset.field;
 
+            const table =
+            this.dataset.table;
+
             const current =
             this.innerText.trim();
 
@@ -819,7 +852,7 @@ function bindCellEvents(){
 
             await supabaseClient
 
-            .from('crm_customers')
+            .from(table)
 
             .update({
 
@@ -849,6 +882,9 @@ function bindCellEvents(){
             const id =
             this.dataset.id;
 
+            const table =
+            this.dataset.table;
+
             const current =
             this.innerText.trim();
 
@@ -863,7 +899,7 @@ function bindCellEvents(){
 
             await supabaseClient
 
-            .from('crm_customers')
+            .from(table)
 
             .update({
 
@@ -893,6 +929,9 @@ function bindCellEvents(){
             const id =
             this.dataset.id;
 
+            const table =
+            this.dataset.table;
+
             const current =
             this.innerText.trim();
 
@@ -907,7 +946,7 @@ function bindCellEvents(){
 
             await supabaseClient
 
-            .from('crm_customers')
+            .from(table)
 
             .update({
 
@@ -940,11 +979,14 @@ function bindCellEvents(){
             const field =
             this.dataset.field;
 
+            const table =
+            this.dataset.table;
+
             const current =
             this.innerText.trim();
 
             openBigEditor(
-                'crm_customers',
+                table,
                 id,
                 field,
                 current
@@ -1020,6 +1062,28 @@ supabaseClient
         event:'*',
         schema:'public',
         table:'crm_customers'
+    },
+
+    ()=>{
+
+        refreshCurrentMode();
+    }
+)
+
+.subscribe();
+
+supabaseClient
+
+.channel('realtime-notes')
+
+.on(
+
+    'postgres_changes',
+
+    {
+        event:'*',
+        schema:'public',
+        table:'notes'
     },
 
     ()=>{
