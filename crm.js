@@ -108,6 +108,11 @@ function setActiveButton(target){
 
 function getCreatedDate(item){
 
+    if(item.created_text){
+
+        return item.created_text;
+    }
+
     if(item.created_at){
 
         return item.created_at;
@@ -137,11 +142,6 @@ function getCreatedDate(item){
 
         return item.createdAt;
     }
-
-    console.log(
-        'created date debug:',
-        item
-    );
 
     return '';
 }
@@ -953,7 +953,7 @@ function bindCellEvents(){
 
             .update({
 
-                created_at:value
+                created_text:value
 
             })
 
