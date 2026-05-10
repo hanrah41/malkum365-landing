@@ -1,149 +1,133 @@
-/* =========================================
-기본 초기화
-========================================= */
-
 *{
-
     margin:0;
     padding:0;
-
     box-sizing:border-box;
 }
 
-html,
 body{
 
     width:100%;
-    height:100%;
+    height:100vh;
+
+    background:#f3f3f3;
 
     font-family:
     Arial,
     "Malgun Gothic",
     sans-serif;
 
-    background:#f3f4f6;
-
     overflow:hidden;
 }
 
-/* =========================================
-전체 레이아웃
-========================================= */
+/* =========================
+   전체
+========================= */
 
-.crm-container{
+.crm-wrap{
+
+    width:100%;
+    height:100vh;
 
     display:flex;
-
-    width:60%;
-    height:60vh;
-
-    margin:20px;
-
-    border-radius:10px;
-
-    overflow:hidden;
-
-    box-shadow:
-    0 0 10px rgba(0,0,0,0.08);
-
-    background:white;
 }
 
-/* =========================================
-사이드바
-========================================= */
+/* =========================
+   좌측 메뉴
+========================= */
 
-.crm-sidebar{
+.sidebar{
 
-    width:150px;
+    width:140px;
 
-    background:#1f2937;
+    background:#1e1e1e;
 
-    color:white;
+    color:#fff;
+
+    padding:10px;
 
     display:flex;
     flex-direction:column;
 }
 
-/* =========================================
-로고 영역
-========================================= */
+/* =========================
+   로고
+========================= */
 
-.logo-area{
+.logo-box{
 
-    padding:20px 14px;
+    width:100%;
 
-    border-bottom:
-    1px solid rgba(255,255,255,0.08);
+    padding-bottom:10px;
+
+    border-bottom:1px solid rgba(255,255,255,0.15);
+
+    margin-bottom:10px;
 }
 
-.logo-area h1{
+.logo-box h1{
 
     font-size:18px;
+
     font-weight:700;
 
-    letter-spacing:0.5px;
+    letter-spacing:1px;
 }
 
-.logo-area p{
+.logo-box p{
 
-    margin-top:6px;
+    margin-top:2px;
 
-    font-size:11px;
+    font-size:10px;
 
-    color:#9ca3af;
+    color:#cccccc;
+
+    letter-spacing:2px;
 }
 
-/* =========================================
-메뉴
-========================================= */
+/* =========================
+   메뉴
+========================= */
 
-.menu-area{
+.menu-list{
 
-    display:flex;
-    flex-direction:column;
-
-    padding:12px;
+    width:100%;
 }
 
 .menu-btn{
 
     width:100%;
 
-    height:38px;
+    height:19px;
 
-    margin-bottom:8px;
+    margin-bottom:4px;
 
     border:none;
 
-    border-radius:8px;
+    background:#2f2f2f;
 
-    background:#374151;
+    color:#fff;
 
-    color:white;
-
-    font-size:12px;
+    font-size:10px;
 
     cursor:pointer;
+
+    border-radius:2px;
 
     transition:0.2s;
 }
 
 .menu-btn:hover{
 
-    background:#4b5563;
+    background:#F5D545;
+
+    color:#000;
 }
 
-.menu-btn.active{
+/* =========================
+   메인
+========================= */
 
-    background:#2563eb;
-}
-
-/* =========================================
-메인
-========================================= */
-
-.crm-main{
+.main-area{
 
     flex:1;
 
@@ -153,174 +137,82 @@ body{
     overflow:hidden;
 }
 
-/* =========================================
-헤더
-========================================= */
+/* =========================
+   상단바
+========================= */
 
-.crm-header{
+.top-bar{
 
     width:100%;
-    height:55px;
 
-    background:white;
+    height:32px;
+
+    background:#ffffff;
 
     border-bottom:1px solid #ddd;
 
     display:flex;
     align-items:center;
-    justify-content:space-between;
 
-    padding:0 18px;
+    padding:0 10px;
 }
 
-.header-left h2{
-
-    font-size:18px;
-
-    color:#111827;
-}
-
-/* =========================================
-실시간 상태
-========================================= */
-
-.realtime-box{
-
-    padding:6px 12px;
-
-    border-radius:20px;
-
-    background:#dcfce7;
-
-    color:#15803d;
+.top-title{
 
     font-size:11px;
-    font-weight:600;
+
+    font-weight:700;
+
+    color:#222;
 }
 
-/* =========================================
-컨텐츠
-========================================= */
+/* =========================
+   테이블
+========================= */
 
-.crm-content{
+.table-wrap{
 
     flex:1;
 
     overflow:auto;
 
-    padding:10px;
+    padding:6px;
 }
 
-/* =========================================
-테이블
-========================================= */
-
-.crm-table{
+table{
 
     width:100%;
 
     border-collapse:collapse;
 
-    background:white;
-
-    border-radius:8px;
-
-    overflow:hidden;
+    background:#fff;
 }
 
-/* =========================================
-thead
-========================================= */
+th{
 
-.crm-table thead{
+    background:#2d2d2d;
 
-    background:#0f172a;
+    color:#fff;
 
-    color:white;
+    font-size:10px;
+
+    padding:5px;
+
+    border:1px solid #444;
 }
 
-.crm-table th{
+td{
 
-    padding:8px 6px;
+    font-size:10px;
 
-    text-align:left;
+    padding:4px;
 
-    font-size:11px;
+    border:1px solid #ddd;
 
-    white-space:nowrap;
+    background:#fff;
 }
 
-/* =========================================
-tbody
-========================================= */
+tr:hover td{
 
-.crm-table td{
-
-    padding:6px 6px;
-
-    border-bottom:1px solid #eee;
-
-    font-size:11px;
-
-    color:#111827;
-
-    white-space:nowrap;
-}
-
-/* =========================================
-행 hover
-========================================= */
-
-.crm-table tbody tr:hover{
-
-    background:#f9fafb;
-}
-
-/* =========================================
-LED
-========================================= */
-
-.status-led{
-
-    width:10px;
-    height:10px;
-
-    border-radius:50%;
-
-    display:inline-block;
-}
-
-/* 기본 */
-
-.led-default{
-
-    background:#9ca3af;
-}
-
-/* 오늘 상담 */
-
-.led-today{
-
-    background:#F5D545;
-}
-
-/* 30분전 */
-
-.led-alarm{
-
-    background:#22c55e;
-}
-
-/* 상담 완료 */
-
-.led-complete{
-
-    background:#3b82f6;
-}
-
-/* 구매 완료 */
-
-.led-purchase{
-
-    background:#a855f7;
+    background:#fff7cf;
 }
