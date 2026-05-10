@@ -288,7 +288,7 @@ function(){
 };
 
 /* =========================
-   상담예정
+   소개등록 / 상담예정
 ========================= */
 
 reserveBtn.onclick =
@@ -330,8 +330,27 @@ async function(){
         return;
     }
 
+    const formatted =
+    result.data.map(item=>({
+
+        ...item,
+
+        reserve_date:
+
+        item.reserve_date
+
+        ?
+
+        item.reserve_date
+
+        :
+
+        ''
+
+    }));
+
     renderNotesTable(
-        result.data
+        formatted
     );
 };
 
@@ -571,11 +590,11 @@ function bindReserveDateEditor(){
 숫자만 입력
 
 예:
-2505121500
+2506121500
 
 ↓
 
-2025-05-12 15:00 자동변환`,
+2025-06-12 15:00 자동변환`,
 
                 current
                     .replaceAll('-','')
@@ -599,7 +618,7 @@ function bindReserveDateEditor(){
             if(value.length !== 10){
 
                 alert(
-                    '10자리 숫자 입력\n\n예:\n2505121500'
+                    '10자리 숫자 입력\n\n예:\n2506121500'
                 );
 
                 return;
@@ -655,7 +674,7 @@ function bindReserveDateEditor(){
                 return;
             }
 
-            loadNotes();
+            refreshCurrentMode();
         };
     });
 }
