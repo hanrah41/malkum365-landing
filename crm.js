@@ -62,7 +62,8 @@ document.querySelector('[data-mode="alarm"]');
 function formatPhoneNumber(value){
 
     const numbers =
-    value.replace(/\D/g,'');
+    String(value || '')
+    .replace(/\D/g,'');
 
     if(numbers.length === 11){
 
@@ -99,6 +100,50 @@ function setActiveButton(target){
     target.classList.add(
         'active'
     );
+}
+
+/* =========================
+   created_at 추출
+========================= */
+
+function getCreatedDate(item){
+
+    if(item.created_at){
+
+        return item.created_at;
+    }
+
+    if(item.created_time){
+
+        return item.created_time;
+    }
+
+    if(item.inserted_at){
+
+        return item.inserted_at;
+    }
+
+    if(item.reg_date){
+
+        return item.reg_date;
+    }
+
+    if(item.date){
+
+        return item.date;
+    }
+
+    if(item.createdAt){
+
+        return item.createdAt;
+    }
+
+    console.log(
+        'created date debug:',
+        item
+    );
+
+    return '';
 }
 
 /* =========================
@@ -198,9 +243,7 @@ async function(){
     .eq(
         'id',
         currentEditId
-    )
-
-    .select();
+    );
 
     if(result.error){
 
@@ -279,9 +322,7 @@ async function(){
         memo:'',
         reserve_date:''
 
-    }])
-
-    .select();
+    }]);
 
     if(result.error){
 
@@ -704,29 +745,6 @@ function bindDoneChecks(){
 }
 
 /* =========================
-   날짜 표시 함수
-========================= */
-
-function getCreatedDate(item){
-
-    return (
-        item.created_at
-        ||
-        item.created_time
-        ||
-        item.inserted_at
-        ||
-        item.createdDate
-        ||
-        item.reg_date
-        ||
-        item.date
-        ||
-        ''
-    );
-}
-
-/* =========================
    CRM 출력
 ========================= */
 
@@ -776,7 +794,7 @@ function renderCRMTable(data){
                 data-field="phone"
                 data-table="${tableName}">
 
-                ${item.phone || ''}
+                ${formatPhoneNumber(item.phone || '')}
 
             </td>
 
