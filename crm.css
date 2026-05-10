@@ -1,6 +1,8 @@
 *{
+
     margin:0;
     padding:0;
+
     box-sizing:border-box;
 }
 
@@ -9,7 +11,7 @@ body{
     width:100%;
     height:100vh;
 
-    background:#f3f3f3;
+    background:#dcdcdc;
 
     font-family:
     Arial,
@@ -46,6 +48,7 @@ body{
     padding:10px;
 
     display:flex;
+
     flex-direction:column;
 }
 
@@ -59,7 +62,8 @@ body{
 
     padding-bottom:10px;
 
-    border-bottom:1px solid rgba(255,255,255,0.15);
+    border-bottom:
+    1px solid rgba(255,255,255,0.15);
 
     margin-bottom:10px;
 }
@@ -71,6 +75,8 @@ body{
     font-weight:700;
 
     letter-spacing:1px;
+
+    color:#ffffff;
 }
 
 .logo-box p{
@@ -97,7 +103,7 @@ body{
 
     width:100%;
 
-    height:19px;
+    height:26px;
 
     margin-bottom:4px;
 
@@ -105,9 +111,11 @@ body{
 
     background:#2f2f2f;
 
-    color:#fff;
+    color:#ffffff;
 
-    font-size:10px;
+    font-size:12px;
+
+    font-weight:700;
 
     cursor:pointer;
 
@@ -120,7 +128,14 @@ body{
 
     background:#F5D545;
 
-    color:#000;
+    color:#000000;
+}
+
+.menu-btn.active{
+
+    background:#c8b13d;
+
+    color:#000000;
 }
 
 /* =========================
@@ -132,6 +147,7 @@ body{
     flex:1;
 
     display:flex;
+
     flex-direction:column;
 
     overflow:hidden;
@@ -149,9 +165,10 @@ body{
 
     background:#ffffff;
 
-    border-bottom:1px solid #ddd;
+    border-bottom:1px solid #cccccc;
 
     display:flex;
+
     align-items:center;
 
     padding:0 10px;
@@ -163,7 +180,7 @@ body{
 
     font-weight:700;
 
-    color:#222;
+    color:#222222;
 }
 
 /* =========================
@@ -185,32 +202,54 @@ table{
 
     border-collapse:collapse;
 
-    background:#fff;
+    background:#ffffff;
 }
+
+/* =========================
+   헤더
+========================= */
 
 th{
 
+    height:30px;
+
     background:#2d2d2d;
 
-    color:#fff;
+    color:#ffffff;
 
     font-size:10px;
 
-    padding:5px;
+    font-weight:700;
 
-    border:1px solid #444;
+    padding:5px 8px;
+
+    border:1px solid #444444;
+
+    vertical-align:middle;
 }
+
+/* =========================
+   데이터
+========================= */
 
 td{
 
+    height:30px;
+
     font-size:10px;
 
-    padding:4px;
+    padding:4px 8px;
 
-    border:1px solid #ddd;
+    border:1px solid #dddddd;
 
-    background:#fff;
+    background:#ffffff;
+
+    vertical-align:middle;
 }
+
+/* =========================
+   hover
+========================= */
 
 tr:hover td{
 
