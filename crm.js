@@ -576,7 +576,9 @@ function bindReserveDateEditor(){
 
 ↓
 
-2025-06-12 15:00 자동변환`,
+2025-06-12 15:00 자동변환
+
+삭제하려면 입력창을 비우세요.`,
 
                 current
                     .replaceAll('-','')
@@ -586,10 +588,66 @@ function bindReserveDateEditor(){
 
             );
 
+            /* =========================
+               취소
+            ========================= */
+
+            if(raw === null){
+
+                return;
+            }
+
+            let tableName =
+            'notes';
+
             if(
-                raw === null ||
-                raw.trim() === ''
+                currentMode === 'new' ||
+                currentMode === 'process' ||
+                currentMode === 'done'
             ){
+
+                tableName =
+                'crm_customers';
+            }
+
+            /* =========================
+               삭제
+            ========================= */
+
+            if(raw.trim() === ''){
+
+                const clearResult =
+                await supabaseClient
+
+                .from(tableName)
+
+                .update({
+
+                    reserve_date:null
+
+                })
+
+                .eq(
+                    'id',
+                    id
+                )
+
+                .select();
+
+                if(clearResult.error){
+
+                    console.error(
+                        clearResult.error
+                    );
+
+                    alert(
+                        '상담예정일 삭제 실패'
+                    );
+
+                    return;
+                }
+
+                refreshCurrentMode();
 
                 return;
             }
@@ -623,19 +681,6 @@ function bindReserveDateEditor(){
 
             const formatted =
 `20${yy}-${mm}-${dd} ${hh}:${mi}`;
-
-            let tableName =
-            'notes';
-
-            if(
-                currentMode === 'new' ||
-                currentMode === 'process' ||
-                currentMode === 'done'
-            ){
-
-                tableName =
-                'crm_customers';
-            }
 
             const result =
             await supabaseClient
