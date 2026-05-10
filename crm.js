@@ -111,6 +111,52 @@ async function(){
 };
 
 /* =========================
+   시간 포맷
+========================= */
+
+function formatKoreaTime(dateString){
+
+    return new Date(dateString)
+
+    .toLocaleString(
+
+        'ko-KR',
+
+        {
+
+            timeZone:'Asia/Seoul',
+
+            year:'numeric',
+
+            month:'2-digit',
+
+            day:'2-digit',
+
+            hour:'2-digit',
+
+            minute:'2-digit',
+
+            second:'2-digit',
+
+            hour12:false
+        }
+
+    )
+
+    .replace(/\./g,'-')
+
+    .replace(
+        /-\s/g,
+        '-'
+    )
+
+    .replace(
+        /\s/g,
+        ' '
+    );
+}
+
+/* =========================
    테이블 출력
 ========================= */
 
@@ -165,7 +211,19 @@ function renderTable(data){
 
             <td>${item.phone || ''}</td>
 
-            <td>${item.created_at || ''}</td>
+            <td>
+
+                ${
+                    item.created_at
+                    ?
+                    formatKoreaTime(
+                        item.created_at
+                    )
+                    :
+                    ''
+                }
+
+            </td>
 
             <td>${item.status || ''}</td>
 
