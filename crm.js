@@ -292,7 +292,7 @@ function(){
 ========================= */
 
 reserveBtn.onclick =
-function(){
+async function(){
 
     currentMode =
     'reserve';
@@ -301,8 +301,37 @@ function(){
         reserveBtn
     );
 
-    loadCRMByStatus(
-        '상담예정'
+    const result =
+    await supabaseClient
+
+    .from('notes')
+
+    .select('*')
+
+    .not(
+        'reserve_date',
+        'is',
+        null
+    )
+
+    .order(
+        'reserve_date',
+        {
+            ascending:true
+        }
+    );
+
+    if(result.error){
+
+        console.error(
+            result.error
+        );
+
+        return;
+    }
+
+    renderNotesTable(
+        result.data
     );
 };
 
@@ -459,11 +488,10 @@ function renderNotesTable(data){
 
             </td>
 
-            <td class="editable-big-note"
-                data-id="${item.id}"
-                data-field="memo">
+            <td class="editable-reserve"
+                data-id="${item.id}">
 
-                ${item.memo || '랜딩유입'}
+                ${item.reserve_date || ''}
 
             </td>
 
@@ -475,10 +503,11 @@ function renderNotesTable(data){
     });
 
     bindNoteBigEditor();
+    bindReserveDateEditor();
 }
 
 /* =========================
-   notes 편집창
+   notes 상태 편집창
 ========================= */
 
 function bindNoteBigEditor(){
@@ -508,6 +537,125 @@ function bindNoteBigEditor(){
                 field,
                 current
             );
+        };
+    });
+}
+
+/* =========================
+   상담예정일 입력 엔진
+========================= */
+
+function bindReserveDateEditor(){
+
+    const cells =
+    document.querySelectorAll(
+        '.editable-reserve'
+    );
+
+    cells.forEach(cell=>{
+
+        cell.onclick =
+        async function(){
+
+            const id =
+            this.dataset.id;
+
+            const current =
+            this.innerText.trim();
+
+            const raw =
+            prompt(
+
+`상담예정일 입력
+
+숫자만 입력
+
+예:
+2505121500
+
+↓
+
+2025-05-12 15:00 자동변환`,
+
+                current
+                    .replaceAll('-','')
+                    .replaceAll(':','')
+                    .replaceAll(' ','')
+                    .replace('20','')
+
+            );
+
+            if(
+                raw === null ||
+                raw.trim() === ''
+            ){
+
+                return;
+            }
+
+            const value =
+            raw.trim();
+
+            if(value.length !== 10){
+
+                alert(
+                    '10자리 숫자 입력\n\n예:\n2505121500'
+                );
+
+                return;
+            }
+
+            const yy =
+            value.substring(0,2);
+
+            const mm =
+            value.substring(2,4);
+
+            const dd =
+            value.substring(4,6);
+
+            const hh =
+            value.substring(6,8);
+
+            const mi =
+            value.substring(8,10);
+
+            const formatted =
+`20${yy}-${mm}-${dd} ${hh}:${mi}`;
+
+            const result =
+            await supabaseClient
+
+            .from('notes')
+
+            .update({
+
+                reserve_date:
+                formatted
+
+            })
+
+            .eq(
+                'id',
+                id
+            )
+
+            .select();
+
+            if(result.error){
+
+                console.error(
+                    result.error
+                );
+
+                alert(
+                    '상담예정일 저장 실패'
+                );
+
+                return;
+            }
+
+            loadNotes();
         };
     });
 }
@@ -870,9 +1018,7 @@ function refreshCurrentMode(){
 
     if(currentMode === 'reserve'){
 
-        loadCRMByStatus(
-            '상담예정'
-        );
+        reserveBtn.click();
 
         return;
     }
@@ -925,9 +1071,12 @@ supabaseClient
 
     ()=>{
 
-        if(currentMode === 'customer'){
+        if(
+            currentMode === 'customer' ||
+            currentMode === 'reserve'
+        ){
 
-            loadNotes();
+            refreshCurrentMode();
         }
     }
 )
