@@ -368,8 +368,6 @@ function(){
 
 async function loadReserveList(){
 
-    /* 소개명단 */
-
     const crmResult =
     await supabaseClient
 
@@ -392,8 +390,6 @@ async function loadReserveList(){
         'status',
         '완료'
     );
-
-    /* 고객명단 */
 
     const notesResult =
     await supabaseClient
@@ -429,13 +425,7 @@ async function loadReserveList(){
         ...item,
 
         source_table:
-        'notes',
-
-        created_at:
-        item.created_at
-        || item.created_time
-        || item.inserted_at
-        || ''
+        'notes'
 
     }));
 
@@ -551,15 +541,7 @@ async function loadNotes(){
         ...item,
 
         source_table:
-        'notes',
-
-        /* 상담신청일 표시 */
-
-        created_at:
-        item.created_at
-        || item.created_time
-        || item.inserted_at
-        || ''
+        'notes'
 
     }));
 
@@ -722,6 +704,29 @@ function bindDoneChecks(){
 }
 
 /* =========================
+   날짜 표시 함수
+========================= */
+
+function getCreatedDate(item){
+
+    return (
+        item.created_at
+        ||
+        item.created_time
+        ||
+        item.inserted_at
+        ||
+        item.createdDate
+        ||
+        item.reg_date
+        ||
+        item.date
+        ||
+        ''
+    );
+}
+
+/* =========================
    CRM 출력
 ========================= */
 
@@ -744,6 +749,9 @@ function renderCRMTable(data){
 
         const tableName =
         item.source_table || 'crm_customers';
+
+        const createdDate =
+        getCreatedDate(item);
 
         const tr =
         document.createElement(
@@ -776,7 +784,7 @@ function renderCRMTable(data){
                 data-id="${item.id}"
                 data-table="${tableName}">
 
-                ${item.created_at || ''}
+                ${createdDate}
 
             </td>
 
