@@ -22,6 +22,7 @@ let currentMode = 'new';
 
 let currentEditId = null;
 let currentEditField = null;
+let currentEditTable = 'crm_customers';
 
 /* =========================
    버튼
@@ -60,7 +61,15 @@ function setActiveButton(target){
    대형 편집창 열기
 ========================= */
 
-function openBigEditor(id, field, value){
+function openBigEditor(
+    table,
+    id,
+    field,
+    value
+){
+
+    currentEditTable =
+    table;
 
     currentEditId =
     id;
@@ -133,7 +142,7 @@ async function(){
     const result =
     await supabaseClient
 
-    .from('crm_customers')
+    .from(currentEditTable)
 
     .update({
 
@@ -262,7 +271,7 @@ async function(){
 };
 
 /* =========================
-   고객명단 notes 불러오기
+   고객명단
 ========================= */
 
 customerBtn.onclick =
@@ -430,21 +439,76 @@ function renderNotesTable(data){
 
             <td>${item.id || ''}</td>
 
-            <td>${item.name || ''}</td>
+            <td>
+                ${item.name || ''}
+            </td>
 
-            <td>${item.phone || ''}</td>
+            <td>
+                ${item.phone || ''}
+            </td>
 
-            <td>${item.created_text || ''}</td>
+            <td>
+                ${item.created_text || ''}
+            </td>
 
-            <td>신규고객</td>
+            <td class="editable-big-note"
+                data-id="${item.id}"
+                data-field="status">
 
-            <td>랜딩유입</td>
+                ${item.status || '신규고객'}
+
+            </td>
+
+            <td class="editable-big-note"
+                data-id="${item.id}"
+                data-field="memo">
+
+                ${item.memo || '랜딩유입'}
+
+            </td>
 
         `;
 
         body.appendChild(
             tr
         );
+    });
+
+    bindNoteBigEditor();
+}
+
+/* =========================
+   notes 편집창
+========================= */
+
+function bindNoteBigEditor(){
+
+    const cells =
+    document.querySelectorAll(
+        '.editable-big-note'
+    );
+
+    cells.forEach(cell=>{
+
+        cell.onclick =
+        function(){
+
+            const id =
+            this.dataset.id;
+
+            const field =
+            this.dataset.field;
+
+            const current =
+            this.innerText.trim();
+
+            openBigEditor(
+                'notes',
+                id,
+                field,
+                current
+            );
+        };
     });
 }
 
@@ -782,6 +846,7 @@ function bindCellEvents(){
             this.innerText.trim();
 
             openBigEditor(
+                'crm_customers',
                 id,
                 field,
                 current
