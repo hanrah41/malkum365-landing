@@ -67,7 +67,7 @@ async function(){
         const result =
         await supabaseClient
 
-        .from('leads')
+        .from('crm_customers')
 
         .insert([{
 
@@ -75,14 +75,9 @@ async function(){
 
             phone:'',
 
-            memo:'',
-
             status:'상담예정',
 
-            created_text:
-            new Date()
-
-            .toLocaleString()
+            memo:''
 
         }])
 
@@ -159,6 +154,9 @@ function renderTable(data){
         const tr =
         document.createElement('tr');
 
+        tr.style.background =
+        rowColor;
+
         tr.innerHTML = `
 
             <td>${item.id || ''}</td>
@@ -167,16 +165,13 @@ function renderTable(data){
 
             <td>${item.phone || ''}</td>
 
-            <td>${item.created_text || ''}</td>
+            <td>${item.created_at || ''}</td>
 
             <td>${item.status || ''}</td>
 
             <td>${item.memo || ''}</td>
 
         `;
-
-        tr.style.background =
-        rowColor;
 
         body.appendChild(tr);
     });
@@ -191,7 +186,7 @@ async function loadAll(){
     const result =
     await supabaseClient
 
-    .from('leads')
+    .from('crm_customers')
 
     .select('*')
 
@@ -202,49 +197,7 @@ async function loadAll(){
         }
     );
 
-    console.log(
-        '전체 데이터:',
-        result
-    );
-
-    if(result.error){
-
-        console.error(
-            result.error
-        );
-
-        return;
-    }
-
-    renderTable(
-        result.data
-    );
-}
-
-/* =========================
-   상태별 필터
-========================= */
-
-async function loadByStatus(status){
-
-    const result =
-    await supabaseClient
-
-    .from('leads')
-
-    .select('*')
-
-    .eq(
-        'status',
-        status
-    )
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
+    console.log(result);
 
     if(result.error){
 
@@ -265,14 +218,33 @@ async function loadByStatus(status){
 ========================= */
 
 reserveBtn.onclick =
-function(){
+async function(){
 
     activeButton(
         reserveBtn
     );
 
-    loadByStatus(
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .eq(
+        'status',
         '상담예정'
+    )
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    renderTable(
+        result.data
     );
 };
 
@@ -281,14 +253,33 @@ function(){
 ========================= */
 
 processBtn.onclick =
-function(){
+async function(){
 
     activeButton(
         processBtn
     );
 
-    loadByStatus(
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .eq(
+        'status',
         '진행중'
+    )
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    renderTable(
+        result.data
     );
 };
 
@@ -297,14 +288,33 @@ function(){
 ========================= */
 
 doneBtn.onclick =
-function(){
+async function(){
 
     activeButton(
         doneBtn
     );
 
-    loadByStatus(
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .eq(
+        'status',
         '완료'
+    )
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    renderTable(
+        result.data
     );
 };
 
@@ -322,7 +332,7 @@ async function(){
     const result =
     await supabaseClient
 
-    .from('leads')
+    .from('crm_customers')
 
     .select('*')
 
@@ -338,15 +348,6 @@ async function(){
             ascending:false
         }
     );
-
-    if(result.error){
-
-        console.error(
-            result.error
-        );
-
-        return;
-    }
 
     renderTable(
         result.data
@@ -370,12 +371,12 @@ function(){
 };
 
 /* =========================
-   실시간 반영
+   실시간
 ========================= */
 
 supabaseClient
 
-.channel('realtime-leads')
+.channel('realtime-crm')
 
 .on(
 
@@ -387,7 +388,7 @@ supabaseClient
 
         schema:'public',
 
-        table:'leads'
+        table:'crm_customers'
     },
 
     payload=>{
