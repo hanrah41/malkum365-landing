@@ -1,205 +1,158 @@
-/* =========================================
-Supabase 연결
-========================================= */
+const supabaseUrl =
+'https://YOUR-PROJECT.supabase.co';
 
-const SUPABASE_URL =
-'https://pziyabogqefxzvinwarg.supabase.co';
-
-const SUPABASE_KEY =
-'sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8';
+const supabaseKey =
+'YOUR-ANON-KEY';
 
 const supabaseClient =
 supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
+    supabaseUrl,
+    supabaseKey
 );
 
-/* =========================================
-테이블 body
-========================================= */
+/* =========================
+   무료신청 버튼
+========================= */
 
-const crmTableBody =
-document.getElementById(
-    'crmTableBody'
+const freeBtn =
+document.querySelectorAll('.menu-btn')[1];
+
+freeBtn.addEventListener(
+    'click',
+    async ()=>{
+
+        try{
+
+            const name =
+            prompt('고객명 입력');
+
+            if(!name) return;
+
+            const phone =
+            prompt('연락처 입력');
+
+            if(!phone) return;
+
+            const memo =
+            prompt('메모 입력');
+
+            const {
+
+                data,
+                error
+
+            } = await supabaseClient
+
+            .from('notes')
+
+            .insert([{
+
+                name:name,
+
+                phone:phone,
+
+                memo:memo,
+
+                status:'무료신청',
+
+                created_text:
+                new Date()
+
+                .toLocaleString()
+
+            }]);
+
+            if(error){
+
+                console.error(error);
+
+                alert(
+                    '저장 실패'
+                );
+
+                return;
+            }
+
+            alert(
+                '무료신청 저장 완료'
+            );
+
+            loadNotes();
+
+        }catch(err){
+
+            console.error(err);
+
+            alert(
+                '오류 발생'
+            );
+        }
+    }
 );
 
-/* =========================================
-고객 데이터 불러오기
-========================================= */
+/* =========================
+   데이터 불러오기
+========================= */
 
-async function loadCRM(){
+async function loadNotes(){
 
     const {
 
         data,
         error
 
-    }
-
-    =
-
-    await supabaseClient
+    } = await supabaseClient
 
     .from('notes')
 
     .select('*')
 
     .order(
-
         'id',
-
         {
-
             ascending:false
-
         }
-
     );
 
     if(error){
 
-        console.error(
-            '불러오기 오류:',
-            error
-        );
+        console.error(error);
 
         return;
     }
 
-    console.log(
-        'CRM 데이터:',
-        data
+    const body =
+    document.getElementById(
+        'crmBody'
     );
 
-    renderCRM(data);
-}
-
-/* =========================================
-LED 상태 계산
-========================================= */
-
-function getLEDClass(item){
-
-    if(item.purchase === true){
-
-        return 'led-purchase';
-    }
-
-    if(item.alarm_checked === true){
-
-        return 'led-complete';
-    }
-
-    if(item.alarm_30m === true){
-
-        return 'led-alarm';
-    }
-
-    if(item.today_mark === true){
-
-        return 'led-today';
-    }
-
-    return 'led-default';
-}
-
-/* =========================================
-테이블 출력
-========================================= */
-
-function renderCRM(data){
-
-    crmTableBody.innerHTML = '';
+    body.innerHTML = '';
 
     data.forEach(item=>{
 
-        const row =
+        const tr =
         document.createElement('tr');
 
-        const ledClass =
-        getLEDClass(item);
+        tr.innerHTML = `
 
-        row.innerHTML = `
+            <td>${item.name || ''}</td>
 
-            <td>
-                ${item.id || '-'}
-            </td>
+            <td>${item.phone || ''}</td>
 
-            <td>
+            <td>${item.created_text || ''}</td>
 
-                <span class="
-                    status-led
-                    ${ledClass}
-                "></span>
+            <td>${item.status || ''}</td>
 
-            </td>
-
-            <td>
-                ${item.name || '-'}
-            </td>
-
-            <td>
-                ${item.phone || '-'}
-            </td>
-
-            <td>
-                ${item.consultation || '-'}
-            </td>
-
-            <td>
-                ${item.schedule || '-'}
-            </td>
-
-            <td>
-                ${item.etc || '-'}
-            </td>
+            <td>${item.memo || ''}</td>
 
         `;
 
-        crmTableBody.appendChild(row);
-
+        body.appendChild(tr);
     });
-
 }
 
-/* =========================================
-실시간 감지
-========================================= */
+/* =========================
+   시작
+========================= */
 
-supabaseClient
-
-.channel('crm-realtime')
-
-.on(
-
-    'postgres_changes',
-
-    {
-
-        event:'*',
-
-        schema:'public',
-
-        table:'notes'
-
-    },
-
-    payload=>{
-
-        console.log(
-            '실시간 변경:',
-            payload
-        );
-
-        loadCRM();
-    }
-
-)
-
-.subscribe();
-
-/* =========================================
-최초 실행
-========================================= */
-
-loadCRM();
+loadNotes();
