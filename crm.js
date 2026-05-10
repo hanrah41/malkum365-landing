@@ -60,7 +60,9 @@ async function(){
     try{
 
         const name =
-        prompt('성명 입력');
+        prompt(
+            '성명 입력'
+        );
 
         if(!name) return;
 
@@ -113,6 +115,17 @@ async function(){
 };
 
 /* =========================
+   날짜 포맷
+========================= */
+
+function formatDate(value){
+
+    if(!value) return '';
+
+    return value;
+}
+
+/* =========================
    테이블 출력
 ========================= */
 
@@ -150,11 +163,11 @@ function renderTable(data){
 
             </td>
 
-            <td class="editable"
+            <td class="editable-date"
                 data-id="${item.id}"
                 data-field="created_at">
 
-                ${item.created_at || ''}
+                ${formatDate(item.created_at)}
 
             </td>
 
@@ -188,6 +201,10 @@ function renderTable(data){
 
 function bindEditable(){
 
+    /* =====================
+       일반 입력
+    ===================== */
+
     const editableCells =
     document.querySelectorAll(
         '.editable'
@@ -209,8 +226,11 @@ function bindEditable(){
 
             const value =
             prompt(
+
                 `${field} 입력`,
+
                 current
+
             );
 
             if(value === null)
@@ -230,9 +250,96 @@ function bindEditable(){
             .eq(
                 'id',
                 id
-            );
+            )
+
+            .select();
 
             console.log(result);
+
+            if(result.error){
+
+                console.error(
+                    result.error
+                );
+
+                alert(
+                    'DB 저장 실패'
+                );
+
+                return;
+            }
+
+            loadAll();
+        };
+    });
+
+    /* =====================
+       상담시간 입력
+    ===================== */
+
+    const dateCells =
+    document.querySelectorAll(
+        '.editable-date'
+    );
+
+    dateCells.forEach(cell=>{
+
+        cell.onclick =
+        async function(){
+
+            const id =
+            this.dataset.id;
+
+            const current =
+            this.innerText.trim();
+
+            const value =
+            prompt(
+
+`상담일 입력
+
+예:
+2025-05-07 15:30`,
+
+                current
+
+            );
+
+            if(value === null)
+            return;
+
+            const result =
+            await supabaseClient
+
+            .from('crm_customers')
+
+            .update({
+
+                created_at:value
+
+            })
+
+            .eq(
+                'id',
+                id
+            )
+
+            .select();
+
+            console.log(result);
+
+            if(result.error){
+
+                console.error(
+                    result.error
+                );
+
+                alert(
+                    'DB 저장 실패'
+                );
+
+                return;
+            }
 
             loadAll();
         };
