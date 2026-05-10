@@ -380,6 +380,11 @@ async function loadReserveList(){
         'reserve_date',
         'is',
         null
+    )
+
+    .neq(
+        'reserve_date',
+        ''
     );
 
     const crmResult =
@@ -393,6 +398,11 @@ async function loadReserveList(){
         'reserve_date',
         'is',
         null
+    )
+
+    .neq(
+        'reserve_date',
+        ''
     );
 
     if(notesResult.error){
@@ -414,7 +424,16 @@ async function loadReserveList(){
     }
 
     const notesData =
-    notesResult.data.map(item=>({
+    notesResult.data
+
+    .filter(item=>{
+
+        return item.reserve_date
+        &&
+        item.reserve_date.trim() !== '';
+    })
+
+    .map(item=>({
 
         ...item,
 
@@ -424,7 +443,16 @@ async function loadReserveList(){
     }));
 
     const crmData =
-    crmResult.data.map(item=>({
+    crmResult.data
+
+    .filter(item=>{
+
+        return item.reserve_date
+        &&
+        item.reserve_date.trim() !== '';
+    })
+
+    .map(item=>({
 
         ...item,
 
