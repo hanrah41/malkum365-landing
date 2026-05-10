@@ -77,7 +77,7 @@ async function(){
 
             phone:'',
 
-            created_at:'',
+            created_at:null,
 
             status:'',
 
@@ -120,7 +120,20 @@ async function(){
 
 function formatDate(value){
 
-    if(!value) return '';
+    if(
+        !value ||
+        value === 'null'
+    ){
+
+        return '';
+    }
+
+    if(
+        value.includes('T')
+    ){
+
+        return '';
+    }
 
     return value;
 }
