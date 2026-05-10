@@ -175,7 +175,7 @@ body{
 
 .top-bar{
 
-    width:100%;
+    width:864px;
 
     height:32px;
 
@@ -206,9 +206,11 @@ body{
 
 .table-wrap{
 
-    flex:1;
+    width:556px;
 
-    overflow:auto;
+    min-width:556px;
+
+    max-width:556px;
 
     padding:6px;
 }
@@ -271,7 +273,7 @@ td:nth-child(3){
 th:nth-child(4),
 td:nth-child(4){
 
-    width:300px;
+    width:280px;
 
     text-align:center;
 }
@@ -291,7 +293,7 @@ td:nth-child(5){
 th:nth-child(6),
 td:nth-child(6){
 
-    width:50px;
+    width:60px;
 
     text-align:center;
 }
