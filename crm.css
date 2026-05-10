@@ -43,7 +43,7 @@ body{
 
     background:#1e1e1e;
 
-    color:#fff;
+    color:#ffffff;
 
     padding:10px;
 
@@ -115,25 +115,31 @@ body{
 
     font-size:12px;
 
-    font-weight:700;
+    font-weight:400;
 
     cursor:pointer;
 
     border-radius:2px;
 
     transition:0.2s;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
 }
 
 .menu-btn:hover{
 
-    background:#F5D545;
+    background:#B9D19E;
 
     color:#000000;
 }
 
 .menu-btn.active{
 
-    background:#c8b13d;
+    background:#B9D19E;
 
     color:#000000;
 }
