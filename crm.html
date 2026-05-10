@@ -1,336 +1,117 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
+<title>CUSTOMER MANAGEMENT</title>
 
-<title>Malkum365 CRM</title>
-
-<link
-rel="stylesheet"
-href="crm.css">
+<link rel="stylesheet" href="crm.css">
 
 </head>
 
 <body>
 
-<div class="crm-container">
+<div class="crm-wrap">
 
-    <!-- =====================================
-    사이드바
-    ===================================== -->
+    <!-- 좌측 메뉴 -->
+    <aside class="sidebar">
 
-    <aside class="crm-sidebar">
+        <div class="logo-box">
 
-        <div class="logo-area">
+            <h1>CUSTOMER</h1>
 
-            <h1>MALKUM365</h1>
-
-            <p>CRM SYSTEM</p>
+            <p>MANAGEMENT</p>
 
         </div>
 
-        <nav class="menu-area">
+        <div class="menu-list">
 
-            <button class="menu-btn active">
-                실시간 고객
+            <button class="menu-btn">
+                신규등록
             </button>
 
             <button class="menu-btn">
-                상담 예정
+                무료신청
             </button>
 
             <button class="menu-btn">
-                상담 완료
+                상담예정
             </button>
 
             <button class="menu-btn">
-                구매 완료
+                진행중
             </button>
 
-        </nav>
+            <button class="menu-btn">
+                완료
+            </button>
+
+            <button class="menu-btn">
+                고객메모
+            </button>
+
+            <button class="menu-btn">
+                알람설정
+            </button>
+
+        </div>
 
     </aside>
 
-    <!-- =====================================
-    메인
-    ===================================== -->
+    <!-- 메인 -->
+    <main class="main-area">
 
-    <main class="crm-main">
+        <div class="top-bar">
 
-        <header class="crm-header">
-
-            <div class="header-left">
-
-                <h2>
-                    실시간 고객관리
-                </h2>
-
+            <div class="top-title">
+                CUSTOMER CRM
             </div>
 
-            <div class="header-right">
+        </div>
 
-                <div class="realtime-box">
+        <div class="table-wrap">
 
-                    ● 실시간 연결중
-
-                </div>
-
-            </div>
-
-        </header>
-
-        <!-- =====================================
-        테이블
-        ===================================== -->
-
-        <section class="crm-content">
-
-            <table class="crm-table">
+            <table>
 
                 <thead>
 
                     <tr>
 
-                        <th>ID</th>
-
-                        <th>상태</th>
-
                         <th>이름</th>
-
                         <th>연락처</th>
-
-                        <th>상담분야</th>
-
-                        <th>예약시간</th>
-
+                        <th>상담일</th>
+                        <th>상태</th>
                         <th>메모</th>
 
                     </tr>
 
                 </thead>
 
-                <tbody id="crmTableBody">
+                <tbody id="crmBody">
+
+                    <tr>
+
+                        <td>홍길동</td>
+                        <td>010-1111-2222</td>
+                        <td>2026-05-10</td>
+                        <td>상담예정</td>
+                        <td>무료상담 요청</td>
+
+                    </tr>
 
                 </tbody>
 
             </table>
 
-        </section>
+        </div>
 
     </main>
 
 </div>
 
-<!-- =====================================
-Supabase
-===================================== -->
-
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
-<script>
-
-/* =====================================
-Supabase 연결
-===================================== */
-
-const SUPABASE_URL =
-
-'https://pziyabogqefxzvinwarg.supabase.co';
-
-const SUPABASE_KEY =
-
-'sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8';
-
-const supabaseClient =
-
-supabase.createClient(
-
-    SUPABASE_URL,
-
-    SUPABASE_KEY
-
-);
-
-/* =====================================
-테이블
-===================================== */
-
-const crmTableBody =
-
-document.getElementById(
-
-    'crmTableBody'
-
-);
-
-/* =====================================
-데이터 로드
-===================================== */
-
-async function loadCRM(){
-
-    const {
-
-        data,
-        error
-
-    }
-
-    =
-
-    await supabaseClient
-
-    .from('notes')
-
-    .select('*')
-
-    .order(
-
-        'id',
-
-        {
-
-            ascending:false
-
-        }
-
-    );
-
-    if(error){
-
-        console.error(error);
-
-        return;
-    }
-
-    renderCRM(data);
-}
-
-/* =====================================
-LED 계산
-===================================== */
-
-function getLEDClass(item){
-
-    if(item.purchase){
-
-        return 'led-purchase';
-    }
-
-    if(item.alarm_checked){
-
-        return 'led-complete';
-    }
-
-    if(item.alarm_30m){
-
-        return 'led-alarm';
-    }
-
-    if(item.today_mark){
-
-        return 'led-today';
-    }
-
-    return 'led-default';
-}
-
-/* =====================================
-렌더링
-===================================== */
-
-function renderCRM(data){
-
-    crmTableBody.innerHTML = '';
-
-    data.forEach(item=>{
-
-        const row =
-
-        document.createElement('tr');
-
-        const ledClass =
-
-        getLEDClass(item);
-
-        row.innerHTML = `
-
-            <td>${item.id}</td>
-
-            <td>
-
-                <span class="
-                    status-led
-                    ${ledClass}
-                "></span>
-
-            </td>
-
-            <td>${item.name || '-'}</td>
-
-            <td>${item.phone || '-'}</td>
-
-            <td>${item.consultation || '-'}</td>
-
-            <td>${item.schedule || '-'}</td>
-
-            <td>${item.etc || '-'}</td>
-
-        `;
-
-        crmTableBody.appendChild(row);
-
-    });
-
-}
-
-/* =====================================
-실시간
-===================================== */
-
-supabaseClient
-
-.channel('crm-realtime')
-
-.on(
-
-    'postgres_changes',
-
-    {
-
-        event:'*',
-
-        schema:'public',
-
-        table:'notes'
-
-    },
-
-    payload=>{
-
-        console.log(payload);
-
-        loadCRM();
-    }
-
-)
-
-.subscribe();
-
-/* =====================================
-최초 실행
-===================================== */
-
-loadCRM();
-
-</script>
+<script src="crm.js"></script>
 
 </body>
-
 </html>
