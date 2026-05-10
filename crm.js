@@ -29,34 +29,47 @@ document.getElementById(
 
 async function loadCRM(){
 
-    const { data, error } =
+    const {
+
+        data,
+        error
+
+    }
+
+    =
 
     await supabaseClient
 
     .from('notes')
 
-    .select(`
-        *,
-        leads (
-            id,
-            name,
-            phone,
-            consultation
-        )
-    `)
+    .select('*')
 
     .order(
-        'created_at',
+
+        'id',
+
         {
+
             ascending:false
+
         }
+
     );
 
     if(error){
 
-        console.error(error);
+        console.error(
+            '불러오기 오류:',
+            error
+        );
+
         return;
     }
+
+    console.log(
+        'CRM 데이터:',
+        data
+    );
 
     renderCRM(data);
 }
@@ -109,7 +122,7 @@ function renderCRM(data){
         row.innerHTML = `
 
             <td>
-                ${item.customer_id || '-'}
+                ${item.id || '-'}
             </td>
 
             <td>
@@ -122,15 +135,15 @@ function renderCRM(data){
             </td>
 
             <td>
-                ${item.leads?.name || '-'}
+                ${item.name || '-'}
             </td>
 
             <td>
-                ${item.leads?.phone || '-'}
+                ${item.phone || '-'}
             </td>
 
             <td>
-                ${item.leads?.consultation || '-'}
+                ${item.consultation || '-'}
             </td>
 
             <td>
@@ -174,7 +187,7 @@ supabaseClient
     payload=>{
 
         console.log(
-            '실시간 notes 변경:',
+            '실시간 변경:',
             payload
         );
 
