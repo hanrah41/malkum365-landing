@@ -64,7 +64,6 @@ function formatPhoneNumber(value){
     const numbers =
     value.replace(/\D/g,'');
 
-    /* 01012345678 */
     if(numbers.length === 11){
 
         return numbers.replace(
@@ -73,7 +72,6 @@ function formatPhoneNumber(value){
         );
     }
 
-    /* 0101234567 */
     if(numbers.length === 10){
 
         return numbers.replace(
@@ -206,10 +204,6 @@ async function(){
 
     if(result.error){
 
-        console.error(
-            result.error
-        );
-
         alert(
             'DB 저장 실패'
         );
@@ -224,38 +218,7 @@ async function(){
     .style.display =
     'none';
 
-    currentEditId =
-    null;
-
-    currentEditField =
-    null;
-
     refreshCurrentMode();
-};
-
-/* =========================
-   대형 편집창 닫기
-========================= */
-
-document
-.getElementById(
-    'closeEditorBtn'
-)
-.onclick =
-function(){
-
-    document
-    .getElementById(
-        'editorModal'
-    )
-    .style.display =
-    'none';
-
-    currentEditId =
-    null;
-
-    currentEditField =
-    null;
 };
 
 /* =========================
@@ -292,20 +255,17 @@ async function(){
 
         created_at:'',
 
-        status:'',
+        status:'신규고객',
 
         memo:'',
-        reserve_date:''
+        reserve_date:'',
+        consultation_done:false
 
     }])
 
     .select();
 
     if(result.error){
-
-        console.error(
-            result.error
-        );
 
         alert(
             'DB 저장 실패'
@@ -345,17 +305,8 @@ async function(){
         }
     );
 
-    if(result.error){
-
-        console.error(
-            result.error
-        );
-
-        return;
-    }
-
     renderCRMTable(
-        result.data
+        result.data || []
     );
 };
 
@@ -381,7 +332,7 @@ function(){
 ========================= */
 
 reserveBtn.onclick =
-async function(){
+function(){
 
     currentMode =
     'reserve';
@@ -394,30 +345,12 @@ async function(){
 };
 
 /* =========================
-   상담예정 통합 로드
+   상담예정 로드
 ========================= */
 
 async function loadReserveList(){
 
-    const notesResult =
-    await supabaseClient
-
-    .from('notes')
-
-    .select('*')
-
-    .not(
-        'reserve_date',
-        'is',
-        null
-    )
-
-    .neq(
-        'reserve_date',
-        ''
-    );
-
-    const crmResult =
+    const result =
     await supabaseClient
 
     .from('crm_customers')
@@ -433,84 +366,22 @@ async function loadReserveList(){
     .neq(
         'reserve_date',
         ''
+    )
+
+    .neq(
+        'consultation_done',
+        true
+    )
+
+    .order(
+        'reserve_date',
+        {
+            ascending:true
+        }
     );
 
-    if(notesResult.error){
-
-        console.error(
-            notesResult.error
-        );
-
-        return;
-    }
-
-    if(crmResult.error){
-
-        console.error(
-            crmResult.error
-        );
-
-        return;
-    }
-
-    const notesData =
-    notesResult.data
-
-    .filter(item=>{
-
-        return item.reserve_date
-        &&
-        item.reserve_date.trim() !== '';
-    })
-
-    .map(item=>({
-
-        ...item,
-
-        source_table:
-        'notes'
-
-    }));
-
-    const crmData =
-    crmResult.data
-
-    .filter(item=>{
-
-        return item.reserve_date
-        &&
-        item.reserve_date.trim() !== '';
-    })
-
-    .map(item=>({
-
-        ...item,
-
-        source_table:
-        'crm_customers',
-
-        created_text:
-        item.created_at || ''
-
-    }));
-
-    const merged = [
-
-        ...notesData,
-
-        ...crmData
-
-    ];
-
-    merged.sort((a,b)=>{
-
-        return new Date(a.reserve_date)
-        -
-        new Date(b.reserve_date);
-    });
-
-    renderNotesTable(
-        merged
+    renderCRMTable(
+        result.data || []
     );
 }
 
@@ -538,7 +409,7 @@ function(){
 ========================= */
 
 doneBtn.onclick =
-function(){
+async function(){
 
     currentMode =
     'done';
@@ -547,8 +418,27 @@ function(){
         doneBtn
     );
 
-    loadCRMByStatus(
-        '완료'
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .eq(
+        'consultation_done',
+        true
+    )
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    renderCRMTable(
+        result.data || []
     );
 };
 
@@ -576,13 +466,6 @@ function(){
 alarmBtn.onclick =
 function(){
 
-    currentMode =
-    'alarm';
-
-    setActiveButton(
-        alarmBtn
-    );
-
     alert(
         '알람 시스템 준비중'
     );
@@ -608,27 +491,8 @@ async function loadNotes(){
         }
     );
 
-    if(result.error){
-
-        console.error(
-            result.error
-        );
-
-        return;
-    }
-
-    const data =
-    result.data.map(item=>({
-
-        ...item,
-
-        source_table:
-        'notes'
-
-    }));
-
     renderNotesTable(
-        data
+        result.data || []
     );
 }
 
@@ -657,240 +521,22 @@ function renderNotesTable(data){
 
             <td>${item.id || ''}</td>
 
-            <td>
-                ${item.name || ''}
-            </td>
+            <td>${item.name || ''}</td>
 
-            <td>
-                ${item.phone || ''}
-            </td>
+            <td>${item.phone || ''}</td>
 
-            <td>
-                ${item.created_text || item.created_at || ''}
-            </td>
+            <td>${item.created_at || ''}</td>
 
-            <td class="editable-big-note"
-                data-id="${item.id}"
-                data-table="${item.source_table || 'notes'}"
-                data-field="status">
+            <td>${item.status || ''}</td>
 
-                ${item.status || '신규고객'}
+            <td>${item.reserve_date || ''}</td>
 
-            </td>
-
-            <td class="editable-reserve"
-                data-id="${item.id}"
-                data-table="${item.source_table || 'notes'}">
-
-                ${item.reserve_date || ''}
-
-            </td>
-
+            <td></td>
         `;
 
         body.appendChild(
             tr
         );
-    });
-
-    bindNoteBigEditor();
-    bindReserveDateEditor();
-}
-
-/* =========================
-   notes 상태 편집창
-========================= */
-
-function bindNoteBigEditor(){
-
-    const cells =
-    document.querySelectorAll(
-        '.editable-big-note'
-    );
-
-    cells.forEach(cell=>{
-
-        cell.onclick =
-        function(){
-
-            const id =
-            this.dataset.id;
-
-            const table =
-            this.dataset.table || 'notes';
-
-            const field =
-            this.dataset.field;
-
-            const current =
-            this.innerText.trim();
-
-            openBigEditor(
-                table,
-                id,
-                field,
-                current
-            );
-        };
-    });
-}
-
-/* =========================
-   상담예정일 입력 엔진
-========================= */
-
-function bindReserveDateEditor(){
-
-    const cells =
-    document.querySelectorAll(
-        '.editable-reserve'
-    );
-
-    cells.forEach(cell=>{
-
-        cell.onclick =
-        async function(){
-
-            const id =
-            this.dataset.id;
-
-            const tableName =
-            this.dataset.table || 'notes';
-
-            const current =
-            this.innerText.trim();
-
-            const raw =
-            prompt(
-
-`상담예정일 입력
-
-숫자만 입력
-
-예:
-2506121500
-
-↓
-
-2025-06-12 15:00 자동변환
-
-삭제하려면 입력창을 비우세요.`,
-
-                current
-                    .replaceAll('-','')
-                    .replaceAll(':','')
-                    .replaceAll(' ','')
-                    .replace('20','')
-
-            );
-
-            if(raw === null){
-
-                return;
-            }
-
-            if(raw.trim() === ''){
-
-                const clearResult =
-                await supabaseClient
-
-                .from(tableName)
-
-                .update({
-
-                    reserve_date:null
-
-                })
-
-                .eq(
-                    'id',
-                    id
-                )
-
-                .select();
-
-                if(clearResult.error){
-
-                    console.error(
-                        clearResult.error
-                    );
-
-                    alert(
-                        '상담예정일 삭제 실패'
-                    );
-
-                    return;
-                }
-
-                refreshCurrentMode();
-
-                return;
-            }
-
-            const value =
-            raw.trim();
-
-            if(value.length !== 10){
-
-                alert(
-                    '10자리 숫자 입력\n\n예:\n2506121500'
-                );
-
-                return;
-            }
-
-            const yy =
-            value.substring(0,2);
-
-            const mm =
-            value.substring(2,4);
-
-            const dd =
-            value.substring(4,6);
-
-            const hh =
-            value.substring(6,8);
-
-            const mi =
-            value.substring(8,10);
-
-            const formatted =
-`20${yy}-${mm}-${dd} ${hh}:${mi}`;
-
-            const result =
-            await supabaseClient
-
-            .from(tableName)
-
-            .update({
-
-                reserve_date:
-                formatted
-
-            })
-
-            .eq(
-                'id',
-                id
-            )
-
-            .select();
-
-            if(result.error){
-
-                console.error(
-                    result.error
-                );
-
-                alert(
-                    '상담예정일 저장 실패'
-                );
-
-                return;
-            }
-
-            refreshCurrentMode();
-        };
     });
 }
 
@@ -914,27 +560,8 @@ async function loadCRM(){
         }
     );
 
-    if(result.error){
-
-        console.error(
-            result.error
-        );
-
-        return;
-    }
-
-    const data =
-    result.data.map(item=>({
-
-        ...item,
-
-        source_table:
-        'crm_customers'
-
-    }));
-
     renderCRMTable(
-        data
+        result.data || []
     );
 }
 
@@ -963,27 +590,8 @@ async function loadCRMByStatus(status){
         }
     );
 
-    if(result.error){
-
-        console.error(
-            result.error
-        );
-
-        return;
-    }
-
-    const data =
-    result.data.map(item=>({
-
-        ...item,
-
-        source_table:
-        'crm_customers'
-
-    }));
-
     renderCRMTable(
-        data
+        result.data || []
     );
 }
 
@@ -1013,32 +621,41 @@ async function loadCRMWithMemo(){
         }
     );
 
-    if(result.error){
-
-        console.error(
-            result.error
-        );
-
-        return;
-    }
-
-    const data =
-    result.data.map(item=>({
-
-        ...item,
-
-        source_table:
-        'crm_customers'
-
-    }));
-
     renderCRMTable(
-        data
+        result.data || []
     );
 }
 
 /* =========================
-   CRM 테이블 출력
+   상담완료 체크
+========================= */
+
+async function toggleConsultDone(
+    id,
+    checked
+){
+
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .update({
+
+        consultation_done:
+        checked
+
+    })
+
+    .eq(
+        'id',
+        id
+    );
+
+    refreshCurrentMode();
+}
+
+/* =========================
+   CRM 출력
 ========================= */
 
 function renderCRMTable(data){
@@ -1052,6 +669,11 @@ function renderCRMTable(data){
     '';
 
     data.forEach(item=>{
+
+        const checked =
+        item.consultation_done
+        ? 'checked'
+        : '';
 
         const tr =
         document.createElement(
@@ -1094,13 +716,22 @@ function renderCRMTable(data){
             </td>
 
             <td class="editable-reserve"
-                data-id="${item.id}"
-                data-table="crm_customers">
+                data-id="${item.id}">
 
                 ${item.reserve_date || ''}
 
             </td>
 
+            <td>
+
+                <input
+                    type="checkbox"
+                    class="done-check"
+                    data-id="${item.id}"
+                    ${checked}
+                >
+
+            </td>
         `;
 
         body.appendChild(
@@ -1109,7 +740,31 @@ function renderCRMTable(data){
     });
 
     bindCellEvents();
-    bindReserveDateEditor();
+    bindDoneChecks();
+}
+
+/* =========================
+   상담완료 체크 이벤트
+========================= */
+
+function bindDoneChecks(){
+
+    const checks =
+    document.querySelectorAll(
+        '.done-check'
+    );
+
+    checks.forEach(check=>{
+
+        check.onchange =
+        function(){
+
+            toggleConsultDone(
+                this.dataset.id,
+                this.checked
+            );
+        };
+    });
 }
 
 /* =========================
@@ -1146,8 +801,6 @@ function bindCellEvents(){
             if(value === null)
             return;
 
-            /* 전화번호 자동 하이픈 */
-
             if(field === 'phone'){
 
                 value =
@@ -1156,7 +809,6 @@ function bindCellEvents(){
                 );
             }
 
-            const result =
             await supabaseClient
 
             .from('crm_customers')
@@ -1170,18 +822,7 @@ function bindCellEvents(){
             .eq(
                 'id',
                 id
-            )
-
-            .select();
-
-            if(result.error){
-
-                alert(
-                    'DB 저장 실패'
-                );
-
-                return;
-            }
+            );
 
             refreshCurrentMode();
         };
@@ -1203,122 +844,73 @@ function bindCellEvents(){
             const current =
             this.innerText.trim();
 
-            const raw =
+            const value =
             prompt(
-
-`상담 및 신청일 입력
-
-숫자만 입력
-
-예:
-2505121100
-
-↓
-
-2025-05-12 11:00 자동변환`,
-
+                '상담 및 신청일 입력',
                 current
-                    .replaceAll('-','')
-                    .replaceAll(':','')
-                    .replaceAll(' ','')
-                    .replace('20','')
-
             );
 
-            if(raw === null)
+            if(value === null)
             return;
 
-            if(raw.trim() === ''){
-
-                const clearResult =
-                await supabaseClient
-
-                .from('crm_customers')
-
-                .update({
-
-                    created_at:null
-
-                })
-
-                .eq(
-                    'id',
-                    id
-                )
-
-                .select();
-
-                if(clearResult.error){
-
-                    alert(
-                        '날짜 삭제 실패'
-                    );
-
-                    return;
-                }
-
-                refreshCurrentMode();
-
-                return;
-            }
-
-            const value =
-            raw.trim();
-
-            if(value.length !== 10){
-
-                alert(
-                    '10자리 숫자 입력\n\n예:\n2505121100'
-                );
-
-                return;
-            }
-
-            const yy =
-            value.substring(0,2);
-
-            const mm =
-            value.substring(2,4);
-
-            const dd =
-            value.substring(4,6);
-
-            const hh =
-            value.substring(6,8);
-
-            const mi =
-            value.substring(8,10);
-
-            const formatted =
-`20${yy}-${mm}-${dd} ${hh}:${mi}`;
-
-            const result =
             await supabaseClient
 
             .from('crm_customers')
 
             .update({
 
-                created_at:
-                formatted
+                created_at:value
 
             })
 
             .eq(
                 'id',
                 id
-            )
+            );
 
-            .select();
+            refreshCurrentMode();
+        };
+    });
 
-            if(result.error){
+    const reserveCells =
+    document.querySelectorAll(
+        '.editable-reserve'
+    );
 
-                alert(
-                    'DB 저장 실패'
-                );
+    reserveCells.forEach(cell=>{
 
-                return;
-            }
+        cell.onclick =
+        async function(){
+
+            const id =
+            this.dataset.id;
+
+            const current =
+            this.innerText.trim();
+
+            const value =
+            prompt(
+                '상담예정일 입력',
+                current
+            );
+
+            if(value === null)
+            return;
+
+            await supabaseClient
+
+            .from('crm_customers')
+
+            .update({
+
+                reserve_date:value
+
+            })
+
+            .eq(
+                'id',
+                id
+            );
 
             refreshCurrentMode();
         };
@@ -1362,21 +954,18 @@ function refreshCurrentMode(){
     if(currentMode === 'introduce'){
 
         introduceBtn.click();
-
         return;
     }
 
     if(currentMode === 'customer'){
 
         loadNotes();
-
         return;
     }
 
     if(currentMode === 'reserve'){
 
         loadReserveList();
-
         return;
     }
 
@@ -1391,17 +980,13 @@ function refreshCurrentMode(){
 
     if(currentMode === 'done'){
 
-        loadCRMByStatus(
-            '완료'
-        );
-
+        doneBtn.click();
         return;
     }
 
     if(currentMode === 'memo'){
 
         loadCRMWithMemo();
-
         return;
     }
 
@@ -1409,38 +994,12 @@ function refreshCurrentMode(){
 }
 
 /* =========================
-   실시간 notes
+   실시간
 ========================= */
 
 supabaseClient
 
-.channel('realtime-notes')
-
-.on(
-
-    'postgres_changes',
-
-    {
-        event:'*',
-        schema:'public',
-        table:'notes'
-    },
-
-    ()=>{
-
-        refreshCurrentMode();
-    }
-)
-
-.subscribe();
-
-/* =========================
-   실시간 CRM
-========================= */
-
-supabaseClient
-
-.channel('realtime-crm-customers')
+.channel('realtime-crm')
 
 .on(
 
