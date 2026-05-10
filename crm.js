@@ -85,6 +85,63 @@ function formatPhoneNumber(value){
 }
 
 /* =========================
+   상담예정일 자동 변환
+========================= */
+
+function formatReserveDate(value){
+
+    const numbers =
+    String(value || '')
+    .replace(/\D/g,'');
+
+    /* 2505121030 */
+
+    if(numbers.length === 10){
+
+        const yy =
+        numbers.substring(0,2);
+
+        const mm =
+        numbers.substring(2,4);
+
+        const dd =
+        numbers.substring(4,6);
+
+        const hh =
+        numbers.substring(6,8);
+
+        const mi =
+        numbers.substring(8,10);
+
+        return `20${yy}-${mm}-${dd} ${hh}:${mi}`;
+    }
+
+    /* 202505121030 */
+
+    if(numbers.length === 12){
+
+        const yyyy =
+        numbers.substring(0,4);
+
+        const mm =
+        numbers.substring(4,6);
+
+        const dd =
+        numbers.substring(6,8);
+
+        const hh =
+        numbers.substring(8,10);
+
+        const mi =
+        numbers.substring(10,12);
+
+        return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+    }
+
+    return value;
+}
+
+/* =========================
    공통 버튼 템플릿
 ========================= */
 
@@ -985,14 +1042,28 @@ function bindCellEvents(){
             const current =
             this.innerText.trim();
 
-            const value =
+            let value =
             prompt(
-                '상담예정일 입력',
+`상담예정일 입력
+
+예:
+2505121030
+또는
+202505121030
+
+↓
+
+2025-05-12 10:30 자동변환`,
                 current
             );
 
             if(value === null)
             return;
+
+            value =
+            formatReserveDate(
+                value
+            );
 
             await supabaseClient
 
