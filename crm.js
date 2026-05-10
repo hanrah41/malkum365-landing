@@ -1,3 +1,7 @@
+/* =========================
+   Supabase 설정
+========================= */
+
 const supabaseUrl =
 'https://YOUR-PROJECT.supabase.co';
 
@@ -43,7 +47,7 @@ freeBtn.addEventListener(
 
             } = await supabaseClient
 
-            .from('notes')
+            .from('leads')
 
             .insert([{
 
@@ -77,7 +81,7 @@ freeBtn.addEventListener(
                 '무료신청 저장 완료'
             );
 
-            loadNotes();
+            loadLeads();
 
         }catch(err){
 
@@ -94,7 +98,7 @@ freeBtn.addEventListener(
    데이터 불러오기
 ========================= */
 
-async function loadNotes(){
+async function loadLeads(){
 
     const {
 
@@ -103,7 +107,7 @@ async function loadNotes(){
 
     } = await supabaseClient
 
-    .from('notes')
+    .from('leads')
 
     .select('*')
 
@@ -155,4 +159,4 @@ async function loadNotes(){
    시작
 ========================= */
 
-loadNotes();
+loadLeads();
