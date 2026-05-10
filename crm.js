@@ -3,10 +3,10 @@
 ========================= */
 
 const supabaseUrl =
-'https://YOUR-PROJECT.supabase.co';
+'https://pziyabogqefxzvinwarg.supabase.co';
 
 const supabaseKey =
-'YOUR-ANON-KEY';
+'sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8';
 
 const supabaseClient =
 window.supabase.createClient(
