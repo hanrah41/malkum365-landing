@@ -222,6 +222,25 @@ async function(){
 };
 
 /* =========================
+   대형 편집창 닫기
+========================= */
+
+document
+.getElementById(
+    'closeEditorBtn'
+)
+.onclick =
+function(){
+
+    document
+    .getElementById(
+        'editorModal'
+    )
+    .style.display =
+    'none';
+};
+
+/* =========================
    소개등록
 ========================= */
 
@@ -258,8 +277,7 @@ async function(){
         status:'신규고객',
 
         memo:'',
-        reserve_date:'',
-        consultation_done:false
+        reserve_date:''
 
     }])
 
@@ -332,7 +350,7 @@ function(){
 ========================= */
 
 reserveBtn.onclick =
-function(){
+async function(){
 
     currentMode =
     'reserve';
@@ -369,8 +387,8 @@ async function loadReserveList(){
     )
 
     .neq(
-        'consultation_done',
-        true
+        'status',
+        '완료'
     )
 
     .order(
@@ -409,7 +427,7 @@ function(){
 ========================= */
 
 doneBtn.onclick =
-async function(){
+function(){
 
     currentMode =
     'done';
@@ -418,27 +436,8 @@ async function(){
         doneBtn
     );
 
-    const result =
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .select('*')
-
-    .eq(
-        'consultation_done',
-        true
-    )
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
-
-    renderCRMTable(
-        result.data || []
+    loadCRMByStatus(
+        '완료'
     );
 };
 
@@ -532,6 +531,7 @@ function renderNotesTable(data){
             <td>${item.reserve_date || ''}</td>
 
             <td></td>
+
         `;
 
         body.appendChild(
@@ -627,31 +627,62 @@ async function loadCRMWithMemo(){
 }
 
 /* =========================
-   상담완료 체크
+   완료 체크 이벤트
 ========================= */
 
-async function toggleConsultDone(
-    id,
-    checked
-){
+function bindDoneChecks(){
 
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .update({
-
-        consultation_done:
-        checked
-
-    })
-
-    .eq(
-        'id',
-        id
+    const checks =
+    document.querySelectorAll(
+        '.done-check'
     );
 
-    refreshCurrentMode();
+    checks.forEach(check=>{
+
+        check.onchange =
+        async function(){
+
+            const id =
+            this.dataset.id;
+
+            if(this.checked){
+
+                await supabaseClient
+
+                .from('crm_customers')
+
+                .update({
+
+                    status:'완료'
+
+                })
+
+                .eq(
+                    'id',
+                    id
+                );
+
+            }else{
+
+                await supabaseClient
+
+                .from('crm_customers')
+
+                .update({
+
+                    status:'신규고객'
+
+                })
+
+                .eq(
+                    'id',
+                    id
+                );
+            }
+
+            refreshCurrentMode();
+        };
+    });
 }
 
 /* =========================
@@ -671,7 +702,7 @@ function renderCRMTable(data){
     data.forEach(item=>{
 
         const checked =
-        item.consultation_done
+        item.status === '완료'
         ? 'checked'
         : '';
 
@@ -732,6 +763,7 @@ function renderCRMTable(data){
                 >
 
             </td>
+
         `;
 
         body.appendChild(
@@ -741,30 +773,6 @@ function renderCRMTable(data){
 
     bindCellEvents();
     bindDoneChecks();
-}
-
-/* =========================
-   상담완료 체크 이벤트
-========================= */
-
-function bindDoneChecks(){
-
-    const checks =
-    document.querySelectorAll(
-        '.done-check'
-    );
-
-    checks.forEach(check=>{
-
-        check.onchange =
-        function(){
-
-            toggleConsultDone(
-                this.dataset.id,
-                this.checked
-            );
-        };
-    });
 }
 
 /* =========================
@@ -980,7 +988,10 @@ function refreshCurrentMode(){
 
     if(currentMode === 'done'){
 
-        doneBtn.click();
+        loadCRMByStatus(
+            '완료'
+        );
+
         return;
     }
 
