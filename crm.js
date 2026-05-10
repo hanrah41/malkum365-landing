@@ -9,90 +9,107 @@ const supabaseKey =
 'YOUR-ANON-KEY';
 
 const supabaseClient =
-supabase.createClient(
+window.supabase.createClient(
     supabaseUrl,
     supabaseKey
 );
 
 /* =========================
-   무료신청 버튼
+   버튼 찾기
 ========================= */
 
+const buttons =
+document.querySelectorAll('.menu-btn');
+
 const freeBtn =
-document.querySelectorAll('.menu-btn')[1];
+buttons[1];
 
-freeBtn.addEventListener(
-    'click',
-    async ()=>{
+/* =========================
+   무료신청
+========================= */
 
-        try{
+freeBtn.onclick =
+async function(){
 
-            const name =
-            prompt('고객명 입력');
+    try{
 
-            if(!name) return;
+        const name =
+        prompt('고객명 입력');
 
-            const phone =
-            prompt('연락처 입력');
+        if(!name){
 
-            if(!phone) return;
-
-            const memo =
-            prompt('메모 입력');
-
-            const {
-
-                data,
-                error
-
-            } = await supabaseClient
-
-            .from('leads')
-
-            .insert([{
-
-                name:name,
-
-                phone:phone,
-
-                memo:memo,
-
-                status:'무료신청',
-
-                created_text:
-                new Date()
-
-                .toLocaleString()
-
-            }]);
-
-            if(error){
-
-                console.error(error);
-
-                alert(
-                    '저장 실패'
-                );
-
-                return;
-            }
-
-            alert(
-                '무료신청 저장 완료'
-            );
-
-            loadLeads();
-
-        }catch(err){
-
-            console.error(err);
-
-            alert(
-                '오류 발생'
-            );
+            return;
         }
+
+        const phone =
+        prompt('연락처 입력');
+
+        if(!phone){
+
+            return;
+        }
+
+        const memo =
+        prompt('메모 입력');
+
+        console.log(
+            'insert 시작'
+        );
+
+        const result =
+        await supabaseClient
+
+        .from('leads')
+
+        .insert([{
+
+            name:name,
+
+            phone:phone,
+
+            memo:memo,
+
+            status:'무료신청',
+
+            created_text:
+            new Date()
+
+            .toLocaleString()
+
+        }])
+
+        .select();
+
+        console.log(result);
+
+        if(result.error){
+
+            console.error(
+                result.error
+            );
+
+            alert(
+                'DB 저장 실패'
+            );
+
+            return;
+        }
+
+        alert(
+            '저장 완료'
+        );
+
+        loadLeads();
+
+    }catch(err){
+
+        console.error(err);
+
+        alert(
+            '실행 오류'
+        );
     }
-);
+};
 
 /* =========================
    데이터 불러오기
@@ -100,12 +117,8 @@ freeBtn.addEventListener(
 
 async function loadLeads(){
 
-    const {
-
-        data,
-        error
-
-    } = await supabaseClient
+    const result =
+    await supabaseClient
 
     .from('leads')
 
@@ -118,9 +131,13 @@ async function loadLeads(){
         }
     );
 
-    if(error){
+    console.log(result);
 
-        console.error(error);
+    if(result.error){
+
+        console.error(
+            result.error
+        );
 
         return;
     }
@@ -132,7 +149,7 @@ async function loadLeads(){
 
     body.innerHTML = '';
 
-    data.forEach(item=>{
+    result.data.forEach(item=>{
 
         const tr =
         document.createElement('tr');
