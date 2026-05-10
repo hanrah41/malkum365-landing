@@ -29,11 +29,12 @@ const buttons =
 document.querySelectorAll('.menu-btn');
 
 const newBtn      = buttons[0];
-const reserveBtn  = buttons[1];
-const processBtn  = buttons[2];
-const doneBtn     = buttons[3];
-const memoBtn     = buttons[4];
-const alarmBtn    = buttons[5];
+const customerBtn = buttons[1];
+const reserveBtn  = buttons[2];
+const processBtn  = buttons[3];
+const doneBtn     = buttons[4];
+const memoBtn     = buttons[5];
+const alarmBtn    = buttons[6];
 
 /* =========================
    활성 버튼
@@ -60,10 +61,14 @@ function activeButton(target){
 newBtn.onclick =
 async function(){
 
-    activeButton(newBtn);
+    activeButton(
+        newBtn
+    );
 
     const name =
-    prompt('성명 입력');
+    prompt(
+        '성명 입력'
+    );
 
     if(!name) return;
 
@@ -92,10 +97,6 @@ async function(){
 
     if(result.error){
 
-        console.error(
-            result.error
-        );
-
         alert(
             'DB 저장 실패'
         );
@@ -103,8 +104,119 @@ async function(){
         return;
     }
 
-    loadAll();
+    loadCRM();
 };
+
+/* =========================
+   고객명단
+========================= */
+
+customerBtn.onclick =
+async function(){
+
+    activeButton(
+        customerBtn
+    );
+
+    loadNotes();
+};
+
+/* =========================
+   notes 불러오기
+========================= */
+
+async function loadNotes(){
+
+    const result =
+    await supabaseClient
+
+    .from('notes')
+
+    .select('*')
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    console.log(
+        'notes:',
+        result
+    );
+
+    if(result.error){
+
+        console.error(
+            result.error
+        );
+
+        return;
+    }
+
+    renderNotesTable(
+        result.data
+    );
+}
+
+/* =========================
+   notes 테이블 출력
+========================= */
+
+function renderNotesTable(data){
+
+    const body =
+    document.getElementById(
+        'crmBody'
+    );
+
+    body.innerHTML = '';
+
+    data.forEach(item=>{
+
+        const tr =
+        document.createElement('tr');
+
+        tr.innerHTML = `
+
+            <td>${item.id || ''}</td>
+
+            <td>
+
+                ${item.name || ''}
+
+            </td>
+
+            <td>
+
+                ${item.phone || ''}
+
+            </td>
+
+            <td>
+
+                ${item.created_text || ''}
+
+            </td>
+
+            <td>
+
+                신규고객
+
+            </td>
+
+            <td>
+
+                랜딩유입
+
+            </td>
+
+        `;
+
+        body.appendChild(tr);
+    });
+}
 
 /* =========================
    날짜 포맷
@@ -132,10 +244,10 @@ function formatDate(value){
 }
 
 /* =========================
-   테이블 출력
+   CRM 테이블 출력
 ========================= */
 
-function renderTable(data){
+function renderCRMTable(data){
 
     const body =
     document.getElementById(
@@ -293,13 +405,7 @@ function bindEditable(){
 
             .select();
 
-            console.log(result);
-
             if(result.error){
-
-                console.error(
-                    result.error
-                );
 
                 alert(
                     'DB 저장 실패'
@@ -308,7 +414,7 @@ function bindEditable(){
                 return;
             }
 
-            loadAll();
+            loadCRM();
         };
     });
 
@@ -365,13 +471,7 @@ function bindEditable(){
 
             .select();
 
-            console.log(result);
-
             if(result.error){
-
-                console.error(
-                    result.error
-                );
 
                 alert(
                     'DB 저장 실패'
@@ -380,7 +480,7 @@ function bindEditable(){
                 return;
             }
 
-            loadAll();
+            loadCRM();
         };
     });
 }
@@ -426,13 +526,7 @@ async function(){
 
     .select();
 
-    console.log(result);
-
     if(result.error){
-
-        console.error(
-            result.error
-        );
 
         alert(
             'DB 저장 실패'
@@ -449,7 +543,7 @@ async function(){
     .style.display =
     'none';
 
-    loadAll();
+    loadCRM();
 };
 
 /* =========================
@@ -475,10 +569,10 @@ function(){
 };
 
 /* =========================
-   전체 로드
+   CRM 로드
 ========================= */
 
-async function loadAll(){
+async function loadCRM(){
 
     const result =
     await supabaseClient
@@ -493,8 +587,6 @@ async function loadAll(){
             ascending:false
         }
     );
-
-    console.log(result);
 
     if(result.error){
 
@@ -505,170 +597,49 @@ async function loadAll(){
         return;
     }
 
-    renderTable(
+    renderCRMTable(
         result.data
     );
 }
 
 /* =========================
-   상담예정
+   실시간 notes
 ========================= */
 
-reserveBtn.onclick =
-async function(){
+supabaseClient
 
-    activeButton(
-        reserveBtn
-    );
+.channel('realtime-notes')
 
-    const result =
-    await supabaseClient
+.on(
 
-    .from('crm_customers')
+    'postgres_changes',
 
-    .select('*')
+    {
 
-    .eq(
-        'status',
-        '상담예정'
-    )
+        event:'*',
 
-    .order(
-        'id',
-        {
-            ascending:false
+        schema:'public',
+
+        table:'notes'
+    },
+
+    ()=>{
+
+        if(
+            customerBtn.classList.contains(
+                'active'
+            )
+        ){
+
+            loadNotes();
         }
-    );
+    }
+)
 
-    renderTable(
-        result.data
-    );
-};
+.subscribe();
 
 /* =========================
-   진행중
-========================= */
-
-processBtn.onclick =
-async function(){
-
-    activeButton(
-        processBtn
-    );
-
-    const result =
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .select('*')
-
-    .eq(
-        'status',
-        '진행중'
-    )
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
-
-    renderTable(
-        result.data
-    );
-};
-
-/* =========================
-   완료
-========================= */
-
-doneBtn.onclick =
-async function(){
-
-    activeButton(
-        doneBtn
-    );
-
-    const result =
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .select('*')
-
-    .eq(
-        'status',
-        '완료'
-    )
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
-
-    renderTable(
-        result.data
-    );
-};
-
-/* =========================
-   고객메모
-========================= */
-
-memoBtn.onclick =
-async function(){
-
-    activeButton(
-        memoBtn
-    );
-
-    const result =
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .select('*')
-
-    .not(
-        'memo',
-        'is',
-        null
-    )
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
-
-    renderTable(
-        result.data
-    );
-};
-
-/* =========================
-   알람
-========================= */
-
-alarmBtn.onclick =
-function(){
-
-    activeButton(
-        alarmBtn
-    );
-
-    alert(
-        '알람 시스템 준비중'
-    );
-};
-
-/* =========================
-   실시간
+   실시간 CRM
 ========================= */
 
 supabaseClient
@@ -690,7 +661,14 @@ supabaseClient
 
     ()=>{
 
-        loadAll();
+        if(
+            newBtn.classList.contains(
+                'active'
+            )
+        ){
+
+            loadCRM();
+        }
     }
 )
 
@@ -700,4 +678,4 @@ supabaseClient
    시작
 ========================= */
 
-loadAll();
+loadCRM();
