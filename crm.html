@@ -19,15 +19,11 @@ href="crm.css">
 
 <body>
 
-<!-- ========================================
-CRM 전체 레이아웃
-======================================== -->
-
 <div class="crm-container">
 
-    <!-- ========================================
-    좌측 사이드바
-    ======================================== -->
+    <!-- =====================================
+    사이드바
+    ===================================== -->
 
     <aside class="crm-sidebar">
 
@@ -61,15 +57,11 @@ CRM 전체 레이아웃
 
     </aside>
 
-    <!-- ========================================
-    메인 영역
-    ======================================== -->
+    <!-- =====================================
+    메인
+    ===================================== -->
 
     <main class="crm-main">
-
-        <!-- ========================================
-        상단 헤더
-        ======================================== -->
 
         <header class="crm-header">
 
@@ -93,9 +85,9 @@ CRM 전체 레이아웃
 
         </header>
 
-        <!-- ========================================
-        고객 리스트 영역
-        ======================================== -->
+        <!-- =====================================
+        테이블
+        ===================================== -->
 
         <section class="crm-content">
 
@@ -125,8 +117,6 @@ CRM 전체 레이아웃
 
                 <tbody id="crmTableBody">
 
-                    <!-- JS 실시간 삽입 -->
-
                 </tbody>
 
             </table>
@@ -137,35 +127,209 @@ CRM 전체 레이아웃
 
 </div>
 
-<!-- ========================================
-Supabase ESM 로드
-======================================== -->
+<!-- =====================================
+Supabase
+===================================== -->
 
-<script type="module">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-import {
+<script>
 
-    createClient
+/* =====================================
+Supabase 연결
+===================================== */
+
+const SUPABASE_URL =
+
+'https://pziyabogqefxzvinwarg.supabase.co';
+
+const SUPABASE_KEY =
+
+'sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8';
+
+const supabaseClient =
+
+supabase.createClient(
+
+    SUPABASE_URL,
+
+    SUPABASE_KEY
+
+);
+
+/* =====================================
+테이블
+===================================== */
+
+const crmTableBody =
+
+document.getElementById(
+
+    'crmTableBody'
+
+);
+
+/* =====================================
+데이터 로드
+===================================== */
+
+async function loadCRM(){
+
+    const {
+
+        data,
+        error
+
+    }
+
+    =
+
+    await supabaseClient
+
+    .from('notes')
+
+    .select('*')
+
+    .order(
+
+        'id',
+
+        {
+
+            ascending:false
+
+        }
+
+    );
+
+    if(error){
+
+        console.error(error);
+
+        return;
+    }
+
+    renderCRM(data);
+}
+
+/* =====================================
+LED 계산
+===================================== */
+
+function getLEDClass(item){
+
+    if(item.purchase){
+
+        return 'led-purchase';
+    }
+
+    if(item.alarm_checked){
+
+        return 'led-complete';
+    }
+
+    if(item.alarm_30m){
+
+        return 'led-alarm';
+    }
+
+    if(item.today_mark){
+
+        return 'led-today';
+    }
+
+    return 'led-default';
+}
+
+/* =====================================
+렌더링
+===================================== */
+
+function renderCRM(data){
+
+    crmTableBody.innerHTML = '';
+
+    data.forEach(item=>{
+
+        const row =
+
+        document.createElement('tr');
+
+        const ledClass =
+
+        getLEDClass(item);
+
+        row.innerHTML = `
+
+            <td>${item.id}</td>
+
+            <td>
+
+                <span class="
+                    status-led
+                    ${ledClass}
+                "></span>
+
+            </td>
+
+            <td>${item.name || '-'}</td>
+
+            <td>${item.phone || '-'}</td>
+
+            <td>${item.consultation || '-'}</td>
+
+            <td>${item.schedule || '-'}</td>
+
+            <td>${item.etc || '-'}</td>
+
+        `;
+
+        crmTableBody.appendChild(row);
+
+    });
 
 }
 
-from
+/* =====================================
+실시간
+===================================== */
 
-'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+supabaseClient
 
-window.supabase = {
+.channel('crm-realtime')
 
-    createClient
+.on(
 
-};
+    'postgres_changes',
+
+    {
+
+        event:'*',
+
+        schema:'public',
+
+        table:'notes'
+
+    },
+
+    payload=>{
+
+        console.log(payload);
+
+        loadCRM();
+    }
+
+)
+
+.subscribe();
+
+/* =====================================
+최초 실행
+===================================== */
+
+loadCRM();
 
 </script>
-
-<!-- ========================================
-CRM JS
-======================================== -->
-
-<script src="crm.js"></script>
 
 </body>
 
