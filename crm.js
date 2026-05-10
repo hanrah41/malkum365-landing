@@ -429,7 +429,13 @@ async function loadReserveList(){
         ...item,
 
         source_table:
-        'notes'
+        'notes',
+
+        created_at:
+        item.created_at
+        || item.created_time
+        || item.inserted_at
+        || ''
 
     }));
 
@@ -539,8 +545,26 @@ async function loadNotes(){
         }
     );
 
+    const data =
+    (result.data || []).map(item=>({
+
+        ...item,
+
+        source_table:
+        'notes',
+
+        /* 상담신청일 표시 */
+
+        created_at:
+        item.created_at
+        || item.created_time
+        || item.inserted_at
+        || ''
+
+    }));
+
     renderCRMTable(
-        result.data || []
+        data
     );
 }
 
