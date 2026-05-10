@@ -137,6 +137,34 @@ CRM 전체 레이아웃
 
 </div>
 
+<!-- ========================================
+Supabase ESM 로드
+======================================== -->
+
+<script type="module">
+
+import {
+
+    createClient
+
+}
+
+from
+
+'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+window.supabase = {
+
+    createClient
+
+};
+
+</script>
+
+<!-- ========================================
+CRM JS
+======================================== -->
+
 <script src="crm.js"></script>
 
 </body>
