@@ -15,8 +15,10 @@ window.supabase.createClient(
 );
 
 /* =========================
-   대형 편집창 상태
+   현재 상태
 ========================= */
+
+let currentMode = 'new';
 
 let currentEditId = null;
 let currentEditField = null;
@@ -28,19 +30,19 @@ let currentEditField = null;
 const buttons =
 document.querySelectorAll('.menu-btn');
 
-const newBtn      = buttons[0];
-const customerBtn = buttons[1];
-const reserveBtn  = buttons[2];
-const processBtn  = buttons[3];
-const doneBtn     = buttons[4];
-const memoBtn     = buttons[5];
-const alarmBtn    = buttons[6];
+const newBtn      = document.querySelector('[data-mode="new"]');
+const customerBtn = document.querySelector('[data-mode="customer"]');
+const reserveBtn  = document.querySelector('[data-mode="reserve"]');
+const processBtn  = document.querySelector('[data-mode="process"]');
+const doneBtn     = document.querySelector('[data-mode="done"]');
+const memoBtn     = document.querySelector('[data-mode="memo"]');
+const alarmBtn    = document.querySelector('[data-mode="alarm"]');
 
 /* =========================
-   활성 버튼
+   공통 버튼 템플릿
 ========================= */
 
-function activeButton(target){
+function setActiveButton(target){
 
     buttons.forEach(btn=>{
 
@@ -55,13 +57,163 @@ function activeButton(target){
 }
 
 /* =========================
+   대형 편집창 열기
+========================= */
+
+function openBigEditor(id, field, value){
+
+    currentEditId =
+    id;
+
+    currentEditField =
+    field;
+
+    const modal =
+    document.getElementById(
+        'editorModal'
+    );
+
+    const textarea =
+    document.getElementById(
+        'editorTextarea'
+    );
+
+    const title =
+    document.getElementById(
+        'editorTitle'
+    );
+
+    if(field === 'status'){
+
+        title.innerText =
+        '상태 편집';
+    }
+
+    if(field === 'memo'){
+
+        title.innerText =
+        '메모 편집';
+    }
+
+    textarea.value =
+    value || '';
+
+    modal.style.display =
+    'flex';
+
+    textarea.focus();
+}
+
+/* =========================
+   대형 편집창 저장
+========================= */
+
+document
+.getElementById(
+    'saveEditorBtn'
+)
+.onclick =
+async function(){
+
+    const value =
+    document
+    .getElementById(
+        'editorTextarea'
+    )
+    .value;
+
+    if(
+        currentEditId === null ||
+        currentEditField === null
+    ){
+
+        return;
+    }
+
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .update({
+
+        [currentEditField]:
+        value
+
+    })
+
+    .eq(
+        'id',
+        currentEditId
+    )
+
+    .select();
+
+    if(result.error){
+
+        console.error(
+            result.error
+        );
+
+        alert(
+            'DB 저장 실패'
+        );
+
+        return;
+    }
+
+    document
+    .getElementById(
+        'editorModal'
+    )
+    .style.display =
+    'none';
+
+    currentEditId =
+    null;
+
+    currentEditField =
+    null;
+
+    refreshCurrentMode();
+};
+
+/* =========================
+   대형 편집창 닫기
+========================= */
+
+document
+.getElementById(
+    'closeEditorBtn'
+)
+.onclick =
+function(){
+
+    document
+    .getElementById(
+        'editorModal'
+    )
+    .style.display =
+    'none';
+
+    currentEditId =
+    null;
+
+    currentEditField =
+    null;
+};
+
+/* =========================
    신규등록
 ========================= */
 
 newBtn.onclick =
 async function(){
 
-    activeButton(
+    currentMode =
+    'new';
+
+    setActiveButton(
         newBtn
     );
 
@@ -93,9 +245,11 @@ async function(){
 
     .select();
 
-    console.log(result);
-
     if(result.error){
+
+        console.error(
+            result.error
+        );
 
         alert(
             'DB 저장 실패'
@@ -108,13 +262,16 @@ async function(){
 };
 
 /* =========================
-   고객명단
+   고객명단 notes 불러오기
 ========================= */
 
 customerBtn.onclick =
-async function(){
+function(){
 
-    activeButton(
+    currentMode =
+    'customer';
+
+    setActiveButton(
         customerBtn
     );
 
@@ -122,7 +279,100 @@ async function(){
 };
 
 /* =========================
-   notes 불러오기
+   상담예정
+========================= */
+
+reserveBtn.onclick =
+function(){
+
+    currentMode =
+    'reserve';
+
+    setActiveButton(
+        reserveBtn
+    );
+
+    loadCRMByStatus(
+        '상담예정'
+    );
+};
+
+/* =========================
+   진행중
+========================= */
+
+processBtn.onclick =
+function(){
+
+    currentMode =
+    'process';
+
+    setActiveButton(
+        processBtn
+    );
+
+    loadCRMByStatus(
+        '진행중'
+    );
+};
+
+/* =========================
+   완료
+========================= */
+
+doneBtn.onclick =
+function(){
+
+    currentMode =
+    'done';
+
+    setActiveButton(
+        doneBtn
+    );
+
+    loadCRMByStatus(
+        '완료'
+    );
+};
+
+/* =========================
+   고객메모
+========================= */
+
+memoBtn.onclick =
+function(){
+
+    currentMode =
+    'memo';
+
+    setActiveButton(
+        memoBtn
+    );
+
+    loadCRMWithMemo();
+};
+
+/* =========================
+   알람설정
+========================= */
+
+alarmBtn.onclick =
+function(){
+
+    currentMode =
+    'alarm';
+
+    setActiveButton(
+        alarmBtn
+    );
+
+    alert(
+        '알람 시스템 준비중'
+    );
+};
+
+/* =========================
+   notes 로드
 ========================= */
 
 async function loadNotes(){
@@ -141,11 +391,6 @@ async function loadNotes(){
         }
     );
 
-    console.log(
-        'notes:',
-        result
-    );
-
     if(result.error){
 
         console.error(
@@ -161,7 +406,7 @@ async function loadNotes(){
 }
 
 /* =========================
-   notes 테이블 출력
+   notes 출력
 ========================= */
 
 function renderNotesTable(data){
@@ -171,76 +416,149 @@ function renderNotesTable(data){
         'crmBody'
     );
 
-    body.innerHTML = '';
+    body.innerHTML =
+    '';
 
     data.forEach(item=>{
 
         const tr =
-        document.createElement('tr');
+        document.createElement(
+            'tr'
+        );
 
         tr.innerHTML = `
 
             <td>${item.id || ''}</td>
 
-            <td>
+            <td>${item.name || ''}</td>
 
-                ${item.name || ''}
+            <td>${item.phone || ''}</td>
 
-            </td>
+            <td>${item.created_text || ''}</td>
 
-            <td>
+            <td>신규고객</td>
 
-                ${item.phone || ''}
-
-            </td>
-
-            <td>
-
-                ${item.created_text || ''}
-
-            </td>
-
-            <td>
-
-                신규고객
-
-            </td>
-
-            <td>
-
-                랜딩유입
-
-            </td>
+            <td>랜딩유입</td>
 
         `;
 
-        body.appendChild(tr);
+        body.appendChild(
+            tr
+        );
     });
 }
 
 /* =========================
-   날짜 포맷
+   CRM 전체 로드
 ========================= */
 
-function formatDate(value){
+async function loadCRM(){
 
-    if(!value) return '';
+    const result =
+    await supabaseClient
 
-    if(
-        value === 'null'
-    ){
+    .from('crm_customers')
 
-        return '';
+    .select('*')
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    if(result.error){
+
+        console.error(
+            result.error
+        );
+
+        return;
     }
 
-    if(
-        value.includes('T')
-    ){
+    renderCRMTable(
+        result.data
+    );
+}
 
-        return '';
+/* =========================
+   CRM 상태별 로드
+========================= */
+
+async function loadCRMByStatus(status){
+
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .eq(
+        'status',
+        status
+    )
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    if(result.error){
+
+        console.error(
+            result.error
+        );
+
+        return;
     }
 
-    return value;
+    renderCRMTable(
+        result.data
+    );
+}
+
+/* =========================
+   CRM 메모 있는 고객
+========================= */
+
+async function loadCRMWithMemo(){
+
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .not(
+        'memo',
+        'is',
+        null
+    )
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    if(result.error){
+
+        console.error(
+            result.error
+        );
+
+        return;
+    }
+
+    renderCRMTable(
+        result.data
+    );
 }
 
 /* =========================
@@ -254,12 +572,15 @@ function renderCRMTable(data){
         'crmBody'
     );
 
-    body.innerHTML = '';
+    body.innerHTML =
+    '';
 
     data.forEach(item=>{
 
         const tr =
-        document.createElement('tr');
+        document.createElement(
+            'tr'
+        );
 
         tr.innerHTML = `
 
@@ -284,11 +605,11 @@ function renderCRMTable(data){
             <td class="editable-date"
                 data-id="${item.id}">
 
-                ${formatDate(item.created_at)}
+                ${item.created_at || ''}
 
             </td>
 
-            <td class="editable"
+            <td class="editable-big"
                 data-id="${item.id}"
                 data-field="status">
 
@@ -296,7 +617,7 @@ function renderCRMTable(data){
 
             </td>
 
-            <td class="editable"
+            <td class="editable-big"
                 data-id="${item.id}"
                 data-field="memo">
 
@@ -306,24 +627,26 @@ function renderCRMTable(data){
 
         `;
 
-        body.appendChild(tr);
+        body.appendChild(
+            tr
+        );
     });
 
-    bindEditable();
+    bindCellEvents();
 }
 
 /* =========================
-   셀 수정
+   셀 이벤트
 ========================= */
 
-function bindEditable(){
+function bindCellEvents(){
 
-    const editableCells =
+    const normalCells =
     document.querySelectorAll(
         '.editable'
     );
 
-    editableCells.forEach(cell=>{
+    normalCells.forEach(cell=>{
 
         cell.onclick =
         async function(){
@@ -337,51 +660,10 @@ function bindEditable(){
             const current =
             this.innerText.trim();
 
-            /* =====================
-               상태 / 메모
-            ===================== */
-
-            if(
-                field === 'status' ||
-                field === 'memo'
-            ){
-
-                currentEditId =
-                id;
-
-                currentEditField =
-                field;
-
-                const modal =
-                document.getElementById(
-                    'editorModal'
-                );
-
-                const textarea =
-                document.getElementById(
-                    'editorTextarea'
-                );
-
-                textarea.value =
-                current;
-
-                modal.style.display =
-                'flex';
-
-                return;
-            }
-
-            /* =====================
-               일반 입력
-            ===================== */
-
             const value =
             prompt(
-
                 `${field} 입력`,
-
                 current
-
             );
 
             if(value === null)
@@ -414,13 +696,9 @@ function bindEditable(){
                 return;
             }
 
-            loadCRM();
+            refreshCurrentMode();
         };
     });
-
-    /* =====================
-       상담일 입력
-    ===================== */
 
     const dateCells =
     document.querySelectorAll(
@@ -480,126 +758,86 @@ function bindEditable(){
                 return;
             }
 
-            loadCRM();
+            refreshCurrentMode();
+        };
+    });
+
+    const bigCells =
+    document.querySelectorAll(
+        '.editable-big'
+    );
+
+    bigCells.forEach(cell=>{
+
+        cell.onclick =
+        function(){
+
+            const id =
+            this.dataset.id;
+
+            const field =
+            this.dataset.field;
+
+            const current =
+            this.innerText.trim();
+
+            openBigEditor(
+                id,
+                field,
+                current
+            );
         };
     });
 }
 
 /* =========================
-   대형 편집창 저장
+   현재 모드 새로고침
 ========================= */
 
-document
-.getElementById(
-    'saveEditorBtn'
-)
+function refreshCurrentMode(){
 
-.onclick =
+    if(currentMode === 'customer'){
 
-async function(){
+        loadNotes();
 
-    const value =
+        return;
+    }
 
-    document
-    .getElementById(
-        'editorTextarea'
-    )
-    .value;
+    if(currentMode === 'reserve'){
 
-    const result =
-
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .update({
-
-        [currentEditField]:
-        value
-
-    })
-
-    .eq(
-        'id',
-        currentEditId
-    )
-
-    .select();
-
-    if(result.error){
-
-        alert(
-            'DB 저장 실패'
+        loadCRMByStatus(
+            '상담예정'
         );
 
         return;
     }
 
-    document
-    .getElementById(
-        'editorModal'
-    )
+    if(currentMode === 'process'){
 
-    .style.display =
-    'none';
+        loadCRMByStatus(
+            '진행중'
+        );
+
+        return;
+    }
+
+    if(currentMode === 'done'){
+
+        loadCRMByStatus(
+            '완료'
+        );
+
+        return;
+    }
+
+    if(currentMode === 'memo'){
+
+        loadCRMWithMemo();
+
+        return;
+    }
 
     loadCRM();
-};
-
-/* =========================
-   닫기
-========================= */
-
-document
-.getElementById(
-    'closeEditorBtn'
-)
-
-.onclick =
-
-function(){
-
-    document
-    .getElementById(
-        'editorModal'
-    )
-
-    .style.display =
-    'none';
-};
-
-/* =========================
-   CRM 로드
-========================= */
-
-async function loadCRM(){
-
-    const result =
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .select('*')
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
-
-    if(result.error){
-
-        console.error(
-            result.error
-        );
-
-        return;
-    }
-
-    renderCRMTable(
-        result.data
-    );
 }
 
 /* =========================
@@ -615,21 +853,14 @@ supabaseClient
     'postgres_changes',
 
     {
-
         event:'*',
-
         schema:'public',
-
         table:'notes'
     },
 
     ()=>{
 
-        if(
-            customerBtn.classList.contains(
-                'active'
-            )
-        ){
+        if(currentMode === 'customer'){
 
             loadNotes();
         }
@@ -644,30 +875,23 @@ supabaseClient
 
 supabaseClient
 
-.channel('realtime-crm')
+.channel('realtime-crm-customers')
 
 .on(
 
     'postgres_changes',
 
     {
-
         event:'*',
-
         schema:'public',
-
         table:'crm_customers'
     },
 
     ()=>{
 
-        if(
-            newBtn.classList.contains(
-                'active'
-            )
-        ){
+        if(currentMode !== 'customer'){
 
-            loadCRM();
+            refreshCurrentMode();
         }
     }
 )
