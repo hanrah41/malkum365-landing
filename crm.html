@@ -1,71 +1,54 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
+<title>CUSTOMER MANAGEMENT</title>
 
-<title>
-CUSTOMER MANAGEMENT
-</title>
-
-<link
-rel="stylesheet"
-href="crm.css">
+<link rel="stylesheet" href="crm.css">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 </head>
 
 <body>
 
 <div class="crm-wrap">
 
-    <!-- =========================
-         좌측 메뉴
-    ========================= -->
-
     <div class="sidebar">
 
         <div class="logo-box">
-
-            <h1>
-                CUSTOMER
-            </h1>
-
-            <p>
-                MANAGEMENT
-            </p>
-
+            <h1>CUSTOMER</h1>
+            <p>MANAGEMENT</p>
         </div>
 
         <div class="menu-list">
 
-            <button class="menu-btn active">
+            <button class="menu-btn active" data-mode="new">
                 신규등록
             </button>
 
-            <button class="menu-btn">
+            <button class="menu-btn" data-mode="customer">
+                고객명단
+            </button>
+
+            <button class="menu-btn" data-mode="reserve">
                 상담예정
             </button>
 
-            <button class="menu-btn">
+            <button class="menu-btn" data-mode="process">
                 진행중
             </button>
 
-            <button class="menu-btn">
+            <button class="menu-btn" data-mode="done">
                 완료
             </button>
 
-            <button class="menu-btn">
+            <button class="menu-btn" data-mode="memo">
                 고객메모
             </button>
 
-            <button class="menu-btn">
+            <button class="menu-btn" data-mode="alarm">
                 알람설정
             </button>
 
@@ -73,54 +56,27 @@ href="crm.css">
 
     </div>
 
-    <!-- =========================
-         메인
-    ========================= -->
-
     <div class="main-area">
 
         <div class="top-bar">
-
-            <div class="top-title">
-
-                CUSTOMER CRM
-
-            </div>
-
+            <div class="top-title">CUSTOMER CRM</div>
         </div>
-
-        <!-- =========================
-             테이블
-        ========================= -->
 
         <div class="table-wrap">
 
             <table>
-
                 <thead>
-
                     <tr>
-
                         <th>ID</th>
-
                         <th>이름</th>
-
                         <th>연락처</th>
-
                         <th>상담일</th>
-
                         <th>상태</th>
-
                         <th>메모</th>
-
                     </tr>
-
                 </thead>
 
-                <tbody id="crmBody">
-
-                </tbody>
-
+                <tbody id="crmBody"></tbody>
             </table>
 
         </div>
@@ -130,7 +86,7 @@ href="crm.css">
 </div>
 
 <!-- =========================
-     대형 편집창
+     A4 1/4 대형 편집창
 ========================= -->
 
 <div id="editorModal">
@@ -138,26 +94,19 @@ href="crm.css">
     <div id="editorBox">
 
         <div id="editorTitle">
-
             CRM 편집창
-
         </div>
 
-        <textarea
-            id="editorTextarea"></textarea>
+        <textarea id="editorTextarea"></textarea>
 
         <div id="editorButtons">
 
             <button id="saveEditorBtn">
-
                 저장
-
             </button>
 
             <button id="closeEditorBtn">
-
                 닫기
-
             </button>
 
         </div>
