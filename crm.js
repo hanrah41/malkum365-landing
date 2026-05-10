@@ -588,10 +588,6 @@ function bindReserveDateEditor(){
 
             );
 
-            /* =========================
-               취소
-            ========================= */
-
             if(raw === null){
 
                 return;
@@ -609,10 +605,6 @@ function bindReserveDateEditor(){
                 tableName =
                 'crm_customers';
             }
-
-            /* =========================
-               삭제
-            ========================= */
 
             if(raw.trim() === ''){
 
@@ -987,20 +979,94 @@ function bindCellEvents(){
             const current =
             this.innerText.trim();
 
-            const value =
+            const raw =
             prompt(
 
-`상담일 입력
+`상담 및 신청일 입력
+
+숫자만 입력
 
 예:
-2025-05-07 15:30`,
+2505121100
+
+↓
+
+2025-05-12 11:00 자동변환`,
 
                 current
+                    .replaceAll('-','')
+                    .replaceAll(':','')
+                    .replaceAll(' ','')
+                    .replace('20','')
 
             );
 
-            if(value === null)
+            if(raw === null)
             return;
+
+            if(raw.trim() === ''){
+
+                const clearResult =
+                await supabaseClient
+
+                .from('crm_customers')
+
+                .update({
+
+                    created_at:null
+
+                })
+
+                .eq(
+                    'id',
+                    id
+                )
+
+                .select();
+
+                if(clearResult.error){
+
+                    alert(
+                        '날짜 삭제 실패'
+                    );
+
+                    return;
+                }
+
+                refreshCurrentMode();
+
+                return;
+            }
+
+            const value =
+            raw.trim();
+
+            if(value.length !== 10){
+
+                alert(
+                    '10자리 숫자 입력\n\n예:\n2505121100'
+                );
+
+                return;
+            }
+
+            const yy =
+            value.substring(0,2);
+
+            const mm =
+            value.substring(2,4);
+
+            const dd =
+            value.substring(4,6);
+
+            const hh =
+            value.substring(6,8);
+
+            const mi =
+            value.substring(8,10);
+
+            const formatted =
+`20${yy}-${mm}-${dd} ${hh}:${mi}`;
 
             const result =
             await supabaseClient
@@ -1009,7 +1075,8 @@ function bindCellEvents(){
 
             .update({
 
-                created_at:value
+                created_at:
+                formatted
 
             })
 
