@@ -31,13 +31,29 @@ let currentEditTable = 'crm_customers';
 const buttons =
 document.querySelectorAll('.menu-btn');
 
-const newBtn      = document.querySelector('[data-mode="new"]');
-const customerBtn = document.querySelector('[data-mode="customer"]');
-const reserveBtn  = document.querySelector('[data-mode="reserve"]');
-const processBtn  = document.querySelector('[data-mode="process"]');
-const doneBtn     = document.querySelector('[data-mode="done"]');
-const memoBtn     = document.querySelector('[data-mode="memo"]');
-const alarmBtn    = document.querySelector('[data-mode="alarm"]');
+const newBtn =
+document.querySelector('[data-mode="new"]');
+
+const introduceBtn =
+document.querySelector('[data-mode="introduce"]');
+
+const customerBtn =
+document.querySelector('[data-mode="customer"]');
+
+const reserveBtn =
+document.querySelector('[data-mode="reserve"]');
+
+const processBtn =
+document.querySelector('[data-mode="process"]');
+
+const doneBtn =
+document.querySelector('[data-mode="done"]');
+
+const memoBtn =
+document.querySelector('[data-mode="memo"]');
+
+const alarmBtn =
+document.querySelector('[data-mode="alarm"]');
 
 /* =========================
    공통 버튼 템플릿
@@ -213,7 +229,7 @@ function(){
 };
 
 /* =========================
-   신규등록
+   소개등록
 ========================= */
 
 newBtn.onclick =
@@ -269,6 +285,48 @@ async function(){
     }
 
     loadCRM();
+};
+
+/* =========================
+   소개명단
+========================= */
+
+introduceBtn.onclick =
+async function(){
+
+    currentMode =
+    'introduce';
+
+    setActiveButton(
+        introduceBtn
+    );
+
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    if(result.error){
+
+        console.error(
+            result.error
+        );
+
+        return;
+    }
+
+    renderCRMTable(
+        result.data
+    );
 };
 
 /* =========================
@@ -355,11 +413,34 @@ async function loadReserveList(){
         return;
     }
 
+    const notesData =
+    notesResult.data.map(item=>({
+
+        ...item,
+
+        source_table:
+        'notes'
+
+    }));
+
+    const crmData =
+    crmResult.data.map(item=>({
+
+        ...item,
+
+        source_table:
+        'crm_customers',
+
+        created_text:
+        item.created_at || ''
+
+    }));
+
     const merged = [
 
-        ...notesResult.data,
+        ...notesData,
 
-        ...crmResult.data
+        ...crmData
 
     ];
 
@@ -478,8 +559,18 @@ async function loadNotes(){
         return;
     }
 
+    const data =
+    result.data.map(item=>({
+
+        ...item,
+
+        source_table:
+        'notes'
+
+    }));
+
     renderNotesTable(
-        result.data
+        data
     );
 }
 
@@ -522,6 +613,7 @@ function renderNotesTable(data){
 
             <td class="editable-big-note"
                 data-id="${item.id}"
+                data-table="${item.source_table || 'notes'}"
                 data-field="status">
 
                 ${item.status || '신규고객'}
@@ -529,7 +621,8 @@ function renderNotesTable(data){
             </td>
 
             <td class="editable-reserve"
-                data-id="${item.id}">
+                data-id="${item.id}"
+                data-table="${item.source_table || 'notes'}">
 
                 ${item.reserve_date || ''}
 
@@ -565,43 +658,17 @@ function bindNoteBigEditor(){
             const id =
             this.dataset.id;
 
+            const table =
+            this.dataset.table || 'notes';
+
             const field =
             this.dataset.field;
 
             const current =
             this.innerText.trim();
 
-            let tableName =
-            'notes';
-
-            if(
-                currentMode === 'new' ||
-                currentMode === 'process' ||
-                currentMode === 'done'
-            ){
-
-                tableName =
-                'crm_customers';
-            }
-
-            if(currentMode === 'reserve'){
-
-                const row =
-                this.parentElement;
-
-                const created =
-                row.children[3]
-                .innerText;
-
-                if(created.includes(':')){
-
-                    tableName =
-                    'crm_customers';
-                }
-            }
-
             openBigEditor(
-                tableName,
+                table,
                 id,
                 field,
                 current
@@ -628,6 +695,9 @@ function bindReserveDateEditor(){
 
             const id =
             this.dataset.id;
+
+            const tableName =
+            this.dataset.table || 'notes';
 
             const current =
             this.innerText.trim();
@@ -659,35 +729,6 @@ function bindReserveDateEditor(){
             if(raw === null){
 
                 return;
-            }
-
-            let tableName =
-            'notes';
-
-            if(
-                currentMode === 'new' ||
-                currentMode === 'process' ||
-                currentMode === 'done'
-            ){
-
-                tableName =
-                'crm_customers';
-            }
-
-            if(currentMode === 'reserve'){
-
-                const row =
-                this.parentElement;
-
-                const created =
-                row.children[3]
-                .innerText;
-
-                if(created.includes(':')){
-
-                    tableName =
-                    'crm_customers';
-                }
             }
 
             if(raw.trim() === ''){
@@ -824,8 +865,18 @@ async function loadCRM(){
         return;
     }
 
+    const data =
+    result.data.map(item=>({
+
+        ...item,
+
+        source_table:
+        'crm_customers'
+
+    }));
+
     renderCRMTable(
-        result.data
+        data
     );
 }
 
@@ -863,8 +914,18 @@ async function loadCRMByStatus(status){
         return;
     }
 
+    const data =
+    result.data.map(item=>({
+
+        ...item,
+
+        source_table:
+        'crm_customers'
+
+    }));
+
     renderCRMTable(
-        result.data
+        data
     );
 }
 
@@ -903,8 +964,18 @@ async function loadCRMWithMemo(){
         return;
     }
 
+    const data =
+    result.data.map(item=>({
+
+        ...item,
+
+        source_table:
+        'crm_customers'
+
+    }));
+
     renderCRMTable(
-        result.data
+        data
     );
 }
 
@@ -965,7 +1036,8 @@ function renderCRMTable(data){
             </td>
 
             <td class="editable-reserve"
-                data-id="${item.id}">
+                data-id="${item.id}"
+                data-table="crm_customers">
 
                 ${item.reserve_date || ''}
 
@@ -1218,6 +1290,13 @@ function bindCellEvents(){
 ========================= */
 
 function refreshCurrentMode(){
+
+    if(currentMode === 'introduce'){
+
+        introduceBtn.click();
+
+        return;
+    }
 
     if(currentMode === 'customer'){
 
