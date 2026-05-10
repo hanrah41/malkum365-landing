@@ -132,16 +132,16 @@ body{
 
 .menu-btn:hover{
 
-    background:#B9D19E;
+    background:#7A8A68;
 
-    color:#000000;
+    color:#ffffff;
 }
 
 .menu-btn.active{
 
-    background:#B9D19E;
+    background:#7A8A68;
 
-    color:#000000;
+    color:#ffffff;
 }
 
 /* =========================
