@@ -1,59 +1,121 @@
-<div class="menu-list">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <button class="menu-btn active"
-            data-mode="new">
+<title>CUSTOMER MANAGEMENT</title>
 
-        소개등록
+<link rel="stylesheet" href="crm.css">
 
-    </button>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
 
-    <button class="menu-btn"
-            data-mode="introduce">
+<body>
 
-        소개명단
+<div class="crm-wrap">
 
-    </button>
+    <div class="sidebar">
 
-    <button class="menu-btn"
-            data-mode="customer">
+        <div class="logo-box">
+            <h1>CUSTOMER</h1>
+            <p>MANAGEMENT</p>
+        </div>
 
-        고객명단
+        <div class="menu-list">
 
-    </button>
+            <button class="menu-btn active" data-mode="new">
+                소개등록
+            </button>
 
-    <button class="menu-btn"
-            data-mode="reserve">
+            <button class="menu-btn" data-mode="introduce">
+                소개명단
+            </button>
 
-        상담예정
+            <button class="menu-btn" data-mode="customer">
+                고객명단
+            </button>
 
-    </button>
+            <button class="menu-btn" data-mode="reserve">
+                상담예정
+            </button>
 
-    <button class="menu-btn"
-            data-mode="process">
+            <button class="menu-btn" data-mode="process">
+                진행중
+            </button>
 
-        진행중
+            <button class="menu-btn" data-mode="done">
+                완료
+            </button>
 
-    </button>
+            <button class="menu-btn" data-mode="memo">
+                고객메모
+            </button>
 
-    <button class="menu-btn"
-            data-mode="done">
+            <button class="menu-btn" data-mode="alarm">
+                알람설정
+            </button>
 
-        완료
+        </div>
 
-    </button>
+    </div>
 
-    <button class="menu-btn"
-            data-mode="memo">
+    <div class="main-area">
 
-        고객메모
+        <div class="top-bar">
+            <div class="top-title">CUSTOMER CRM</div>
+        </div>
 
-    </button>
+        <div class="table-wrap">
 
-    <button class="menu-btn"
-            data-mode="alarm">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>이름</th>
+                        <th>연락처</th>
+                        <th>상담 및 신청일</th>
+                        <th>상태</th>
+                        <th>상담 예정일</th>
+                    </tr>
+                </thead>
 
-        알람설정
+                <tbody id="crmBody"></tbody>
+            </table>
 
-    </button>
+        </div>
+
+    </div>
 
 </div>
+
+<div id="editorModal">
+
+    <div id="editorBox">
+
+        <div id="editorTitle">
+            CRM 편집창
+        </div>
+
+        <textarea id="editorTextarea"></textarea>
+
+        <div id="editorButtons">
+
+            <button id="saveEditorBtn">
+                저장
+            </button>
+
+            <button id="closeEditorBtn">
+                닫기
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="crm.js"></script>
+
+</body>
+</html>
