@@ -225,7 +225,7 @@ table{
 }
 
 /* =========================
-   컬럼 고정폭
+   컬럼 폭
 ========================= */
 
 /* ID */
@@ -233,7 +233,7 @@ table{
 th:nth-child(1),
 td:nth-child(1){
 
-    width:50px;
+    width:60px;
 
     text-align:center;
 }
@@ -244,6 +244,8 @@ th:nth-child(2),
 td:nth-child(2){
 
     width:90px;
+
+    text-align:center;
 }
 
 /* 연락처 */
@@ -252,6 +254,8 @@ th:nth-child(3),
 td:nth-child(3){
 
     width:110px;
+
+    text-align:center;
 }
 
 /* 상담일 */
@@ -259,7 +263,9 @@ td:nth-child(3){
 th:nth-child(4),
 td:nth-child(4){
 
-    width:290px;
+    width:420px;
+
+    text-align:center;
 }
 
 /* 상태 */
@@ -278,6 +284,8 @@ th:nth-child(6),
 td:nth-child(6){
 
     width:auto;
+
+    text-align:center;
 }
 
 /* =========================
@@ -315,7 +323,7 @@ td{
     border:
     1px solid #d0d0d0;
 
-    background:#ffffff;
+    background:#FFF9D9;
 
     font-size:13px;
 
@@ -330,8 +338,6 @@ td{
     overflow:hidden;
 
     white-space:nowrap;
-
-    text-overflow:ellipsis;
 }
 
 /* =========================
@@ -340,5 +346,5 @@ td{
 
 tr:hover td{
 
-    background:#fff7cf;
+    background:#FFF3B0;
 }
