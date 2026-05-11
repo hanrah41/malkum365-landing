@@ -161,6 +161,46 @@ function formatReserveDate(value){
 }
 
 /* =========================
+   현재 날짜시간 생성
+========================= */
+
+function getNowDateTime(){
+
+    const now =
+    new Date();
+
+    const yyyy =
+    now.getFullYear();
+
+    const mm =
+    String(
+        now.getMonth() + 1
+    ).padStart(2,'0');
+
+    const dd =
+    String(
+        now.getDate()
+    ).padStart(2,'0');
+
+    const hh =
+    String(
+        now.getHours()
+    ).padStart(2,'0');
+
+    const mi =
+    String(
+        now.getMinutes()
+    ).padStart(2,'0');
+
+    const ss =
+    String(
+        now.getSeconds()
+    ).padStart(2,'0');
+
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+}
+
+/* =========================
    날짜 추출
 ========================= */
 
@@ -206,7 +246,10 @@ if(newBtn){
 
             phone:'',
 
-            created_text:'',
+            /* 자동 날짜 입력 */
+
+            created_text:
+            getNowDateTime(),
 
             status:'신규고객',
 
@@ -570,10 +613,9 @@ function renderCRMTable(data){
 
             </td>
 
-            <td class="editable-cell"
-                data-id="${item.id}"
-                data-table="${tableName}"
-                data-field="created_text">
+            <!-- 수정불가 -->
+
+            <td>
 
                 ${createdDate}
 
