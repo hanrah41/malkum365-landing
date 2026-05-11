@@ -161,16 +161,21 @@ function showMemoArea(){
         );
     }
 
-    if(memoTextArea){
+    const memoBox =
+    document.getElementById(
+        'memoTextArea'
+    );
 
-        memoTextArea.value =
+    if(memoBox){
+
+        memoBox.value =
         localStorage.getItem(
             MEMO_STORAGE_KEY
         ) || '';
 
         setTimeout(()=>{
 
-            memoTextArea.focus();
+            memoBox.focus();
 
         },50);
     }
