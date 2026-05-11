@@ -18,11 +18,7 @@ window.supabase.createClient(
    현재 상태
 ========================= */
 
-let currentMode = 'new';
-
-let currentEditId = null;
-let currentEditField = null;
-let currentEditTable = 'crm_customers';
+let currentMode = 'introduce';
 
 /* =========================
    버튼
@@ -30,9 +26,6 @@ let currentEditTable = 'crm_customers';
 
 const buttons =
 document.querySelectorAll('.menu-btn');
-
-const newBtn =
-document.querySelector('[data-mode="new"]');
 
 const introduceBtn =
 document.querySelector('[data-mode="introduce"]');
@@ -49,11 +42,23 @@ document.querySelector('[data-mode="process"]');
 const doneBtn =
 document.querySelector('[data-mode="done"]');
 
-const memoBtn =
-document.querySelector('[data-mode="memo"]');
+/* =========================
+   활성 버튼
+========================= */
 
-const alarmBtn =
-document.querySelector('[data-mode="alarm"]');
+function setActiveButton(target){
+
+    buttons.forEach(btn=>{
+
+        btn.classList.remove(
+            'active'
+        );
+    });
+
+    target.classList.add(
+        'active'
+    );
+}
 
 /* =========================
    전화번호 자동 하이픈
@@ -94,8 +99,6 @@ function formatReserveDate(value){
     String(value || '')
     .replace(/\D/g,'');
 
-    /* 2505121030 */
-
     if(numbers.length === 10){
 
         const yy =
@@ -115,8 +118,6 @@ function formatReserveDate(value){
 
         return `20${yy}-${mm}-${dd} ${hh}:${mi}`;
     }
-
-    /* 202505121030 */
 
     if(numbers.length === 12){
 
@@ -142,24 +143,6 @@ function formatReserveDate(value){
 }
 
 /* =========================
-   공통 버튼 템플릿
-========================= */
-
-function setActiveButton(target){
-
-    buttons.forEach(btn=>{
-
-        btn.classList.remove(
-            'active'
-        );
-    });
-
-    target.classList.add(
-        'active'
-    );
-}
-
-/* =========================
    created_at 추출
 ========================= */
 
@@ -175,223 +158,8 @@ function getCreatedDate(item){
         return item.created_at;
     }
 
-    if(item.created_time){
-
-        return item.created_time;
-    }
-
-    if(item.inserted_at){
-
-        return item.inserted_at;
-    }
-
-    if(item.reg_date){
-
-        return item.reg_date;
-    }
-
-    if(item.date){
-
-        return item.date;
-    }
-
-    if(item.createdAt){
-
-        return item.createdAt;
-    }
-
     return '';
 }
-
-/* =========================
-   대형 편집창 열기
-========================= */
-
-function openBigEditor(
-    table,
-    id,
-    field,
-    value
-){
-
-    currentEditTable =
-    table;
-
-    currentEditId =
-    id;
-
-    currentEditField =
-    field;
-
-    const modal =
-    document.getElementById(
-        'editorModal'
-    );
-
-    const textarea =
-    document.getElementById(
-        'editorTextarea'
-    );
-
-    const title =
-    document.getElementById(
-        'editorTitle'
-    );
-
-    if(field === 'status'){
-
-        title.innerText =
-        '상태 편집';
-    }
-
-    if(field === 'memo'){
-
-        title.innerText =
-        '메모 편집';
-    }
-
-    textarea.value =
-    value || '';
-
-    modal.style.display =
-    'flex';
-
-    textarea.focus();
-}
-
-/* =========================
-   대형 편집창 저장
-========================= */
-
-document
-.getElementById(
-    'saveEditorBtn'
-)
-.onclick =
-async function(){
-
-    const value =
-    document
-    .getElementById(
-        'editorTextarea'
-    )
-    .value;
-
-    if(
-        currentEditId === null ||
-        currentEditField === null
-    ){
-
-        return;
-    }
-
-    const result =
-    await supabaseClient
-
-    .from(currentEditTable)
-
-    .update({
-
-        [currentEditField]:
-        value
-
-    })
-
-    .eq(
-        'id',
-        currentEditId
-    );
-
-    if(result.error){
-
-        alert(
-            'DB 저장 실패'
-        );
-
-        return;
-    }
-
-    document
-    .getElementById(
-        'editorModal'
-    )
-    .style.display =
-    'none';
-
-    refreshCurrentMode();
-};
-
-/* =========================
-   대형 편집창 닫기
-========================= */
-
-document
-.getElementById(
-    'closeEditorBtn'
-)
-.onclick =
-function(){
-
-    document
-    .getElementById(
-        'editorModal'
-    )
-    .style.display =
-    'none';
-};
-
-/* =========================
-   소개등록
-========================= */
-
-newBtn.onclick =
-async function(){
-
-    currentMode =
-    'new';
-
-    setActiveButton(
-        newBtn
-    );
-
-    const name =
-    prompt(
-        '성명 입력'
-    );
-
-    if(!name) return;
-
-    const result =
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .insert([{
-
-        name:name,
-
-        phone:'',
-
-        created_at:'',
-
-        status:'신규고객',
-
-        memo:'',
-        reserve_date:''
-
-    }]);
-
-    if(result.error){
-
-        alert(
-            'DB 저장 실패'
-        );
-
-        return;
-    }
-
-    loadCRM();
-};
 
 /* =========================
    소개명단
@@ -431,7 +199,7 @@ async function(){
 ========================= */
 
 customerBtn.onclick =
-function(){
+async function(){
 
     currentMode =
     'customer';
@@ -440,7 +208,55 @@ function(){
         customerBtn
     );
 
-    loadNotes();
+    const crmResult =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .eq(
+        'consult_done',
+        true
+    );
+
+    const notesResult =
+    await supabaseClient
+
+    .from('notes')
+
+    .select('*');
+
+    const crmData =
+    (crmResult.data || []).map(item=>({
+
+        ...item,
+
+        source_table:
+        'crm_customers'
+
+    }));
+
+    const notesData =
+    (notesResult.data || []).map(item=>({
+
+        ...item,
+
+        source_table:
+        'notes'
+
+    }));
+
+    const merged = [
+
+        ...crmData,
+        ...notesData
+
+    ];
+
+    renderCRMTable(
+        merged
+    );
 };
 
 /* =========================
@@ -448,7 +264,7 @@ function(){
 ========================= */
 
 reserveBtn.onclick =
-function(){
+async function(){
 
     currentMode =
     'reserve';
@@ -473,6 +289,11 @@ async function loadReserveList(){
 
     .select('*')
 
+    .eq(
+        'consult_done',
+        false
+    )
+
     .not(
         'reserve_date',
         'is',
@@ -482,11 +303,6 @@ async function loadReserveList(){
     .neq(
         'reserve_date',
         ''
-    )
-
-    .neq(
-        'status',
-        '완료'
     );
 
     const notesResult =
@@ -559,10 +375,6 @@ function(){
     setActiveButton(
         processBtn
     );
-
-    loadCRMByStatus(
-        '진행중'
-    );
 };
 
 /* =========================
@@ -570,7 +382,7 @@ function(){
 ========================= */
 
 doneBtn.onclick =
-function(){
+async function(){
 
     currentMode =
     'done';
@@ -578,106 +390,6 @@ function(){
     setActiveButton(
         doneBtn
     );
-
-    loadCRMByStatus(
-        '완료'
-    );
-};
-
-/* =========================
-   고객메모
-========================= */
-
-memoBtn.onclick =
-function(){
-
-    currentMode =
-    'memo';
-
-    setActiveButton(
-        memoBtn
-    );
-
-    loadCRMWithMemo();
-};
-
-/* =========================
-   알람설정
-========================= */
-
-alarmBtn.onclick =
-function(){
-
-    alert(
-        '알람 시스템 준비중'
-    );
-};
-
-/* =========================
-   notes 로드
-========================= */
-
-async function loadNotes(){
-
-    const result =
-    await supabaseClient
-
-    .from('notes')
-
-    .select('*')
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
-
-    const data =
-    (result.data || []).map(item=>({
-
-        ...item,
-
-        source_table:
-        'notes'
-
-    }));
-
-    renderCRMTable(
-        data
-    );
-}
-
-/* =========================
-   CRM 전체 로드
-========================= */
-
-async function loadCRM(){
-
-    const result =
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .select('*')
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
-
-    renderCRMTable(
-        result.data || []
-    );
-}
-
-/* =========================
-   CRM 상태별 로드
-========================= */
-
-async function loadCRMByStatus(status){
 
     const result =
     await supabaseClient
@@ -687,8 +399,8 @@ async function loadCRMByStatus(status){
     .select('*')
 
     .eq(
-        'status',
-        status
+        'consult_done',
+        true
     )
 
     .order(
@@ -701,104 +413,30 @@ async function loadCRMByStatus(status){
     renderCRMTable(
         result.data || []
     );
-}
+};
 
 /* =========================
-   CRM 메모 있는 고객
+   종료 처리
 ========================= */
 
-async function loadCRMWithMemo(){
+async function completeConsult(id){
 
-    const result =
     await supabaseClient
 
     .from('crm_customers')
 
-    .select('*')
+    .update({
 
-    .not(
-        'memo',
-        'is',
-        null
-    )
+        consult_done:true
 
-    .order(
+    })
+
+    .eq(
         'id',
-        {
-            ascending:false
-        }
+        id
     );
 
-    renderCRMTable(
-        result.data || []
-    );
-}
-
-/* =========================
-   완료 체크 이벤트
-========================= */
-
-function bindDoneChecks(){
-
-    const checks =
-    document.querySelectorAll(
-        '.done-check'
-    );
-
-    checks.forEach(check=>{
-
-        check.onchange =
-        async function(){
-
-            const id =
-            this.dataset.id;
-
-            const table =
-            this.dataset.table;
-
-            if(table !== 'crm_customers'){
-
-                return;
-            }
-
-            if(this.checked){
-
-                await supabaseClient
-
-                .from('crm_customers')
-
-                .update({
-
-                    status:'완료'
-
-                })
-
-                .eq(
-                    'id',
-                    id
-                );
-
-            }else{
-
-                await supabaseClient
-
-                .from('crm_customers')
-
-                .update({
-
-                    status:'신규고객'
-
-                })
-
-                .eq(
-                    'id',
-                    id
-                );
-            }
-
-            refreshCurrentMode();
-        };
-    });
+    loadReserveList();
 }
 
 /* =========================
@@ -817,11 +455,6 @@ function renderCRMTable(data){
 
     data.forEach(item=>{
 
-        const checked =
-        item.status === '완료'
-        ? 'checked'
-        : '';
-
         const tableName =
         item.source_table || 'crm_customers';
 
@@ -837,39 +470,22 @@ function renderCRMTable(data){
 
             <td>${item.id || ''}</td>
 
-            <td class="editable"
-                data-id="${item.id}"
-                data-field="name"
-                data-table="${tableName}">
-
+            <td>
                 ${item.name || ''}
-
             </td>
 
-            <td class="editable"
-                data-id="${item.id}"
-                data-field="phone"
-                data-table="${tableName}">
-
-                ${formatPhoneNumber(item.phone || '')}
-
+            <td>
+                ${formatPhoneNumber(
+                    item.phone || ''
+                )}
             </td>
 
-            <td class="editable-date"
-                data-id="${item.id}"
-                data-table="${tableName}">
-
+            <td>
                 ${createdDate}
-
             </td>
 
-            <td class="editable-big"
-                data-id="${item.id}"
-                data-field="status"
-                data-table="${tableName}">
-
+            <td>
                 ${item.status || ''}
-
             </td>
 
             <td class="editable-reserve"
@@ -883,16 +499,18 @@ function renderCRMTable(data){
             <td>
 
                 ${
+                    currentMode === 'reserve'
+                    &&
                     tableName === 'crm_customers'
+
                     ?
 
-                    `<input
-                        type="checkbox"
-                        class="done-check"
+                    `<button
+                        class="finish-btn"
                         data-id="${item.id}"
-                        data-table="${tableName}"
-                        ${checked}
-                    >`
+                    >
+                        종료
+                    </button>`
 
                     :
 
@@ -908,120 +526,38 @@ function renderCRMTable(data){
         );
     });
 
-    bindCellEvents();
-    bindDoneChecks();
+    bindReserveDateEditor();
+    bindFinishButtons();
 }
 
 /* =========================
-   셀 이벤트
+   종료 버튼
 ========================= */
 
-function bindCellEvents(){
+function bindFinishButtons(){
 
-    const normalCells =
+    const buttons =
     document.querySelectorAll(
-        '.editable'
+        '.finish-btn'
     );
 
-    normalCells.forEach(cell=>{
+    buttons.forEach(btn=>{
 
-        cell.onclick =
-        async function(){
+        btn.onclick =
+        function(){
 
-            const id =
-            this.dataset.id;
-
-            const field =
-            this.dataset.field;
-
-            const table =
-            this.dataset.table;
-
-            const current =
-            this.innerText.trim();
-
-            let value =
-            prompt(
-                `${field} 입력`,
-                current
+            completeConsult(
+                this.dataset.id
             );
-
-            if(value === null)
-            return;
-
-            if(field === 'phone'){
-
-                value =
-                formatPhoneNumber(
-                    value
-                );
-            }
-
-            await supabaseClient
-
-            .from(table)
-
-            .update({
-
-                [field]:value
-
-            })
-
-            .eq(
-                'id',
-                id
-            );
-
-            refreshCurrentMode();
         };
     });
+}
 
-    const dateCells =
-    document.querySelectorAll(
-        '.editable-date'
-    );
+/* =========================
+   상담예정일 수정
+========================= */
 
-    dateCells.forEach(cell=>{
-
-        cell.onclick =
-        async function(){
-
-            const id =
-            this.dataset.id;
-
-            const table =
-            this.dataset.table;
-
-            const current =
-            this.innerText.trim();
-
-            const value =
-            prompt(
-                '상담 및 신청일 입력',
-                current
-            );
-
-            if(value === null)
-            return;
-
-            await supabaseClient
-
-            .from(table)
-
-            .update({
-
-                created_text:value
-
-            })
-
-            .eq(
-                'id',
-                id
-            );
-
-            refreshCurrentMode();
-        };
-    });
+function bindReserveDateEditor(){
 
     const reserveCells =
     document.querySelectorAll(
@@ -1048,8 +584,6 @@ function bindCellEvents(){
 
 예:
 2505121030
-또는
-202505121030
 
 ↓
 
@@ -1083,56 +617,13 @@ function bindCellEvents(){
             refreshCurrentMode();
         };
     });
-
-    const bigCells =
-    document.querySelectorAll(
-        '.editable-big'
-    );
-
-    bigCells.forEach(cell=>{
-
-        cell.onclick =
-        function(){
-
-            const id =
-            this.dataset.id;
-
-            const field =
-            this.dataset.field;
-
-            const table =
-            this.dataset.table;
-
-            const current =
-            this.innerText.trim();
-
-            openBigEditor(
-                table,
-                id,
-                field,
-                current
-            );
-        };
-    });
 }
 
 /* =========================
-   현재 모드 새로고침
+   새로고침
 ========================= */
 
 function refreshCurrentMode(){
-
-    if(currentMode === 'introduce'){
-
-        introduceBtn.click();
-        return;
-    }
-
-    if(currentMode === 'customer'){
-
-        loadNotes();
-        return;
-    }
 
     if(currentMode === 'reserve'){
 
@@ -1140,31 +631,19 @@ function refreshCurrentMode(){
         return;
     }
 
-    if(currentMode === 'process'){
+    if(currentMode === 'customer'){
 
-        loadCRMByStatus(
-            '진행중'
-        );
-
+        customerBtn.click();
         return;
     }
 
     if(currentMode === 'done'){
 
-        loadCRMByStatus(
-            '완료'
-        );
-
+        doneBtn.click();
         return;
     }
 
-    if(currentMode === 'memo'){
-
-        loadCRMWithMemo();
-        return;
-    }
-
-    loadCRM();
+    introduceBtn.click();
 }
 
 /* =========================
@@ -1193,30 +672,8 @@ supabaseClient
 
 .subscribe();
 
-supabaseClient
-
-.channel('realtime-notes')
-
-.on(
-
-    'postgres_changes',
-
-    {
-        event:'*',
-        schema:'public',
-        table:'notes'
-    },
-
-    ()=>{
-
-        refreshCurrentMode();
-    }
-)
-
-.subscribe();
-
 /* =========================
    시작
 ========================= */
 
-loadCRM();
+introduceBtn.click();
