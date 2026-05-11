@@ -169,9 +169,6 @@ body{
 
 /* =====================================================
    CRM 테이블 기본
-   중요:
-   width:auto 고정
-   전체 화면으로 늘어나는 현상 차단
 ===================================================== */
 
 .crm-table{
@@ -226,8 +223,13 @@ body{
 }
 
 /* =====================================================
-   컬럼 폭 고정
-   red 박스 기준
+   컬럼 폭 고정 수정본
+
+   줄인 컬럼:
+   이름 / 연락처 / 상담신청일 / 상담예정일 / 종료
+
+   줄어든 여분:
+   상태 컬럼에 전부 추가
 ===================================================== */
 
 /* ID */
@@ -238,39 +240,41 @@ body{
     max-width:32px !important;
 }
 
-/* 이름 */
+/* 이름 - red 박스 기준 축소 */
 .crm-table th:nth-child(2),
 .crm-table td:nth-child(2){
-    width:85px !important;
-    min-width:85px !important;
-    max-width:85px !important;
+    width:78px !important;
+    min-width:78px !important;
+    max-width:78px !important;
 }
 
-/* 연락처 */
+/* 연락처 - 더 축소 */
 .crm-table th:nth-child(3),
 .crm-table td:nth-child(3){
-    width:150px !important;
-    min-width:150px !important;
-    max-width:150px !important;
+    width:130px !important;
+    min-width:130px !important;
+    max-width:130px !important;
 }
 
-/* 상담신청일 */
+/* 상담신청일 - red 박스 기준 축소 */
 .crm-table th:nth-child(4),
 .crm-table td:nth-child(4){
-    width:190px !important;
-    min-width:190px !important;
-    max-width:190px !important;
+    width:155px !important;
+    min-width:155px !important;
+    max-width:155px !important;
 }
 
-/* 상태 */
+/* 상태 - 남은 여분 전부 추가 */
 .crm-table th:nth-child(5),
 .crm-table td:nth-child(5){
-    width:225px !important;
-    min-width:225px !important;
-    max-width:225px !important;
+    width:270px !important;
+    min-width:270px !important;
+    max-width:270px !important;
+
+    text-align:center;
 }
 
-/* 상담 예정일 */
+/* 상담 예정일 - red 박스 기준 축소 */
 .crm-table th:nth-child(6),
 .crm-table td:nth-child(6){
     width:130px !important;
@@ -278,12 +282,12 @@ body{
     max-width:130px !important;
 }
 
-/* 종료 */
+/* 종료 - 축소 */
 .crm-table th:nth-child(7),
 .crm-table td:nth-child(7){
-    width:72px !important;
-    min-width:72px !important;
-    max-width:72px !important;
+    width:52px !important;
+    min-width:52px !important;
+    max-width:52px !important;
 }
 
 /* =====================================================
@@ -305,7 +309,7 @@ body{
 ===================================================== */
 
 .finish-btn{
-    width:42px;
+    width:40px;
     height:20px;
 
     padding:0;
