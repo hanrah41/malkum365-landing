@@ -102,9 +102,12 @@ function setActiveButton(target){
         );
     });
 
-    target.classList.add(
-        'active'
-    );
+    if(target){
+
+        target.classList.add(
+            'active'
+        );
+    }
 }
 
 /* =========================
@@ -326,7 +329,10 @@ if(newBtn){
             '소개등록 완료'
         );
 
-        introduceBtn.click();
+        if(introduceBtn){
+
+            introduceBtn.click();
+        }
     };
 }
 
@@ -334,134 +340,143 @@ if(newBtn){
    소개명단
 ========================= */
 
-introduceBtn.onclick =
-async function(){
+if(introduceBtn){
 
-    currentMode =
-    'introduce';
+    introduceBtn.onclick =
+    async function(){
 
-    setActiveButton(
-        introduceBtn
-    );
+        currentMode =
+        'introduce';
 
-    const result =
-    await supabaseClient
+        setActiveButton(
+            introduceBtn
+        );
 
-    .from('crm_customers')
+        const result =
+        await supabaseClient
 
-    .select('*')
+        .from('crm_customers')
 
-    .or(
-        'consult_done.is.null,consult_done.eq.false'
-    )
+        .select('*')
 
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
+        .or(
+            'consult_done.is.null,consult_done.eq.false'
+        )
 
-    renderCRMTable(
-        result.data || []
-    );
-};
+        .order(
+            'id',
+            {
+                ascending:false
+            }
+        );
+
+        renderCRMTable(
+            result.data || []
+        );
+    };
+}
 
 /* =========================
    고객명단
 ========================= */
 
-customerBtn.onclick =
-async function(){
+if(customerBtn){
 
-    currentMode =
-    'customer';
+    customerBtn.onclick =
+    async function(){
 
-    setActiveButton(
-        customerBtn
-    );
+        currentMode =
+        'customer';
 
-    const crmResult =
-    await supabaseClient
+        setActiveButton(
+            customerBtn
+        );
 
-    .from('crm_customers')
+        const crmResult =
+        await supabaseClient
 
-    .select('*')
+        .from('crm_customers')
 
-    .eq(
-        'consult_done',
-        true
-    )
+        .select('*')
 
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
+        .eq(
+            'consult_done',
+            true
+        )
 
-    const notesResult =
-    await supabaseClient
+        .order(
+            'id',
+            {
+                ascending:false
+            }
+        );
 
-    .from('notes')
+        const notesResult =
+        await supabaseClient
 
-    .select('*')
+        .from('notes')
 
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
+        .select('*')
 
-    const crmData =
-    (crmResult.data || []).map(item=>({
+        .order(
+            'id',
+            {
+                ascending:false
+            }
+        );
 
-        ...item,
+        const crmData =
+        (crmResult.data || []).map(item=>({
 
-        source_table:
-        'crm_customers'
+            ...item,
 
-    }));
+            source_table:
+            'crm_customers'
 
-    const notesData =
-    (notesResult.data || []).map(item=>({
+        }));
 
-        ...item,
+        const notesData =
+        (notesResult.data || []).map(item=>({
 
-        source_table:
-        'notes'
+            ...item,
 
-    }));
+            source_table:
+            'notes'
 
-    const merged = [
+        }));
 
-        ...crmData,
-        ...notesData
+        const merged = [
 
-    ];
+            ...crmData,
+            ...notesData
 
-    renderCRMTable(
-        merged
-    );
-};
+        ];
+
+        renderCRMTable(
+            merged
+        );
+    };
+}
 
 /* =========================
    상담예정
 ========================= */
 
-reserveBtn.onclick =
-async function(){
+if(reserveBtn){
 
-    currentMode =
-    'reserve';
+    reserveBtn.onclick =
+    async function(){
 
-    setActiveButton(
-        reserveBtn
-    );
+        currentMode =
+        'reserve';
 
-    loadReserveList();
-};
+        setActiveButton(
+            reserveBtn
+        );
+
+        loadReserveList();
+    };
+}
 
 /* =========================
    상담예정 로드
@@ -596,58 +611,64 @@ async function loadReserveList(){
    진행중
 ========================= */
 
-processBtn.onclick =
-function(){
+if(processBtn){
 
-    currentMode =
-    'process';
+    processBtn.onclick =
+    function(){
 
-    setActiveButton(
-        processBtn
-    );
+        currentMode =
+        'process';
 
-    loadCRMByStatus(
-        '진행중'
-    );
-};
+        setActiveButton(
+            processBtn
+        );
+
+        loadCRMByStatus(
+            '진행중'
+        );
+    };
+}
 
 /* =========================
    완료
 ========================= */
 
-doneBtn.onclick =
-async function(){
+if(doneBtn){
 
-    currentMode =
-    'done';
+    doneBtn.onclick =
+    async function(){
 
-    setActiveButton(
-        doneBtn
-    );
+        currentMode =
+        'done';
 
-    const result =
-    await supabaseClient
+        setActiveButton(
+            doneBtn
+        );
 
-    .from('crm_customers')
+        const result =
+        await supabaseClient
 
-    .select('*')
+        .from('crm_customers')
 
-    .eq(
-        'consult_done',
-        true
-    )
+        .select('*')
 
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
+        .eq(
+            'consult_done',
+            true
+        )
 
-    renderCRMTable(
-        result.data || []
-    );
-};
+        .order(
+            'id',
+            {
+                ascending:false
+            }
+        );
+
+        renderCRMTable(
+            result.data || []
+        );
+    };
+}
 
 /* =========================
    고객메모
@@ -827,6 +848,11 @@ function renderCRMTable(data){
     document.getElementById(
         'crmBody'
     );
+
+    if(!body){
+
+        return;
+    }
 
     body.innerHTML =
     '';
@@ -1093,9 +1119,13 @@ async function saveCounselModal(){
     }
 
     const value =
-    counselTextArea.value.trim();
+    counselTextArea
+    ?
+    counselTextArea.value.trim()
+    :
+    '';
 
-    const result =
+    let result =
     await supabaseClient
 
     .from(counselTarget.table)
@@ -1110,6 +1140,25 @@ async function saveCounselModal(){
         'id',
         counselTarget.id
     );
+
+    if(result.error){
+
+        result =
+        await supabaseClient
+
+        .from(counselTarget.table)
+
+        .update({
+
+            status:value
+
+        })
+
+        .eq(
+            'id',
+            counselTarget.id
+        );
+    }
 
     if(result.error){
 
@@ -1165,14 +1214,14 @@ function bindStatusInputs(){
 
 /* =========================
    상담창 버튼 이벤트
-   저장 / 취소 / X 강제 연결
+   null 오류 방지 안전 연결
 ========================= */
 
 document.addEventListener(
     'click',
     function(e){
 
-        if(e.target.id === 'counselSaveBtn'){
+        if(e.target && e.target.id === 'counselSaveBtn'){
 
             e.preventDefault();
             e.stopPropagation();
@@ -1181,7 +1230,7 @@ document.addEventListener(
             return;
         }
 
-        if(e.target.id === 'counselCancelBtn'){
+        if(e.target && e.target.id === 'counselCancelBtn'){
 
             e.preventDefault();
             e.stopPropagation();
@@ -1190,7 +1239,7 @@ document.addEventListener(
             return;
         }
 
-        if(e.target.id === 'counselCloseBtn'){
+        if(e.target && e.target.id === 'counselCloseBtn'){
 
             e.preventDefault();
             e.stopPropagation();
@@ -1199,7 +1248,7 @@ document.addEventListener(
             return;
         }
 
-        if(e.target.id === 'counselModal'){
+        if(e.target && e.target.id === 'counselModal'){
 
             closeCounselModal();
             return;
@@ -1384,13 +1433,21 @@ function refreshCurrentMode(){
 
     if(currentMode === 'customer'){
 
-        customerBtn.click();
+        if(customerBtn){
+
+            customerBtn.click();
+        }
+
         return;
     }
 
     if(currentMode === 'done'){
 
-        doneBtn.click();
+        if(doneBtn){
+
+            doneBtn.click();
+        }
+
         return;
     }
 
@@ -1409,7 +1466,10 @@ function refreshCurrentMode(){
         return;
     }
 
-    introduceBtn.click();
+    if(introduceBtn){
+
+        introduceBtn.click();
+    }
 }
 
 /* =========================
@@ -1483,4 +1543,7 @@ supabaseClient
    시작
 ========================= */
 
-introduceBtn.click();
+if(introduceBtn){
+
+    introduceBtn.click();
+}
