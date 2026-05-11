@@ -389,11 +389,16 @@ body{
     font-weight:400;
 }
 
+/* =====================================================
+   메모 저장 버튼
+   눌림 효과 적용
+===================================================== */
+
 .memo-save-btn{
     width:58px;
     height:23px;
 
-    border:1px solid #999;
+    border:1px solid #4ebf91;
     border-radius:3px;
 
     background:#7BE8B8;
@@ -403,6 +408,25 @@ body{
     font-weight:400;
 
     cursor:pointer;
+
+    box-shadow:0 2px 0 #4aa982;
+
+    transition:
+        transform 0.05s ease,
+        box-shadow 0.05s ease,
+        background 0.05s ease;
+}
+
+.memo-save-btn:hover{
+    background:#8cf0c6;
+}
+
+.memo-save-btn:active{
+    transform:translateY(2px);
+
+    box-shadow:0 0 0 #4aa982;
+
+    background:#63dca8;
 }
 
 .memo-body{
@@ -586,9 +610,35 @@ body{
     cursor:pointer;
 }
 
+/* =====================================================
+   상담창 저장 버튼
+   눌림 효과 적용
+===================================================== */
+
 .counsel-save-btn{
+    border:1px solid #4ebf91;
+
     background:#7BE8B8;
     color:#000000;
+
+    box-shadow:0 2px 0 #4aa982;
+
+    transition:
+        transform 0.05s ease,
+        box-shadow 0.05s ease,
+        background 0.05s ease;
+}
+
+.counsel-save-btn:hover{
+    background:#8cf0c6;
+}
+
+.counsel-save-btn:active{
+    transform:translateY(2px);
+
+    box-shadow:0 0 0 #4aa982;
+
+    background:#63dca8;
 }
 
 .counsel-cancel-btn{
@@ -633,8 +683,13 @@ body{
 }
 
 .finish-btn:hover{
-    background:#7BE8B8 !important;
-    color:#000000 !important;
+    background:#8cf0c6 !important;
+}
+
+.finish-btn:active{
+    transform:translateY(1px);
+
+    background:#63dca8 !important;
 }
 
 /* =====================================================
