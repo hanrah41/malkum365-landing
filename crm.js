@@ -12,6 +12,7 @@
    - 메모 행은 소개명단/고객명단/상담예정에 표시하지 않음
    - 상담내용 줄바꿈 저장 보존
    - 전화번호 하이픈 표시
+   - 상담신청일 표시 형식: 2026-05-12   10:30
 ===================================================== */
 
 
@@ -240,6 +241,66 @@ function formatPhone(value){
     }
 
     return String(value ?? '');
+}
+
+
+/* =========================
+   상담신청일 표시 형식
+   목표:
+   2026-05-12   10:30
+========================= */
+
+function formatDateTimeDisplay(value){
+
+    if(!value){
+
+        return '';
+    }
+
+    const text =
+    String(value);
+
+    let datePart =
+    '';
+
+    let timePart =
+    '';
+
+    if(text.includes('T')){
+
+        const parts =
+        text.split('T');
+
+        datePart =
+        parts[0] || '';
+
+        timePart =
+        (parts[1] || '').substring(0,5);
+
+        return `${datePart}   ${timePart}`;
+    }
+
+    if(text.includes(' ')){
+
+        const parts =
+        text.split(' ');
+
+        datePart =
+        parts[0] || '';
+
+        timePart =
+        parts.find(part=>part.includes(':')) || '';
+
+        timePart =
+        timePart.substring(0,5);
+
+        if(datePart && timePart){
+
+            return `${datePart}   ${timePart}`;
+        }
+    }
+
+    return text;
 }
 
 
@@ -614,9 +675,6 @@ if(counselCancelBtn){
 
 /* =========================
    소개등록
-   - 소개등록한 데이터는 crm_customers에 저장
-   - status = 소개등록
-   - reserve_date = null
 ========================= */
 
 if(newBtn){
@@ -846,10 +904,6 @@ if(alarmBtn){
 
 /* =========================
    소개명단 로드
-   핵심:
-   - crm_customers 중 status = 소개등록만 표시
-   - reserve_date가 있어도 소개명단에 계속 유지
-   - 상담예정 종료 후 status가 고객명단으로 바뀌면 소개명단에서 사라짐
 ========================= */
 
 async function loadIntroduceList(){
@@ -912,11 +966,6 @@ async function loadIntroduceList(){
 
 /* =========================
    고객명단 로드
-   핵심:
-   - notes 데이터 표시
-   - crm_customers 중 status = 고객명단인 데이터 표시
-   - 소개등록 상태의 데이터는 고객명단에 표시하지 않음
-   - 상담예정 중인 소개등록 데이터도 고객명단에 표시하지 않음
 ========================= */
 
 async function loadCustomers(){
@@ -1014,11 +1063,6 @@ async function loadCustomers(){
 
 /* =========================
    상담예정 통합 로드
-   핵심:
-   - notes 중 reserve_date 있는 데이터 표시
-   - crm_customers 중 reserve_date 있는 데이터 표시
-   - 소개등록 상태여도 reserve_date가 있으면 상담예정에 표시
-   - 메모 제외
 ========================= */
 
 async function loadReserveList(){
@@ -1177,6 +1221,11 @@ function renderTable(data){
         item.created_at ||
         '';
 
+        const createdTextDisplay =
+        formatDateTimeDisplay(
+            createdText
+        );
+
         const phoneDisplay =
         formatPhone(
             item.phone || ''
@@ -1210,7 +1259,7 @@ function renderTable(data){
             </td>
 
             <td>
-                ${escapeHTML(createdText)}
+                ${escapeHTML(createdTextDisplay)}
             </td>
 
             <td class="editable-cell editable-status"
@@ -1386,10 +1435,6 @@ function bindStatusEditor(){
 
 /* =========================
    상담예정일 입력
-   핵심:
-   - 소개명단에서 상담예정일 입력 시 DB에는 reserve_date 저장
-   - 소개명단에는 그대로 유지
-   - 상담예정 목록으로 이동하여 확인 가능
 ========================= */
 
 function bindReserveDateEditor(){
@@ -1563,11 +1608,6 @@ function bindReserveDateEditor(){
 
 /* =========================
    상담예정 종료 버튼
-   핵심:
-   - reserve_date 삭제
-   - crm_customers 데이터는 status를 고객명단으로 변경
-   - 고객명단으로 이동
-   - 소개명단에서는 사라짐
 ========================= */
 
 function bindFinishButtons(){
