@@ -3,13 +3,15 @@
    파일: C:\malkum365-landing\crm.js
 
    수정 내용:
-   - 메모 저장 시 crm_customers에 insert 하지 않음
+   - 소개등록 → 소개명단 표시
+   - 소개명단에서 상담예정일 입력해도 소개명단에 계속 유지
+   - 상담예정일 입력된 소개등록자는 상담예정에도 함께 표시
+   - 상담예정에서 종료 버튼 클릭 시 고객명단으로 이동
+   - 종료 후 소개명단에서는 사라짐
    - 메모는 localStorage에만 저장
-   - 메모 데이터가 소개명단/고객명단에 나타나지 않도록 필터 적용
-   - notes 데이터는 고객명단에 표시
-   - 상담예정 종료 버튼 클릭 시 고객명단으로 이동
-   - 상담내용 줄바꿈 저장 보존 유지
-   - 전화번호 01086949600 -> 010-8694-9600 화면 표시
+   - 메모 행은 소개명단/고객명단/상담예정에 표시하지 않음
+   - 상담내용 줄바꿈 저장 보존
+   - 전화번호 하이픈 표시
 ===================================================== */
 
 
@@ -181,8 +183,6 @@ function toDisplayText(value){
 
 /* =========================
    원문 보존용 정규화
-   - 줄바꿈 보존
-   - trim() 사용 안 함
 ========================= */
 
 function normalizeMultiline(value){
@@ -206,7 +206,6 @@ function onlyPhoneDigits(value){
 
 /* =========================
    전화번호 표시 형식
-   01086949600 -> 010-8694-9600
 ========================= */
 
 function formatPhone(value){
@@ -270,7 +269,6 @@ function getSortTime(item){
 
 /* =========================
    메모 행 제거 필터
-   - 과거에 잘못 저장된 name='메모', status='메모' 행 숨김
 ========================= */
 
 function removeMemoRows(list){
@@ -307,12 +305,6 @@ function removeMemoRows(list){
 
 /* =========================
    중복 신청 표시 제거
-   기준:
-   - 같은 이름
-   - 같은 전화번호 숫자
-   - 같은 테이블
-   - created_at 차이 10초 이내
-   => 최신 1건만 화면 표시
 ========================= */
 
 function removeDuplicateSubmissions(list){
@@ -622,7 +614,9 @@ if(counselCancelBtn){
 
 /* =========================
    소개등록
-   - 소개등록에서 수동 등록한 데이터는 crm_customers에 저장
+   - 소개등록한 데이터는 crm_customers에 저장
+   - status = 소개등록
+   - reserve_date = null
 ========================= */
 
 if(newBtn){
@@ -727,8 +721,6 @@ if(newBtn){
 
 /* =========================
    소개명단
-   - crm_customers 데이터만 표시
-   - 메모 행은 표시하지 않음
 ========================= */
 
 if(introduceBtn){
@@ -752,9 +744,6 @@ if(introduceBtn){
 
 /* =========================
    고객명단
-   - notes 데이터 표시
-   - crm_customers 데이터도 함께 표시
-   - 메모 행은 표시하지 않음
 ========================= */
 
 if(customerBtn){
@@ -801,8 +790,6 @@ if(reserveBtn){
 
 /* =========================
    메모
-   - 별도 DB 저장 없음
-   - 이 화면 안에서만 저장/조회
 ========================= */
 
 if(memoBtn){
@@ -859,6 +846,10 @@ if(alarmBtn){
 
 /* =========================
    소개명단 로드
+   핵심:
+   - crm_customers 중 status = 소개등록만 표시
+   - reserve_date가 있어도 소개명단에 계속 유지
+   - 상담예정 종료 후 status가 고객명단으로 바뀌면 소개명단에서 사라짐
 ========================= */
 
 async function loadIntroduceList(){
@@ -869,6 +860,11 @@ async function loadIntroduceList(){
     .from('crm_customers')
 
     .select('*')
+
+    .eq(
+        'status',
+        '소개등록'
+    )
 
     .order(
         'id',
@@ -916,10 +912,11 @@ async function loadIntroduceList(){
 
 /* =========================
    고객명단 로드
-   - notes + crm_customers 통합
-   - notes에서 넘어온 데이터는 고객명단에 표시
-   - 메모 행은 표시하지 않음
-   - 중복 신청은 화면에서 1건만 표시
+   핵심:
+   - notes 데이터 표시
+   - crm_customers 중 status = 고객명단인 데이터 표시
+   - 소개등록 상태의 데이터는 고객명단에 표시하지 않음
+   - 상담예정 중인 소개등록 데이터도 고객명단에 표시하지 않음
 ========================= */
 
 async function loadCustomers(){
@@ -936,7 +933,12 @@ async function loadCustomers(){
 
     .from('crm_customers')
 
-    .select('*');
+    .select('*')
+
+    .eq(
+        'status',
+        '고객명단'
+    );
 
     if(notesResult.error){
 
@@ -1012,7 +1014,11 @@ async function loadCustomers(){
 
 /* =========================
    상담예정 통합 로드
-   - 메모 행은 표시하지 않음
+   핵심:
+   - notes 중 reserve_date 있는 데이터 표시
+   - crm_customers 중 reserve_date 있는 데이터 표시
+   - 소개등록 상태여도 reserve_date가 있으면 상담예정에 표시
+   - 메모 제외
 ========================= */
 
 async function loadReserveList(){
@@ -1380,6 +1386,10 @@ function bindStatusEditor(){
 
 /* =========================
    상담예정일 입력
+   핵심:
+   - 소개명단에서 상담예정일 입력 시 DB에는 reserve_date 저장
+   - 소개명단에는 그대로 유지
+   - 상담예정 목록으로 이동하여 확인 가능
 ========================= */
 
 function bindReserveDateEditor(){
@@ -1533,7 +1543,19 @@ function bindReserveDateEditor(){
                 return;
             }
 
-            refreshCurrentMode();
+            currentMode =
+            'reserve';
+
+            if(reserveBtn){
+
+                setActiveButton(
+                    reserveBtn
+                );
+            }
+
+            showTableArea();
+
+            loadReserveList();
         };
     });
 }
@@ -1541,6 +1563,11 @@ function bindReserveDateEditor(){
 
 /* =========================
    상담예정 종료 버튼
+   핵심:
+   - reserve_date 삭제
+   - crm_customers 데이터는 status를 고객명단으로 변경
+   - 고객명단으로 이동
+   - 소개명단에서는 사라짐
 ========================= */
 
 function bindFinishButtons(){
@@ -1563,17 +1590,26 @@ function bindFinishButtons(){
             const tableName =
             this.dataset.table || 'notes';
 
+            const updateData =
+            {
+                reserve_date:
+                null
+            };
+
+            if(tableName === 'crm_customers'){
+
+                updateData.status =
+                '고객명단';
+            }
+
             const result =
             await supabaseClient
 
             .from(tableName)
 
-            .update({
-
-                reserve_date:
-                null
-
-            })
+            .update(
+                updateData
+            )
 
             .eq(
                 'id',
@@ -1615,8 +1651,6 @@ function bindFinishButtons(){
 
 /* =========================
    메모 로드
-   - DB에서 불러오지 않음
-   - localStorage에서만 불러옴
 ========================= */
 
 function loadMemo(){
@@ -1640,8 +1674,6 @@ function loadMemo(){
 
 /* =========================
    메모 저장
-   - DB insert 없음
-   - 소개명단/고객명단에 절대 표시 안 됨
 ========================= */
 
 if(memoSaveBtn){
@@ -1713,7 +1745,6 @@ function refreshCurrentMode(){
 
 /* =========================
    실시간 notes
-   - notes 변경 시 고객명단/상담예정에서만 갱신
 ========================= */
 
 supabaseClient
