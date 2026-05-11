@@ -15,32 +15,50 @@ window.supabase.createClient(
 );
 
 /* =========================
-   현재 상태
+   상태
 ========================= */
 
-let currentMode = 'introduce';
+let currentMode =
+'introduce';
 
 /* =========================
    버튼
 ========================= */
 
 const buttons =
-document.querySelectorAll('.menu-btn');
+document.querySelectorAll(
+    '.menu-btn'
+);
+
+const newBtn =
+document.querySelector(
+    '[data-mode="new"]'
+);
 
 const introduceBtn =
-document.querySelector('[data-mode="introduce"]');
+document.querySelector(
+    '[data-mode="introduce"]'
+);
 
 const customerBtn =
-document.querySelector('[data-mode="customer"]');
+document.querySelector(
+    '[data-mode="customer"]'
+);
 
 const reserveBtn =
-document.querySelector('[data-mode="reserve"]');
+document.querySelector(
+    '[data-mode="reserve"]'
+);
 
 const processBtn =
-document.querySelector('[data-mode="process"]');
+document.querySelector(
+    '[data-mode="process"]'
+);
 
 const doneBtn =
-document.querySelector('[data-mode="done"]');
+document.querySelector(
+    '[data-mode="done"]'
+);
 
 /* =========================
    활성 버튼
@@ -90,7 +108,7 @@ function formatPhoneNumber(value){
 }
 
 /* =========================
-   상담예정일 자동 변환
+   상담예정일 자동변환
 ========================= */
 
 function formatReserveDate(value){
@@ -143,7 +161,7 @@ function formatReserveDate(value){
 }
 
 /* =========================
-   created_at 추출
+   날짜 추출
 ========================= */
 
 function getCreatedDate(item){
@@ -159,6 +177,62 @@ function getCreatedDate(item){
     }
 
     return '';
+}
+
+/* =========================
+   소개등록 복구
+========================= */
+
+if(newBtn){
+
+    newBtn.onclick =
+    async function(){
+
+        const name =
+        prompt(
+            '성명 입력'
+        );
+
+        if(!name) return;
+
+        const result =
+        await supabaseClient
+
+        .from('crm_customers')
+
+        .insert([{
+
+            name:name,
+
+            phone:'',
+
+            created_at:'',
+
+            status:'신규고객',
+
+            memo:'',
+
+            reserve_date:'',
+
+            consult_done:false
+
+        }]);
+
+        if(result.error){
+
+            alert(
+                '등록 실패'
+            );
+
+            return;
+        }
+
+        alert(
+            '소개등록 완료'
+        );
+
+        introduceBtn.click();
+    };
 }
 
 /* =========================
@@ -461,6 +535,10 @@ function renderCRMTable(data){
         const createdDate =
         getCreatedDate(item);
 
+        const hasReserve =
+        item.reserve_date &&
+        item.reserve_date !== '';
+
         const tr =
         document.createElement(
             'tr'
@@ -468,7 +546,9 @@ function renderCRMTable(data){
 
         tr.innerHTML = `
 
-            <td>${item.id || ''}</td>
+            <td>
+                ${item.id || ''}
+            </td>
 
             <td>
                 ${item.name || ''}
@@ -499,8 +579,7 @@ function renderCRMTable(data){
             <td>
 
                 ${
-                    currentMode === 'reserve'
-                    &&
+                    hasReserve &&
                     tableName === 'crm_customers'
 
                     ?
@@ -536,12 +615,12 @@ function renderCRMTable(data){
 
 function bindFinishButtons(){
 
-    const buttons =
+    const finishButtons =
     document.querySelectorAll(
         '.finish-btn'
     );
 
-    buttons.forEach(btn=>{
+    finishButtons.forEach(btn=>{
 
         btn.onclick =
         function(){
