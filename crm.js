@@ -4,8 +4,8 @@
 
    수정 내용:
    - 소개등록 성명 입력창 중복 실행 버그 수정
+   - 확인 버튼 눌러도 prompt가 다시 뜨는 현상 방지
    - 소개등록 버튼 연속 클릭 방지
-   - prompt 창 겹침 방지
    - 소개등록 → 소개명단 표시
    - 소개명단에서 상담예정일 입력해도 소개명단에 계속 유지
    - 상담예정일 입력된 소개등록자는 상담예정에도 함께 표시
@@ -52,7 +52,7 @@ null;
 let currentEditTable =
 'notes';
 
-let isCreatingCustomer =
+let createPromptRunning =
 false;
 
 
@@ -681,45 +681,160 @@ if(counselCancelBtn){
 
 /* =========================
    소개등록
-   핵심 수정:
-   - isCreatingCustomer로 prompt 중복 실행 방지
-   - 확인 버튼 후 같은 성명 입력창이 다시 뜨는 버그 방지
+   핵심:
+   - prompt 중복 실행 방지
+   - 확인 버튼 눌러도 다시 뜨는 버그 방지
+   - 성명 입력 → 연락처 입력 → DB 저장
 ========================= */
 
 if(newBtn){
 
     newBtn.onclick =
-    async function(){
+    null;
 
-        if(isCreatingCustomer){
+    newBtn.addEventListener(
+        'click',
+        async function(e){
 
-            return;
-        }
+            e.preventDefault();
+            e.stopPropagation();
 
-        isCreatingCustomer =
-        true;
+            if(createPromptRunning === true){
 
-        newBtn.disabled =
-        true;
+                return;
+            }
 
-        try{
+            createPromptRunning =
+            true;
 
-            currentMode =
-            'new';
+            newBtn.disabled =
+            true;
 
-            setActiveButton(
-                newBtn
-            );
+            try{
 
-            showTableArea();
+                currentMode =
+                'new';
 
-            const nameInput =
-            window.prompt(
-                '성명 입력',
-                ''
-            );
+                setActiveButton(
+                    newBtn
+                );
 
-            if(nameInput === null){
+                showTableArea();
+
+                const nameInput =
+                window.prompt(
+                    '성명 입력',
+                    ''
+                );
+
+                if(nameInput === null){
+
+                    currentMode =
+                    'introduce';
+
+                    if(introduceBtn){
+
+                        setActiveButton(
+                            introduceBtn
+                        );
+                    }
+
+                    loadIntroduceList();
+
+                    return;
+                }
+
+                const name =
+                String(nameInput)
+                .trim();
+
+                if(name === ''){
+
+                    alert(
+                        '성명을 입력하세요.'
+                    );
+
+                    currentMode =
+                    'introduce';
+
+                    if(introduceBtn){
+
+                        setActiveButton(
+                            introduceBtn
+                        );
+                    }
+
+                    loadIntroduceList();
+
+                    return;
+                }
+
+                const phoneInput =
+                window.prompt(
+                    '연락처 입력',
+                    ''
+                );
+
+                if(phoneInput === null){
+
+                    currentMode =
+                    'introduce';
+
+                    if(introduceBtn){
+
+                        setActiveButton(
+                            introduceBtn
+                        );
+                    }
+
+                    loadIntroduceList();
+
+                    return;
+                }
+
+                const phone =
+                formatPhone(
+                    phoneInput
+                );
+
+                const result =
+                await supabaseClient
+
+                .from('crm_customers')
+
+                .insert([{
+
+                    name:
+                    name,
+
+                    phone:
+                    phone,
+
+                    created_at:
+                    new Date().toISOString(),
+
+                    status:
+                    '소개등록',
+
+                    reserve_date:
+                    null
+
+                }])
+
+                .select();
+
+                if(result.error){
+
+                    console.error(
+                        result.error
+                    );
+
+                    alert(
+                        'DB 저장 실패'
+                    );
+
+                    return;
+                }
 
                 currentMode =
                 'introduce';
@@ -733,118 +848,29 @@ if(newBtn){
 
                 loadIntroduceList();
 
-                return;
-            }
-
-            const name =
-            String(nameInput)
-            .trim();
-
-            if(name === ''){
-
-                currentMode =
-                'introduce';
-
-                if(introduceBtn){
-
-                    setActiveButton(
-                        introduceBtn
-                    );
-                }
-
-                loadIntroduceList();
-
-                return;
-            }
-
-            const phoneInput =
-            window.prompt(
-                '연락처 입력',
-                ''
-            );
-
-            if(phoneInput === null){
-
-                currentMode =
-                'introduce';
-
-                if(introduceBtn){
-
-                    setActiveButton(
-                        introduceBtn
-                    );
-                }
-
-                loadIntroduceList();
-
-                return;
-            }
-
-            const phone =
-            formatPhone(
-                phoneInput
-            );
-
-            const result =
-            await supabaseClient
-
-            .from('crm_customers')
-
-            .insert([{
-
-                name:
-                name,
-
-                phone:
-                phone,
-
-                created_at:
-                new Date().toISOString(),
-
-                status:
-                '소개등록',
-
-                reserve_date:
-                null
-
-            }])
-
-            .select();
-
-            if(result.error){
+            }catch(error){
 
                 console.error(
-                    result.error
+                    error
                 );
 
                 alert(
-                    'DB 저장 실패'
+                    '소개등록 처리 중 오류가 발생했습니다.'
                 );
 
-                return;
+            }finally{
+
+                createPromptRunning =
+                false;
+
+                newBtn.disabled =
+                false;
             }
-
-            currentMode =
-            'introduce';
-
-            if(introduceBtn){
-
-                setActiveButton(
-                    introduceBtn
-                );
-            }
-
-            loadIntroduceList();
-
-        }finally{
-
-            isCreatingCustomer =
-            false;
-
-            newBtn.disabled =
-            false;
+        },
+        {
+            once:false
         }
-    };
+    );
 }
 
 
