@@ -14,6 +14,20 @@
 <style>
 
 /* =====================================================
+   무료서체 설정
+   경로:
+   C:\malkum365-landing\assets\fonts\NotoSerifKR-Regular.woff2
+===================================================== */
+
+@font-face{
+    font-family:'NotoSerifKRLocal';
+    src:url('./assets/fonts/NotoSerifKR-Regular.woff2') format('woff2');
+    font-weight:400;
+    font-style:normal;
+    font-display:block;
+}
+
+/* =====================================================
    CUSTOMER CRM
    파일: C:\malkum365-landing\crm.html
 ===================================================== */
@@ -130,7 +144,6 @@ body{
     white-space:nowrap;
 }
 
-/* 마우스오버 색상 */
 .menu-btn:hover{
     background:#6E94DB;
 }
@@ -392,7 +405,6 @@ body{
 
 /* =====================================================
    메모 저장 버튼
-   눌림 효과 적용
 ===================================================== */
 
 .memo-save-btn{
@@ -438,6 +450,11 @@ body{
     background:#f7f7f7;
 }
 
+/* =====================================================
+   메모지 텍스트 입력창
+   무료 NotoSerifKR-Regular.woff2 적용
+===================================================== */
+
 #memoTextArea{
     width:100%;
     height:100%;
@@ -450,6 +467,8 @@ body{
 
     background:#ffffff;
     color:#000000;
+
+    font-family:'NotoSerifKRLocal', serif !important;
 
     font-size:13px;
     font-weight:400;
@@ -554,6 +573,11 @@ body{
     background:#f7f7f7;
 }
 
+/* =====================================================
+   상담내용 입력창
+   무료 NotoSerifKR-Regular.woff2 적용
+===================================================== */
+
 #counselTextArea{
     width:100%;
     height:100%;
@@ -566,6 +590,8 @@ body{
 
     background:#ffffff;
     color:#000000;
+
+    font-family:'NotoSerifKRLocal', serif !important;
 
     font-size:13px;
     font-weight:400;
@@ -613,7 +639,6 @@ body{
 
 /* =====================================================
    상담창 저장 버튼
-   눌림 효과 적용
 ===================================================== */
 
 .counsel-save-btn{
