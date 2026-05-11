@@ -3,11 +3,11 @@
    파일: C:\malkum365-landing\crm.js
 
    수정 내용:
-   - 상담내용 입력창 줄바꿈 저장 보존
-   - 저장 후 다시 열어도 문단 나눔 유지
-   - textarea.value 원문 그대로 저장
-   - innerText.trim()으로 상담내용을 다시 읽지 않도록 수정
-   - data-raw-value에 원문 저장 후 다시 열 때 그대로 복원
+   - notes 데이터는 고객명단에 표시
+   - 소개명단은 crm_customers 데이터만 표시
+   - 상담예정 종료 버튼 클릭 시 고객명단으로 이동
+   - 종료 후 소개명단으로 들어가는 버그 수정
+   - 상담내용 줄바꿈 저장 보존 유지
 ===================================================== */
 
 
@@ -33,7 +33,7 @@ window.supabase.createClient(
 ========================= */
 
 let currentMode =
-'introduce';
+'customer';
 
 let currentEditId =
 null;
@@ -157,8 +157,6 @@ function escapeHTML(value){
 
 /* =========================
    테이블 표시용 텍스트
-   - 표 안에서는 줄바꿈을 한 줄로 보이게 처리
-   - 실제 원문은 data-raw-value에 따로 저장
 ========================= */
 
 function toDisplayText(value){
@@ -173,7 +171,7 @@ function toDisplayText(value){
 
 /* =========================
    원문 보존용 정규화
-   - 줄바꿈은 \n으로 통일
+   - 줄바꿈 보존
    - trim() 사용 안 함
 ========================= */
 
@@ -182,6 +180,30 @@ function normalizeMultiline(value){
     return String(value ?? '')
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n');
+}
+
+
+/* =========================
+   날짜 정렬용 값
+========================= */
+
+function getSortTime(item){
+
+    const value =
+    item.reserve_date ||
+    item.created_at ||
+    item.created_text ||
+    '';
+
+    const time =
+    new Date(value).getTime();
+
+    if(Number.isNaN(time)){
+
+        return 0;
+    }
+
+    return time;
 }
 
 
@@ -319,11 +341,8 @@ function closeCounselEditor(){
 
 /* =========================
    상담내용 저장
-   핵심:
    - textarea.value 그대로 저장
-   - trim() 금지
-   - replace(/\s+/g,' ') 금지
-   - 줄바꿈 \n 보존
+   - 줄바꿈 보존
 ========================= */
 
 if(counselSaveBtn){
@@ -410,6 +429,9 @@ if(counselCancelBtn){
 
 /* =========================
    소개등록
+   - 소개등록에서 수동 등록한 데이터는 crm_customers에 저장
+   - 따라서 소개명단에 표시됨
+   - notes로 들어온 외부 데이터와 분리
 ========================= */
 
 if(newBtn){
@@ -433,7 +455,17 @@ if(newBtn){
 
         if(!name){
 
-            refreshCurrentMode();
+            currentMode =
+            'introduce';
+
+            if(introduceBtn){
+
+                setActiveButton(
+                    introduceBtn
+                );
+            }
+
+            loadIntroduceList();
 
             return;
         }
@@ -446,7 +478,7 @@ if(newBtn){
         const result =
         await supabaseClient
 
-        .from('notes')
+        .from('crm_customers')
 
         .insert([{
 
@@ -456,8 +488,11 @@ if(newBtn){
             phone:
             phone,
 
+            created_at:
+            new Date().toISOString(),
+
             status:
-            '신규고객',
+            '소개등록',
 
             reserve_date:
             null
@@ -489,13 +524,15 @@ if(newBtn){
             );
         }
 
-        loadNotes();
+        loadIntroduceList();
     };
 }
 
 
 /* =========================
    소개명단
+   - crm_customers 데이터만 표시
+   - notes 데이터는 여기 표시하지 않음
 ========================= */
 
 if(introduceBtn){
@@ -512,13 +549,15 @@ if(introduceBtn){
 
         showTableArea();
 
-        loadNotes();
+        loadIntroduceList();
     };
 }
 
 
 /* =========================
    고객명단
+   - notes 데이터 표시
+   - crm_customers 데이터도 함께 표시
 ========================= */
 
 if(customerBtn){
@@ -620,55 +659,11 @@ if(alarmBtn){
 
 
 /* =========================
-   notes 로드
+   소개명단 로드
+   - crm_customers 전용
 ========================= */
 
-async function loadNotes(){
-
-    const result =
-    await supabaseClient
-
-    .from('notes')
-
-    .select('*')
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
-
-    if(result.error){
-
-        console.error(
-            result.error
-        );
-
-        return;
-    }
-
-    const data =
-    (result.data || []).map(item=>({
-
-        ...item,
-
-        source_table:
-        'notes'
-
-    }));
-
-    renderTable(
-        data
-    );
-}
-
-
-/* =========================
-   crm_customers 로드
-========================= */
-
-async function loadCustomers(){
+async function loadIntroduceList(){
 
     const result =
     await supabaseClient
@@ -713,7 +708,91 @@ async function loadCustomers(){
 
 
 /* =========================
+   고객명단 로드
+   - notes + crm_customers 통합
+   - notes에서 넘어온 데이터는 고객명단에 표시
+========================= */
+
+async function loadCustomers(){
+
+    const notesResult =
+    await supabaseClient
+
+    .from('notes')
+
+    .select('*');
+
+    const crmResult =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*');
+
+    if(notesResult.error){
+
+        console.error(
+            notesResult.error
+        );
+
+        return;
+    }
+
+    if(crmResult.error){
+
+        console.error(
+            crmResult.error
+        );
+
+        return;
+    }
+
+    const notesData =
+    (notesResult.data || []).map(item=>({
+
+        ...item,
+
+        source_table:
+        'notes',
+
+        created_text:
+        item.created_at || ''
+
+    }));
+
+    const crmData =
+    (crmResult.data || []).map(item=>({
+
+        ...item,
+
+        source_table:
+        'crm_customers',
+
+        created_text:
+        item.created_at || ''
+
+    }));
+
+    const merged =
+    [
+        ...notesData,
+        ...crmData
+    ];
+
+    merged.sort((a,b)=>{
+
+        return getSortTime(b) - getSortTime(a);
+    });
+
+    renderTable(
+        merged
+    );
+}
+
+
+/* =========================
    상담예정 통합 로드
+   - notes + crm_customers 중 reserve_date 있는 것만 표시
 ========================= */
 
 async function loadReserveList(){
@@ -768,7 +847,10 @@ async function loadReserveList(){
         ...item,
 
         source_table:
-        'notes'
+        'notes',
+
+        created_text:
+        item.created_at || ''
 
     }));
 
@@ -793,9 +875,7 @@ async function loadReserveList(){
 
     merged.sort((a,b)=>{
 
-        return new Date(a.reserve_date)
-        -
-        new Date(b.reserve_date);
+        return getSortTime(a) - getSortTime(b);
     });
 
     renderTable(
@@ -806,9 +886,6 @@ async function loadReserveList(){
 
 /* =========================
    테이블 출력
-   핵심:
-   - 상태 원문은 cell.dataset.rawValue에 저장
-   - 다시 열 때 innerText가 아니라 dataset.rawValue 사용
 ========================= */
 
 function renderTable(data){
@@ -820,6 +897,20 @@ function renderTable(data){
 
     crmBody.innerHTML =
     '';
+
+    if(!data || data.length === 0){
+
+        crmBody.innerHTML =
+        `
+            <tr>
+                <td colspan="7">
+                    표시할 데이터가 없습니다.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
 
     data.forEach(item=>{
 
@@ -841,8 +932,8 @@ function renderTable(data){
 
         const statusDisplay =
         toDisplayText(
-            item.status || '신규고객'
-        ) || '신규고객';
+            item.status || '상담내용'
+        ) || '상담내용';
 
         const createdText =
         item.created_text ||
@@ -1003,9 +1094,6 @@ function bindNormalCellEditor(){
 
 /* =========================
    상태/상담내용 입력창 열기
-   핵심:
-   - innerText.trim() 사용 금지
-   - dataset.rawValue 그대로 사용
 ========================= */
 
 function bindStatusEditor(){
@@ -1206,6 +1294,11 @@ function bindReserveDateEditor(){
 
 /* =========================
    상담예정 종료 버튼
+   핵심 수정:
+   - reserve_date 삭제
+   - currentMode를 customer로 변경
+   - 고객명단 버튼 활성화
+   - 고객명단 목록으로 이동
 ========================= */
 
 function bindFinishButtons(){
@@ -1260,7 +1353,19 @@ function bindFinishButtons(){
                 return;
             }
 
-            refreshCurrentMode();
+            currentMode =
+            'customer';
+
+            if(customerBtn){
+
+                setActiveButton(
+                    customerBtn
+                );
+            }
+
+            showTableArea();
+
+            loadCustomers();
         };
     });
 }
@@ -1399,7 +1504,7 @@ function refreshCurrentMode(){
 
     if(currentMode === 'introduce'){
 
-        loadNotes();
+        loadIntroduceList();
 
         return;
     }
@@ -1427,17 +1532,19 @@ function refreshCurrentMode(){
 
     if(currentMode === 'new'){
 
-        loadNotes();
+        loadIntroduceList();
 
         return;
     }
 
-    loadNotes();
+    loadCustomers();
 }
 
 
 /* =========================
    실시간 notes
+   - notes 변경 시 고객명단/상담예정에서만 갱신
+   - 소개명단으로 보내지 않음
 ========================= */
 
 supabaseClient
@@ -1458,7 +1565,13 @@ supabaseClient
 
     ()=>{
 
-        refreshCurrentMode();
+        if(
+            currentMode === 'customer' ||
+            currentMode === 'reserve'
+        ){
+
+            refreshCurrentMode();
+        }
     }
 )
 
@@ -1496,15 +1609,17 @@ supabaseClient
 
 /* =========================
    시작
+   - 기본 시작 화면을 고객명단으로 변경
+   - notes 데이터가 소개명단으로 뜨지 않도록 함
 ========================= */
 
-if(introduceBtn){
+if(customerBtn){
 
     setActiveButton(
-        introduceBtn
+        customerBtn
     );
 }
 
 showTableArea();
 
-loadNotes();
+loadCustomers();
