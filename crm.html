@@ -5,229 +5,371 @@
 
 <meta charset="UTF-8">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>CUSTOMER CRM</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
-*{
+/* =====================================================
+   CUSTOMER CRM
+   파일: C:\malkum365-landing\crm.html
 
-    margin:0;
-    padding:0;
+   중요:
+   - index.html 수정 금지
+   - CRM 전용 화면
+   - crm.js는 그대로 사용
+   - 테이블 폭은 이 파일 내부 CSS에서 강제 제어
+===================================================== */
+
+*{
     box-sizing:border-box;
 }
 
+html,
 body{
+    margin:0;
+    padding:0;
 
     width:100%;
-    height:100vh;
+    height:100%;
+
+    font-family:Arial, sans-serif;
+
+    background:#d9d9d9;
+
+    color:#111;
 
     overflow:hidden;
-
-    font-family:
-    'Malgun Gothic',
-    sans-serif;
-
-    background:#dcdcdc;
 }
 
-/* =========================
-   전체
-========================= */
+/* =====================================================
+   전체 구조
+===================================================== */
 
-.crm-wrap{
+.crm-app{
+    width:100%;
+    height:100vh;
 
     display:flex;
 
-    width:100%;
-    height:100vh;
+    background:#d9d9d9;
 }
 
-/* =========================
+/* =====================================================
    좌측 메뉴
-========================= */
+===================================================== */
 
-.sidebar{
+.crm-sidebar{
+    width:120px;
+    min-width:120px;
+    max-width:120px;
 
+    height:100vh;
+
+    background:#11141c;
+
+    overflow:hidden;
+}
+
+.crm-logo{
     width:120px;
 
-    background:#17181d;
-
-    border-right:
-    1px solid #2d2d2d;
-
-    padding:10px 6px;
-}
-
-.logo{
-
-    color:#fff;
-
-    font-size:15px;
-
-    font-weight:bold;
-
-    line-height:1.2;
-
-    margin-bottom:14px;
-}
-
-.logo small{
-
-    display:block;
-
-    font-size:10px;
+    padding-top:8px;
+    padding-left:7px;
+    padding-bottom:13px;
 
     color:#ffffff;
-
-    letter-spacing:2px;
-
-    margin-top:3px;
 }
 
+.crm-logo-main{
+    font-size:14px;
+    font-weight:400;
+
+    line-height:16px;
+
+    letter-spacing:0.5px;
+}
+
+.crm-logo-sub{
+    margin-top:4px;
+
+    font-size:10px;
+    font-weight:400;
+
+    line-height:12px;
+
+    letter-spacing:3px;
+}
+
+/* =====================================================
+   메뉴 버튼
+===================================================== */
+
 .menu-btn{
+    display:block;
 
-    width:100%;
+    width:114px;
+    height:29px;
 
-    height:28px;
+    margin-left:6px;
+    margin-bottom:3px;
 
-    margin-bottom:4px;
+    padding:0;
 
     border:none;
 
-    background:#23252c;
-
-    color:#fff;
+    background:#171b25;
+    color:#ffffff;
 
     font-size:12px;
+    font-weight:400;
 
-    font-weight:bold;
+    text-align:center;
 
     cursor:pointer;
+}
+
+.menu-btn:hover{
+    background:#2a2f3c;
 }
 
 .menu-btn.active{
+    background:#d8d2b5;
+    color:#000000;
 
-    background:#bdb79d;
-
-    color:#000;
+    font-weight:400;
 }
 
-/* =========================
-   우측 영역
-========================= */
+/* =====================================================
+   우측 본문
+===================================================== */
 
-.content{
-
+.crm-content{
     flex:1;
 
-    background:#dcdcdc;
+    height:100vh;
 
-    overflow:auto;
+    background:#d9d9d9;
+
+    overflow:hidden;
 }
 
-.top-title{
-
-    height:24px;
-
-    background:#ffffff;
-
-    border-bottom:
-    1px solid #cfcfcf;
-
-    display:flex;
-
-    align-items:center;
+.crm-title{
+    width:100%;
+    height:27px;
 
     padding-left:10px;
 
+    display:flex;
+    align-items:center;
+
+    background:#eeeeee;
+
+    color:#000000;
+
     font-size:12px;
-
-    font-weight:bold;
+    font-weight:400;
 }
 
-/* =========================
-   테이블
-========================= */
+/* =====================================================
+   테이블 영역
+===================================================== */
 
-.table-wrap{
-
-    padding:26px 20px;
-}
-
-table{
-
-    border-collapse:collapse;
-
+.crm-table-wrap{
     width:100%;
+    height:calc(100vh - 27px);
+
+    padding-top:28px;
+    padding-left:20px;
+    padding-right:20px;
+
+    overflow:auto;
+
+    background:#d9d9d9;
 }
 
-thead th{
+/* =====================================================
+   CRM 테이블 기본
 
-    background:#2a2929;
+   핵심:
+   width:auto !important;
+   화면 끝까지 강제 확장 금지
+===================================================== */
 
-    color:#fff;
+.crm-table{
+    width:auto !important;
 
-    border:
-    1px solid #4a4a4a;
+    max-width:none !important;
+
+    border-collapse:collapse !important;
+
+    table-layout:fixed !important;
+
+    background:#ffffff;
 
     font-size:12px;
-
-    height:28px;
-
-    text-align:center;
 }
 
-tbody td{
+/* =====================================================
+   테이블 셀 공통
+===================================================== */
 
-    background:#ece7c9;
+.crm-table th,
+.crm-table td{
+    height:29px !important;
 
-    border:
-    1px solid #c7c0a0;
+    padding:2px 4px !important;
 
-    height:30px;
+    border:1px solid #bfbfbf !important;
 
-    text-align:center;
+    font-size:12px !important;
+    font-weight:400 !important;
 
-    font-size:12px;
+    text-align:center !important;
+    vertical-align:middle !important;
+
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
 }
 
-/* =========================
+/* 헤더 */
+.crm-table th{
+    background:#242424 !important;
+    color:#ffffff !important;
+
+    font-weight:400 !important;
+}
+
+/* 본문 */
+.crm-table td{
+    background:#f5efcc !important;
+    color:#000000 !important;
+
+    font-weight:400 !important;
+}
+
+/* =====================================================
+   컬럼 폭 강제 지정
+
+   red 박스 기준:
+   - 이름 축소
+   - 연락처 축소
+   - 상담신청일 축소
+   - 상담예정일 축소
+   - 종료 축소
+   - 남은 폭은 상태 칸에 추가
+===================================================== */
+
+/* ID */
+.crm-table th:nth-child(1),
+.crm-table td:nth-child(1){
+    width:32px !important;
+    min-width:32px !important;
+    max-width:32px !important;
+}
+
+/* 이름 */
+.crm-table th:nth-child(2),
+.crm-table td:nth-child(2){
+    width:74px !important;
+    min-width:74px !important;
+    max-width:74px !important;
+}
+
+/* 연락처 */
+.crm-table th:nth-child(3),
+.crm-table td:nth-child(3){
+    width:124px !important;
+    min-width:124px !important;
+    max-width:124px !important;
+}
+
+/* 상담신청일 */
+.crm-table th:nth-child(4),
+.crm-table td:nth-child(4){
+    width:150px !important;
+    min-width:150px !important;
+    max-width:150px !important;
+}
+
+/* 상태 */
+.crm-table th:nth-child(5),
+.crm-table td:nth-child(5){
+    width:285px !important;
+    min-width:285px !important;
+    max-width:285px !important;
+}
+
+/* 상담 예정일 */
+.crm-table th:nth-child(6),
+.crm-table td:nth-child(6){
+    width:126px !important;
+    min-width:126px !important;
+    max-width:126px !important;
+}
+
+/* 종료 */
+.crm-table th:nth-child(7),
+.crm-table td:nth-child(7){
+    width:52px !important;
+    min-width:52px !important;
+    max-width:52px !important;
+}
+
+/* =====================================================
+   수정 가능 셀
+===================================================== */
+
+.editable-cell,
+.editable-reserve{
+    cursor:pointer;
+}
+
+.editable-cell:hover,
+.editable-reserve:hover{
+    background:#fff6b8 !important;
+}
+
+/* =====================================================
    종료 버튼
-========================= */
+===================================================== */
 
 .finish-btn{
+    width:40px !important;
+    height:20px !important;
 
-    width:54px;
+    padding:0 !important;
 
-    height:24px;
+    border:1px solid #999;
+    border-radius:3px;
 
-    border:none;
+    background:#eeeeee;
+    color:#222222;
 
-    background:#111;
-
-    color:#fff;
-
-    font-size:12px;
-
-    font-weight:bold;
+    font-size:10px !important;
+    font-weight:400 !important;
 
     cursor:pointer;
 }
 
-/* =========================
-   예약일 셀
-========================= */
+.finish-btn:hover{
+    background:#f5d545;
+}
 
-.editable-reserve{
+/* =====================================================
+   전체 bold 제거
+===================================================== */
 
-    cursor:pointer;
+button,
+th,
+td,
+.menu-btn,
+.finish-btn{
+    font-weight:400 !important;
 }
 
 </style>
@@ -236,135 +378,95 @@ tbody td{
 
 <body>
 
-<div class="crm-wrap">
+<div class="crm-app">
 
-    <!-- 좌측 -->
+    <!-- =================================================
+         좌측 메뉴
+    ================================================== -->
 
-    <div class="sidebar">
+    <aside class="crm-sidebar">
 
-        <div class="logo">
+        <div class="crm-logo">
 
-            CUSTOMER
+            <div class="crm-logo-main">
+                CUSTOMER
+            </div>
 
-            <small>
+            <div class="crm-logo-sub">
                 MANAGEMENT
-            </small>
+            </div>
 
         </div>
 
-        <!-- 복구 -->
-
-        <button
-        class="menu-btn"
-        data-mode="new">
-
+        <button class="menu-btn" data-mode="new">
             소개등록
-
         </button>
 
-        <button
-        class="menu-btn active"
-        data-mode="introduce">
-
+        <button class="menu-btn active" data-mode="introduce">
             소개명단
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="customer">
-
+        <button class="menu-btn" data-mode="customer">
             고객명단
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="reserve">
-
+        <button class="menu-btn" data-mode="reserve">
             상담예정
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="process">
-
+        <button class="menu-btn" data-mode="process">
             진행중
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="done">
-
+        <button class="menu-btn" data-mode="done">
             완료
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="memo">
-
+        <button class="menu-btn" data-mode="memo">
             고객메모
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="alarm">
-
+        <button class="menu-btn" data-mode="alarm">
             알람설정
-
         </button>
 
-    </div>
+    </aside>
 
-    <!-- 우측 -->
+    <!-- =================================================
+         우측 CRM 본문
+    ================================================== -->
 
-    <div class="content">
+    <main class="crm-content">
 
-        <div class="top-title">
-
+        <div class="crm-title">
             CUSTOMER CRM
-
         </div>
 
-        <div class="table-wrap">
+        <div class="crm-table-wrap">
 
-            <table>
+            <table class="crm-table">
 
                 <thead>
 
-                <tr>
-
-                    <th>ID</th>
-
-                    <th>이름</th>
-
-                    <th>연락처</th>
-
-                    <th>상담신청일</th>
-
-                    <th>상태</th>
-
-                    <th>상담 예정일</th>
-
-                    <th>종료</th>
-
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>이름</th>
+                        <th>연락처</th>
+                        <th>상담신청일</th>
+                        <th>상태</th>
+                        <th>상담 예정일</th>
+                        <th>종료</th>
+                    </tr>
 
                 </thead>
 
-                <tbody id="crmBody">
-
-                </tbody>
+                <tbody id="crmBody"></tbody>
 
             </table>
 
         </div>
 
-    </div>
+    </main>
 
 </div>
 
