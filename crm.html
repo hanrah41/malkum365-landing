@@ -18,8 +18,8 @@
    파일: C:\malkum365-landing\crm.html
 
    수정 내용:
-   - 상담내용 입력창을 A4 용지 2/3 크기로 확대
-   - 서버폰트 사용 안 함
+   - 상담내용 입력창 A4 2/3 크기 유지
+   - 상담내용 입력창 드래그 이동 가능
    - PC 기본서체 사용
 ===================================================== */
 
@@ -501,16 +501,20 @@ body{
     background:rgba(0,0,0,0.35);
 
     z-index:9999;
-
-    align-items:center;
-    justify-content:center;
 }
 
 .counsel-modal.show{
-    display:flex;
+    display:block;
 }
 
 .counsel-panel{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%, -50%);
+
     width:140mm;
     height:198mm;
 
@@ -543,6 +547,9 @@ body{
 
     font-size:12px;
     font-weight:400;
+
+    cursor:move;
+    user-select:none;
 }
 
 .counsel-title{
@@ -894,6 +901,163 @@ td,
 </div>
 
 <script src="crm.js"></script>
+
+<script>
+/* =====================================================
+   상담내용 입력창 드래그 기능
+   - 검정색 상단 제목줄(.counsel-header)을 잡고 이동
+   - 입력창 내부 textarea 드래그와 충돌 방지
+===================================================== */
+
+(function(){
+
+    const panel =
+    document.querySelector(
+        '.counsel-panel'
+    );
+
+    const header =
+    document.querySelector(
+        '.counsel-header'
+    );
+
+    if(!panel || !header){
+
+        return;
+    }
+
+    let isDragging =
+    false;
+
+    let startX =
+    0;
+
+    let startY =
+    0;
+
+    let panelLeft =
+    0;
+
+    let panelTop =
+    0;
+
+    header.addEventListener(
+        'mousedown',
+        function(e){
+
+            if(
+                e.target &&
+                e.target.id === 'counselCloseBtn'
+            ){
+
+                return;
+            }
+
+            const rect =
+            panel.getBoundingClientRect();
+
+            panel.style.transform =
+            'none';
+
+            panel.style.left =
+            rect.left + 'px';
+
+            panel.style.top =
+            rect.top + 'px';
+
+            startX =
+            e.clientX;
+
+            startY =
+            e.clientY;
+
+            panelLeft =
+            rect.left;
+
+            panelTop =
+            rect.top;
+
+            isDragging =
+            true;
+
+            document.body.style.userSelect =
+            'none';
+        }
+    );
+
+    document.addEventListener(
+        'mousemove',
+        function(e){
+
+            if(!isDragging){
+
+                return;
+            }
+
+            const dx =
+            e.clientX - startX;
+
+            const dy =
+            e.clientY - startY;
+
+            let nextLeft =
+            panelLeft + dx;
+
+            let nextTop =
+            panelTop + dy;
+
+            const maxLeft =
+            window.innerWidth - panel.offsetWidth;
+
+            const maxTop =
+            window.innerHeight - panel.offsetHeight;
+
+            if(nextLeft < 0){
+
+                nextLeft =
+                0;
+            }
+
+            if(nextTop < 0){
+
+                nextTop =
+                0;
+            }
+
+            if(nextLeft > maxLeft){
+
+                nextLeft =
+                maxLeft;
+            }
+
+            if(nextTop > maxTop){
+
+                nextTop =
+                maxTop;
+            }
+
+            panel.style.left =
+            nextLeft + 'px';
+
+            panel.style.top =
+            nextTop + 'px';
+        }
+    );
+
+    document.addEventListener(
+        'mouseup',
+        function(){
+
+            isDragging =
+            false;
+
+            document.body.style.userSelect =
+            '';
+        }
+    );
+
+})();
+</script>
 
 </body>
 
