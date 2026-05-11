@@ -100,70 +100,47 @@ body{
 
 /* =====================================================
    메뉴 버튼
-   마우스오버 / 선택 배경색을 red 박스 크기로 축소
+   red 박스 우측 잘라낸 크기 기준
+   텍스트는 배경색 박스 중앙 정렬
 ===================================================== */
 
 .menu-btn{
     display:block;
 
-    position:relative;
-
-    width:124px;
+    width:90px;
     height:29px;
 
-    margin-left:6px;
+    margin-left:34px;
     margin-bottom:3px;
 
     padding:0;
 
     border:none;
 
-    background:transparent;
+    background:#111722;
     color:#ffffff;
 
     font-size:12px;
     font-weight:400;
 
     text-align:center;
+    line-height:29px;
 
     cursor:pointer;
 
-    z-index:1;
+    overflow:hidden;
+    white-space:nowrap;
 }
 
-/* 실제 배경 박스 크기 */
-.menu-btn::before{
-    content:"";
-
-    position:absolute;
-
-    left:28px;
-    top:0;
-
-    width:90px;
-    height:29px;
-
-    background:#111722;
-
-    z-index:-1;
-}
-
-/* 마우스오버 배경 */
-.menu-btn:hover::before{
+.menu-btn:hover{
     background:#2a2f3c;
 }
 
-/* 선택된 버튼 */
 .menu-btn.active{
-    background:transparent;
+    background:#d8d2b5;
     color:#000000;
 
     font-weight:400;
-}
-
-/* 선택된 버튼 배경 */
-.menu-btn.active::before{
-    background:#d8d2b5;
 }
 
 /* =====================================================
