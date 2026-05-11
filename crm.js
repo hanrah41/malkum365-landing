@@ -211,6 +211,11 @@ function getCreatedDate(item){
         return item.created_at;
     }
 
+    if(item.created_text){
+
+        return item.created_text;
+    }
+
     return '';
 }
 
@@ -535,6 +540,7 @@ async function(){
 
 async function completeConsult(id){
 
+    const result =
     await supabaseClient
 
     .from('crm_customers')
@@ -549,6 +555,19 @@ async function completeConsult(id){
         'id',
         id
     );
+
+    if(result.error){
+
+        console.log(
+            result.error
+        );
+
+        alert(
+            '종료 처리 실패'
+        );
+
+        return;
+    }
 
     loadReserveList();
 }
@@ -636,7 +655,10 @@ function renderCRMTable(data){
             <td>
 
                 ${
-                    hasReserve &&
+                    currentMode === 'reserve'
+                    &&
+                    hasReserve
+                    &&
                     tableName === 'crm_customers'
 
                     ?
@@ -712,6 +734,7 @@ function bindEditableCells(){
                 );
             }
 
+            const result =
             await supabaseClient
 
             .from(table)
@@ -726,6 +749,19 @@ function bindEditableCells(){
                 'id',
                 id
             );
+
+            if(result.error){
+
+                console.log(
+                    result.error
+                );
+
+                alert(
+                    '수정 실패'
+                );
+
+                return;
+            }
 
             refreshCurrentMode();
         };
@@ -801,6 +837,7 @@ function bindReserveDateEditor(){
                 value
             );
 
+            const result =
             await supabaseClient
 
             .from(table)
@@ -815,6 +852,19 @@ function bindReserveDateEditor(){
                 'id',
                 id
             );
+
+            if(result.error){
+
+                console.log(
+                    result.error
+                );
+
+                alert(
+                    '상담예정일 수정 실패'
+                );
+
+                return;
+            }
 
             refreshCurrentMode();
         };
