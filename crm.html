@@ -100,8 +100,6 @@ body{
 
 /* =====================================================
    메뉴 버튼
-   red 박스 우측 잘라낸 크기 기준
-   텍스트는 배경색 박스 중앙 정렬
 ===================================================== */
 
 .menu-btn{
@@ -332,6 +330,115 @@ body{
 }
 
 /* =====================================================
+   메모 영역
+   A4 절반 크기 입력창
+===================================================== */
+
+.memo-area{
+    display:none;
+
+    width:100%;
+    height:calc(100vh - 27px);
+
+    padding-top:28px;
+    padding-left:20px;
+
+    background:#9a9a9a;
+
+    overflow:auto;
+}
+
+.memo-area.show{
+    display:block;
+}
+
+.memo-paper{
+    width:148.5mm;
+    height:210mm;
+
+    background:#ffffff;
+
+    border:1px solid #555;
+
+    box-shadow:0 8px 22px rgba(0,0,0,0.28);
+
+    display:flex;
+    flex-direction:column;
+}
+
+.memo-header{
+    height:32px;
+
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 8px;
+
+    background:#242424;
+    color:#ffffff;
+
+    font-size:12px;
+    font-weight:400;
+}
+
+.memo-title{
+    font-size:12px;
+    font-weight:400;
+}
+
+.memo-save-btn{
+    width:58px;
+    height:23px;
+
+    border:1px solid #999;
+    border-radius:3px;
+
+    background:#7BE8B8;
+    color:#000000;
+
+    font-size:11px;
+    font-weight:400;
+
+    cursor:pointer;
+}
+
+.memo-body{
+    flex:1;
+
+    padding:8px;
+
+    background:#f7f7f7;
+}
+
+#memoTextArea{
+    width:100%;
+    height:100%;
+
+    resize:none;
+
+    padding:10px;
+
+    border:1px solid #bfbfbf;
+
+    background:#ffffff;
+    color:#000000;
+
+    font-size:13px;
+    font-weight:400;
+
+    line-height:1.6;
+
+    outline:none;
+}
+
+#memoTextArea:focus{
+    border-color:#7BE8B8;
+}
+
+/* =====================================================
    상담내용 A4 1/4 창
 ===================================================== */
 
@@ -542,7 +649,8 @@ td,
 .status-input,
 .counsel-save-btn,
 .counsel-cancel-btn,
-.counsel-close{
+.counsel-close,
+.memo-save-btn{
     font-weight:400 !important;
 }
 
@@ -585,7 +693,7 @@ td,
         </button>
 
         <button class="menu-btn" data-mode="memo">
-            고객메모
+            메모
         </button>
 
         <button class="menu-btn" data-mode="alarm">
@@ -600,7 +708,7 @@ td,
             CUSTOMER CRM
         </div>
 
-        <div class="crm-table-wrap">
+        <div id="crmTableArea" class="crm-table-wrap">
 
             <table class="crm-table">
 
@@ -621,6 +729,32 @@ td,
                 <tbody id="crmBody"></tbody>
 
             </table>
+
+        </div>
+
+        <div id="memoArea" class="memo-area">
+
+            <div class="memo-paper">
+
+                <div class="memo-header">
+
+                    <div class="memo-title">
+                        메모
+                    </div>
+
+                    <button id="memoSaveBtn" class="memo-save-btn" type="button">
+                        저장
+                    </button>
+
+                </div>
+
+                <div class="memo-body">
+
+                    <textarea id="memoTextArea" placeholder="메모 내용을 입력하세요."></textarea>
+
+                </div>
+
+            </div>
 
         </div>
 
