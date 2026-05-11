@@ -774,7 +774,9 @@ async function loadCRMWithMemo(){
 
 /* =========================
    종료 처리
-   crm_customers / notes 공통 처리
+   상담예정 목록에서 제거
+   고객명단으로 이동
+   상담예정일은 반드시 공백 처리
 ========================= */
 
 async function completeConsult(id, table){
@@ -787,7 +789,9 @@ async function completeConsult(id, table){
 
             consult_done:true,
 
-            status:'상담완료'
+            status:'상담완료',
+
+            reserve_date:''
 
         };
     }
@@ -1226,8 +1230,6 @@ function bindFinishButtons(){
 
 /* =========================
    상담예정일 수정
-   고객명단에서 다시 상담예정일 수정 시
-   crm_customers / notes 모두 상담예정 목록에 종료 버튼 생성
 ========================= */
 
 function bindReserveDateEditor(){
