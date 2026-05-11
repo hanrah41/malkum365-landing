@@ -1,126 +1,315 @@
-// 파일명 : script.js
+/* =====================================================
+   MALKUM365 CRM STYLE
+   경로: C:\malkum365-landing\style.css
+===================================================== */
 
-const SUPABASE_URL =
-"https://pziyabogqefxzvinwarg.supabase.co";
+*{
+    box-sizing:border-box;
+}
 
-const SUPABASE_KEY =
-"sb_publishable_VrVP0buVQ3kCBiQm88Jr5g_q61_DoK8";
+html,
+body{
+    margin:0;
+    padding:0;
 
-window.addEventListener("DOMContentLoaded", () => {
+    width:100%;
+    height:100%;
 
-    const submitBtn =
-    document.getElementById("submitBtn");
+    font-family:Arial, sans-serif;
 
-    submitBtn.addEventListener("click", async () => {
+    background:#f2f2f2;
 
-        const name =
-        document.getElementById("name")
-        .value
-        .trim();
+    color:#222;
 
-        const phone =
-        document.getElementById("phone")
-        .value
-        .trim();
+    font-size:12px;
 
-        if(name === "" || phone === ""){
+    overflow:hidden;
+}
 
-            alert("이름과 전화번호 입력");
-            return;
-        }
+/* =====================================================
+   전체 화면
+===================================================== */
 
-        submitBtn.innerText =
-        "접수중입니다...";
+.wrapper{
+    width:100%;
+    height:100vh;
 
-        const now = new Date();
+    display:flex;
+    flex-direction:column;
 
-        const createdText =
+    background:#f2f2f2;
+}
 
-            now.getFullYear() + "-" +
-            String(now.getMonth() + 1).padStart(2,"0") + "-" +
-            String(now.getDate()).padStart(2,"0") + " " +
-            String(now.getHours()).padStart(2,"0") + ":" +
-            String(now.getMinutes()).padStart(2,"0") + ":" +
-            String(now.getSeconds()).padStart(2,"0");
+/* =====================================================
+   상단 제목
+===================================================== */
 
-        const data = {
+.header{
+    width:100%;
+    height:38px;
 
-            created_text: createdText,
-            name: name,
-            phone: phone
-        };
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-        console.log("전송 데이터:", data);
+    background:#2f2f2f;
+    color:#ffffff;
 
-        try{
+    font-size:15px;
+    font-weight:400;
 
-            const response = await fetch(
+    flex-shrink:0;
+}
 
-                `${SUPABASE_URL}/rest/v1/leads`,
+.header-title{
+    font-size:15px;
+    font-weight:400;
+    letter-spacing:0.5px;
+}
 
-                {
+/* =====================================================
+   메뉴 버튼 영역
+===================================================== */
 
-                    method:"POST",
+.menu{
+    width:100%;
+    height:34px;
 
-                    headers:{
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-                        "Content-Type":
-                        "application/json",
+    gap:4px;
 
-                        "apikey":
-                        SUPABASE_KEY,
+    background:#3a3a3a;
 
-                        "Authorization":
-                        `Bearer ${SUPABASE_KEY}`,
+    padding:3px 6px;
 
-                        "Prefer":
-                        "return=representation"
-                    },
+    flex-shrink:0;
+}
 
-                    body:JSON.stringify(data)
-                }
-            );
+.menu-btn{
+    min-width:58px;
+    height:24px;
 
-            console.log("응답 상태:", response.status);
+    padding:2px 6px;
 
-            const result =
-            await response.text();
+    border:1px solid #777;
+    border-radius:3px;
 
-            console.log("응답 내용:", result);
+    background:#eeeeee;
+    color:#222;
 
-            if(response.ok){
+    font-size:11px;
+    font-weight:400;
 
-                alert("상담 신청 완료");
+    cursor:pointer;
 
-                document
-                .getElementById("name")
-                .value = "";
+    white-space:nowrap;
+}
 
-                document
-                .getElementById("phone")
-                .value = "";
+.menu-btn:hover{
+    background:#ffffff;
+}
 
-            }else{
+.menu-btn.active{
+    background:#f5d545;
+    border-color:#c8a900;
+    color:#000;
+    font-weight:400;
+}
 
-                alert(
-                    "서버 저장 실패\n\n" +
-                    result
-                );
-            }
+/* =====================================================
+   본문 영역
+===================================================== */
 
-        }catch(error){
+.main{
+    width:100%;
+    height:calc(100vh - 72px);
 
-            console.log("에러:", error);
+    padding:6px;
 
-            alert(
-                "연결 실패\n\n" +
-                error.message
-            );
-        }
+    overflow:auto;
 
-        submitBtn.innerText =
-        "무료 상담 신청하기";
+    background:#f2f2f2;
+}
 
-    });
+/* =====================================================
+   CRM 테이블 기본
+===================================================== */
 
-});
+.crm-table,
+table:has(#crmBody){
+    width:100%;
+
+    border-collapse:collapse;
+
+    table-layout:fixed;
+
+    background:#ffffff;
+
+    font-size:11px;
+}
+
+/* =====================================================
+   테이블 헤더 / 셀 공통
+===================================================== */
+
+.crm-table th,
+.crm-table td,
+table:has(#crmBody) th,
+table:has(#crmBody) td{
+    border:1px solid #cfcfcf;
+
+    padding:2px 3px;
+
+    height:24px;
+
+    font-size:11px;
+    font-weight:400;
+
+    text-align:center;
+    vertical-align:middle;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+/* 헤더 */
+.crm-table th,
+table:has(#crmBody) th{
+    background:#e7e7e7;
+
+    font-weight:400;
+}
+
+/* =====================================================
+   컬럼 폭 조정
+   1 번호
+   2 이름      → 더 축소
+   3 연락처    → 더 축소
+   4 상담신청일 → 더 축소
+   5 상태      → 많이 확대
+   6 상담예정일 → 더 축소
+   7 종료
+===================================================== */
+
+/* 번호 */
+.crm-table th:nth-child(1),
+.crm-table td:nth-child(1),
+table:has(#crmBody) th:nth-child(1),
+table:has(#crmBody) td:nth-child(1){
+    width:34px;
+    max-width:34px;
+}
+
+/* 이름 */
+.crm-table th:nth-child(2),
+.crm-table td:nth-child(2),
+table:has(#crmBody) th:nth-child(2),
+table:has(#crmBody) td:nth-child(2){
+    width:58px;
+    max-width:58px;
+}
+
+/* 연락처 */
+.crm-table th:nth-child(3),
+.crm-table td:nth-child(3),
+table:has(#crmBody) th:nth-child(3),
+table:has(#crmBody) td:nth-child(3){
+    width:76px;
+    max-width:76px;
+}
+
+/* 상담신청일 */
+.crm-table th:nth-child(4),
+.crm-table td:nth-child(4),
+table:has(#crmBody) th:nth-child(4),
+table:has(#crmBody) td:nth-child(4){
+    width:92px;
+    max-width:92px;
+}
+
+/* 상태 */
+.crm-table th:nth-child(5),
+.crm-table td:nth-child(5),
+table:has(#crmBody) th:nth-child(5),
+table:has(#crmBody) td:nth-child(5){
+    width:180px;
+    max-width:180px;
+
+    text-align:left;
+
+    padding-left:6px;
+}
+
+/* 상담예정일 */
+.crm-table th:nth-child(6),
+.crm-table td:nth-child(6),
+table:has(#crmBody) th:nth-child(6),
+table:has(#crmBody) td:nth-child(6){
+    width:88px;
+    max-width:88px;
+}
+
+/* 종료 */
+.crm-table th:nth-child(7),
+.crm-table td:nth-child(7),
+table:has(#crmBody) th:nth-child(7),
+table:has(#crmBody) td:nth-child(7){
+    width:42px;
+    max-width:42px;
+}
+
+/* =====================================================
+   수정 가능 셀
+===================================================== */
+
+.editable-cell,
+.editable-reserve{
+    cursor:pointer;
+}
+
+.editable-cell:hover,
+.editable-reserve:hover{
+    background:#fff6b8;
+}
+
+/* =====================================================
+   종료 버튼
+===================================================== */
+
+.finish-btn{
+    width:36px;
+    height:19px;
+
+    padding:0;
+
+    border:1px solid #999;
+    border-radius:3px;
+
+    background:#eeeeee;
+    color:#222;
+
+    font-size:10px;
+    font-weight:400;
+
+    cursor:pointer;
+}
+
+.finish-btn:hover{
+    background:#f5d545;
+}
+
+/* =====================================================
+   텍스트 굵기 제거
+===================================================== */
+
+button,
+th,
+td,
+.menu-btn,
+.finish-btn{
+    font-weight:400;
+}
