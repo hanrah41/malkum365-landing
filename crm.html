@@ -18,8 +18,9 @@
    파일: C:\malkum365-landing\crm.html
 
    수정 내용:
-   - 서버폰트 @font-face 제거
-   - 메모 입력창 / 상담내용 입력창을 PC 기본서체로 변경
+   - 상담내용 입력창을 A4 용지 2/3 크기로 확대
+   - 서버폰트 사용 안 함
+   - PC 기본서체 사용
 ===================================================== */
 
 *{
@@ -481,7 +482,9 @@ body{
 }
 
 /* =====================================================
-   상담내용 A4 1/4 창
+   상담내용 A4 2/3 창
+   A4 기준 210mm x 297mm
+   2/3 크기 = 140mm x 198mm
 ===================================================== */
 
 .counsel-modal{
@@ -508,8 +511,11 @@ body{
 }
 
 .counsel-panel{
-    width:105mm;
-    height:148.5mm;
+    width:140mm;
+    height:198mm;
+
+    max-width:calc(100vw - 40px);
+    max-height:calc(100vh - 40px);
 
     background:#ffffff;
 
@@ -571,6 +577,8 @@ body{
     padding:8px;
 
     background:#f7f7f7;
+
+    min-height:0;
 }
 
 /* =====================================================
@@ -584,7 +592,7 @@ body{
 
     resize:none;
 
-    padding:8px;
+    padding:10px;
 
     border:1px solid #bfbfbf;
 
