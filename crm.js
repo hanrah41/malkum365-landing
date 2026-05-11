@@ -58,16 +58,6 @@ document.querySelector(
     '[data-mode="reserve"]'
 );
 
-const processBtn =
-document.querySelector(
-    '[data-mode="process"]'
-);
-
-const doneBtn =
-document.querySelector(
-    '[data-mode="done"]'
-);
-
 const memoBtn =
 document.querySelector(
     '[data-mode="memo"]'
@@ -95,11 +85,6 @@ document.getElementById(
 const memoTextArea =
 document.getElementById(
     'memoTextArea'
-);
-
-const memoSaveBtn =
-document.getElementById(
-    'memoSaveBtn'
 );
 
 /* =========================
@@ -197,28 +182,28 @@ function showMemoArea(){
 
 function saveMemoText(){
 
-    if(!memoTextArea){
+    const memoBox =
+    document.getElementById(
+        'memoTextArea'
+    );
+
+    if(!memoBox){
+
+        alert(
+            '메모 입력창을 찾을 수 없습니다.'
+        );
 
         return;
     }
 
     localStorage.setItem(
         MEMO_STORAGE_KEY,
-        memoTextArea.value
+        memoBox.value
     );
 
     alert(
         '메모 저장 완료'
     );
-}
-
-if(memoSaveBtn){
-
-    memoSaveBtn.onclick =
-    function(){
-
-        saveMemoText();
-    };
 }
 
 /* =========================
@@ -618,6 +603,28 @@ if(memoBtn){
 }
 
 /* =========================
+   알람설정
+========================= */
+
+if(alarmBtn){
+
+    alarmBtn.onclick =
+    function(){
+
+        currentMode =
+        'alarm';
+
+        setActiveButton(
+            alarmBtn
+        );
+
+        alert(
+            '알람 시스템 준비중'
+        );
+    };
+}
+
+/* =========================
    상담예정 로드
 ========================= */
 
@@ -744,130 +751,6 @@ async function loadReserveList(){
     renderCRMTable(
         merged
     );
-}
-
-/* =========================
-   진행중 / 완료 기존 호환용
-========================= */
-
-if(processBtn){
-
-    processBtn.onclick =
-    function(){
-
-        currentMode =
-        'process';
-
-        showTableArea();
-
-        setActiveButton(
-            processBtn
-        );
-
-        loadCRMByStatus(
-            '진행중'
-        );
-    };
-}
-
-if(doneBtn){
-
-    doneBtn.onclick =
-    async function(){
-
-        currentMode =
-        'done';
-
-        showTableArea();
-
-        setActiveButton(
-            doneBtn
-        );
-
-        const result =
-        await supabaseClient
-
-        .from('crm_customers')
-
-        .select('*')
-
-        .eq(
-            'consult_done',
-            true
-        )
-
-        .order(
-            'id',
-            {
-                ascending:false
-            }
-        );
-
-        renderCRMTable(
-            result.data || []
-        );
-    };
-}
-
-/* =========================
-   알람설정
-========================= */
-
-if(alarmBtn){
-
-    alarmBtn.onclick =
-    function(){
-
-        currentMode =
-        'alarm';
-
-        setActiveButton(
-            alarmBtn
-        );
-
-        alert(
-            '알람 시스템 준비중'
-        );
-    };
-}
-
-/* =========================
-   상태별 로드
-========================= */
-
-async function loadCRMByStatus(status){
-
-    const result =
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .select('*')
-
-    .eq(
-        'status',
-        status
-    )
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
-
-    renderCRMTable(
-        result.data || []
-    );
-}
-
-/* =========================
-   메모 로드 기존 호환
-========================= */
-
-async function loadCRMWithMemo(){
-
-    showMemoArea();
 }
 
 /* =========================
@@ -1307,73 +1190,6 @@ function bindStatusInputs(){
 }
 
 /* =========================
-   상담창 버튼 이벤트
-========================= */
-
-document.addEventListener(
-    'click',
-    function(e){
-
-        if(e.target && e.target.id === 'counselSaveBtn'){
-
-            e.preventDefault();
-            e.stopPropagation();
-
-            saveCounselModal();
-            return;
-        }
-
-        if(e.target && e.target.id === 'counselCancelBtn'){
-
-            e.preventDefault();
-            e.stopPropagation();
-
-            closeCounselModal();
-            return;
-        }
-
-        if(e.target && e.target.id === 'counselCloseBtn'){
-
-            e.preventDefault();
-            e.stopPropagation();
-
-            closeCounselModal();
-            return;
-        }
-
-        if(e.target && e.target.id === 'counselModal'){
-
-            closeCounselModal();
-            return;
-        }
-    }
-);
-
-document.addEventListener(
-    'keydown',
-    function(e){
-
-        if(e.key === 'Escape'){
-
-            closeCounselModal();
-        }
-
-        if(
-            e.ctrlKey
-            &&
-            e.key === 'Enter'
-            &&
-            counselModal
-            &&
-            counselModal.classList.contains('show')
-        ){
-
-            saveCounselModal();
-        }
-    }
-);
-
-/* =========================
    종료 버튼
 ========================= */
 
@@ -1513,6 +1329,99 @@ function bindReserveDateEditor(){
 }
 
 /* =========================
+   전체 클릭 이벤트
+========================= */
+
+document.addEventListener(
+    'click',
+    function(e){
+
+        if(e.target && e.target.id === 'memoSaveBtn'){
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            saveMemoText();
+            return;
+        }
+
+        if(e.target && e.target.id === 'counselSaveBtn'){
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            saveCounselModal();
+            return;
+        }
+
+        if(e.target && e.target.id === 'counselCancelBtn'){
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            closeCounselModal();
+            return;
+        }
+
+        if(e.target && e.target.id === 'counselCloseBtn'){
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            closeCounselModal();
+            return;
+        }
+
+        if(e.target && e.target.id === 'counselModal'){
+
+            closeCounselModal();
+            return;
+        }
+    }
+);
+
+/* =========================
+   키보드 이벤트
+========================= */
+
+document.addEventListener(
+    'keydown',
+    function(e){
+
+        if(e.key === 'Escape'){
+
+            closeCounselModal();
+        }
+
+        if(
+            e.ctrlKey
+            &&
+            e.key === 'Enter'
+            &&
+            counselModal
+            &&
+            counselModal.classList.contains('show')
+        ){
+
+            saveCounselModal();
+        }
+
+        if(
+            e.ctrlKey
+            &&
+            e.key === 's'
+            &&
+            currentMode === 'memo'
+        ){
+
+            e.preventDefault();
+
+            saveMemoText();
+        }
+    }
+);
+
+/* =========================
    새로고침
 ========================= */
 
@@ -1536,25 +1445,6 @@ function refreshCurrentMode(){
 
             customerBtn.click();
         }
-
-        return;
-    }
-
-    if(currentMode === 'done'){
-
-        if(doneBtn){
-
-            doneBtn.click();
-        }
-
-        return;
-    }
-
-    if(currentMode === 'process'){
-
-        loadCRMByStatus(
-            '진행중'
-        );
 
         return;
     }
