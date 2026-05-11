@@ -3,19 +3,14 @@
    파일: C:\malkum365-landing\crm.js
 
    수정 내용:
-   - 소개등록 성명 입력창 중복 실행 버그 수정
-   - 확인 버튼 눌러도 prompt가 다시 뜨는 현상 방지
-   - 소개등록 버튼 연속 클릭 방지
+   - 소개등록 저장 실패 버그 수정
+   - crm_customers insert 시 created_at 사용 금지
+   - created_text 기준으로 저장
+   - 성명 입력 확인 후 prompt 반복/멈춤 방지
    - 소개등록 → 소개명단 표시
-   - 소개명단에서 상담예정일 입력해도 소개명단에 계속 유지
-   - 상담예정일 입력된 소개등록자는 상담예정에도 함께 표시
-   - 상담예정에서 종료 버튼 클릭 시 고객명단으로 이동
-   - 종료 후 소개명단에서는 사라짐
+   - 소개명단에서 상담예정일 입력해도 소개명단 유지
+   - 상담예정에서 종료 시 고객명단으로 이동
    - 메모는 localStorage에만 저장
-   - 메모 행은 소개명단/고객명단/상담예정에 표시하지 않음
-   - 상담내용 줄바꿈 저장 보존
-   - 전화번호 하이픈 표시
-   - 상담신청일 표시 형식: 2026-05-12   10:30
 ===================================================== */
 
 
@@ -175,6 +170,36 @@ function escapeHTML(value){
 
 
 /* =========================
+   현재 시간 문자열
+   저장 형식:
+   2026-05-12 10:30
+========================= */
+
+function getNowText(){
+
+    const now =
+    new Date();
+
+    const yyyy =
+    now.getFullYear();
+
+    const mm =
+    String(now.getMonth() + 1).padStart(2, '0');
+
+    const dd =
+    String(now.getDate()).padStart(2, '0');
+
+    const hh =
+    String(now.getHours()).padStart(2, '0');
+
+    const mi =
+    String(now.getMinutes()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+}
+
+
+/* =========================
    테이블 표시용 텍스트
 ========================= */
 
@@ -319,7 +344,6 @@ function getSortTime(item){
     const value =
     item.reserve_date ||
     item.created_text ||
-    item.created_at ||
     '';
 
     const time =
@@ -642,7 +666,7 @@ if(counselSaveBtn){
             );
 
             alert(
-                'DB 저장 실패'
+                'DB 저장 실패: ' + result.error.message
             );
 
             return;
@@ -681,160 +705,46 @@ if(counselCancelBtn){
 
 /* =========================
    소개등록
-   핵심:
-   - prompt 중복 실행 방지
-   - 확인 버튼 눌러도 다시 뜨는 버그 방지
-   - 성명 입력 → 연락처 입력 → DB 저장
+   핵심 수정:
+   - created_at 사용 금지
+   - created_text로 저장
+   - prompt 반복 실행 방지
 ========================= */
 
 if(newBtn){
 
     newBtn.onclick =
-    null;
+    async function(e){
 
-    newBtn.addEventListener(
-        'click',
-        async function(e){
+        e.preventDefault();
+        e.stopPropagation();
 
-            e.preventDefault();
-            e.stopPropagation();
+        if(createPromptRunning){
 
-            if(createPromptRunning === true){
+            return;
+        }
 
-                return;
-            }
+        createPromptRunning =
+        true;
 
-            createPromptRunning =
-            true;
+        try{
 
-            newBtn.disabled =
-            true;
+            currentMode =
+            'new';
 
-            try{
+            setActiveButton(
+                newBtn
+            );
 
-                currentMode =
-                'new';
+            showTableArea();
 
-                setActiveButton(
-                    newBtn
-                );
+            const nameInput =
+            window.prompt(
+                '성명 입력',
+                ''
+            );
 
-                showTableArea();
-
-                const nameInput =
-                window.prompt(
-                    '성명 입력',
-                    ''
-                );
-
-                if(nameInput === null){
-
-                    currentMode =
-                    'introduce';
-
-                    if(introduceBtn){
-
-                        setActiveButton(
-                            introduceBtn
-                        );
-                    }
-
-                    loadIntroduceList();
-
-                    return;
-                }
-
-                const name =
-                String(nameInput)
-                .trim();
-
-                if(name === ''){
-
-                    alert(
-                        '성명을 입력하세요.'
-                    );
-
-                    currentMode =
-                    'introduce';
-
-                    if(introduceBtn){
-
-                        setActiveButton(
-                            introduceBtn
-                        );
-                    }
-
-                    loadIntroduceList();
-
-                    return;
-                }
-
-                const phoneInput =
-                window.prompt(
-                    '연락처 입력',
-                    ''
-                );
-
-                if(phoneInput === null){
-
-                    currentMode =
-                    'introduce';
-
-                    if(introduceBtn){
-
-                        setActiveButton(
-                            introduceBtn
-                        );
-                    }
-
-                    loadIntroduceList();
-
-                    return;
-                }
-
-                const phone =
-                formatPhone(
-                    phoneInput
-                );
-
-                const result =
-                await supabaseClient
-
-                .from('crm_customers')
-
-                .insert([{
-
-                    name:
-                    name,
-
-                    phone:
-                    phone,
-
-                    created_at:
-                    new Date().toISOString(),
-
-                    status:
-                    '소개등록',
-
-                    reserve_date:
-                    null
-
-                }])
-
-                .select();
-
-                if(result.error){
-
-                    console.error(
-                        result.error
-                    );
-
-                    alert(
-                        'DB 저장 실패'
-                    );
-
-                    return;
-                }
+            if(nameInput === null){
 
                 currentMode =
                 'introduce';
@@ -848,29 +758,129 @@ if(newBtn){
 
                 loadIntroduceList();
 
-            }catch(error){
+                return;
+            }
+
+            const name =
+            String(nameInput)
+            .trim();
+
+            if(name === ''){
+
+                alert(
+                    '성명을 입력하세요.'
+                );
+
+                currentMode =
+                'introduce';
+
+                if(introduceBtn){
+
+                    setActiveButton(
+                        introduceBtn
+                    );
+                }
+
+                loadIntroduceList();
+
+                return;
+            }
+
+            const phoneInput =
+            window.prompt(
+                '연락처 입력',
+                ''
+            );
+
+            if(phoneInput === null){
+
+                currentMode =
+                'introduce';
+
+                if(introduceBtn){
+
+                    setActiveButton(
+                        introduceBtn
+                    );
+                }
+
+                loadIntroduceList();
+
+                return;
+            }
+
+            const phone =
+            formatPhone(
+                phoneInput
+            );
+
+            const result =
+            await supabaseClient
+
+            .from('crm_customers')
+
+            .insert([{
+
+                name:
+                name,
+
+                phone:
+                phone,
+
+                created_text:
+                getNowText(),
+
+                status:
+                '소개등록',
+
+                reserve_date:
+                null
+
+            }])
+
+            .select();
+
+            if(result.error){
 
                 console.error(
-                    error
+                    result.error
                 );
 
                 alert(
-                    '소개등록 처리 중 오류가 발생했습니다.'
+                    'DB 저장 실패: ' + result.error.message
                 );
 
-            }finally{
-
-                createPromptRunning =
-                false;
-
-                newBtn.disabled =
-                false;
+                return;
             }
-        },
-        {
-            once:false
+
+            currentMode =
+            'introduce';
+
+            if(introduceBtn){
+
+                setActiveButton(
+                    introduceBtn
+                );
+            }
+
+            loadIntroduceList();
+
+        }catch(error){
+
+            console.error(
+                error
+            );
+
+            alert(
+                '소개등록 처리 중 오류: ' + error.message
+            );
+
+        }finally{
+
+            createPromptRunning =
+            false;
         }
-    );
+    };
 }
 
 
@@ -1030,6 +1040,10 @@ async function loadIntroduceList(){
             result.error
         );
 
+        alert(
+            '소개명단 불러오기 실패: ' + result.error.message
+        );
+
         return;
     }
 
@@ -1042,9 +1056,7 @@ async function loadIntroduceList(){
         'crm_customers',
 
         created_text:
-        item.created_text ||
-        item.created_at ||
-        ''
+        item.created_text || ''
 
     }));
 
@@ -1113,9 +1125,7 @@ async function loadCustomers(){
         'notes',
 
         created_text:
-        item.created_text ||
-        item.created_at ||
-        ''
+        item.created_text || ''
 
     }));
 
@@ -1128,9 +1138,7 @@ async function loadCustomers(){
         'crm_customers',
 
         created_text:
-        item.created_text ||
-        item.created_at ||
-        ''
+        item.created_text || ''
 
     }));
 
@@ -1217,9 +1225,7 @@ async function loadReserveList(){
         'notes',
 
         created_text:
-        item.created_text ||
-        item.created_at ||
-        ''
+        item.created_text || ''
 
     }));
 
@@ -1232,9 +1238,7 @@ async function loadReserveList(){
         'crm_customers',
 
         created_text:
-        item.created_text ||
-        item.created_at ||
-        ''
+        item.created_text || ''
 
     }));
 
@@ -1314,9 +1318,7 @@ function renderTable(data){
         ) || '상담내용';
 
         const createdText =
-        item.created_text ||
-        item.created_at ||
-        '';
+        item.created_text || '';
 
         const createdTextDisplay =
         formatDateTimeDisplay(
@@ -1479,7 +1481,7 @@ function bindNormalCellEditor(){
                 );
 
                 alert(
-                    'DB 저장 실패'
+                    'DB 저장 실패: ' + result.error.message
                 );
 
                 return;
@@ -1612,7 +1614,7 @@ function bindReserveDateEditor(){
                     );
 
                     alert(
-                        '상담예정일 삭제 실패'
+                        '상담예정일 삭제 실패: ' + clearResult.error.message
                     );
 
                     return;
@@ -1679,7 +1681,7 @@ function bindReserveDateEditor(){
                 );
 
                 alert(
-                    '상담예정일 저장 실패'
+                    '상담예정일 저장 실패: ' + result.error.message
                 );
 
                 return;
@@ -1762,7 +1764,7 @@ function bindFinishButtons(){
                 );
 
                 alert(
-                    '종료 처리 실패'
+                    '종료 처리 실패: ' + result.error.message
                 );
 
                 return;
