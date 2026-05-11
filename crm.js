@@ -21,6 +21,11 @@ window.supabase.createClient(
 let currentMode =
 'introduce';
 
+let counselTarget = {
+    id:null,
+    table:null
+};
+
 /* =========================
    버튼
 ========================= */
@@ -68,6 +73,35 @@ document.querySelector(
 const alarmBtn =
 document.querySelector(
     '[data-mode="alarm"]'
+);
+
+/* =========================
+   상담내용 창 요소
+========================= */
+
+const counselModal =
+document.getElementById(
+    'counselModal'
+);
+
+const counselTextArea =
+document.getElementById(
+    'counselTextArea'
+);
+
+const counselSaveBtn =
+document.getElementById(
+    'counselSaveBtn'
+);
+
+const counselCancelBtn =
+document.getElementById(
+    'counselCancelBtn'
+);
+
+const counselCloseBtn =
+document.getElementById(
+    'counselCloseBtn'
 );
 
 /* =========================
@@ -313,7 +347,6 @@ if(newBtn){
 
 /* =========================
    소개명단
-   종료된 고객은 제외
 ========================= */
 
 introduceBtn.onclick =
@@ -351,7 +384,6 @@ async function(){
 
 /* =========================
    고객명단
-   종료된 소개고객 + notes 고객
 ========================= */
 
 customerBtn.onclick =
@@ -737,8 +769,6 @@ async function loadCRMWithMemo(){
 
 /* =========================
    종료 처리
-   상담예정 목록에서 제거
-   고객명단에는 유지
 ========================= */
 
 async function completeConsult(id){
@@ -779,7 +809,6 @@ async function completeConsult(id){
 
 /* =========================
    CRM 출력
-   상태 칸 = 상담내용 입력창
 ========================= */
 
 function renderCRMTable(data){
@@ -853,6 +882,7 @@ function renderCRMTable(data){
                     data-table="${tableName}"
                     value="${escapeHTML(counselText)}"
                     placeholder="상담내용 입력"
+                    readonly
                 >
 
             </td>
@@ -983,8 +1013,51 @@ function bindEditableCells(){
 }
 
 /* =========================
-   상태 칸 상담내용 저장
-   기본 저장 위치: memo
+   상담내용 창 열기
+========================= */
+
+function openCounselModal(id, table, value){
+
+    counselTarget = {
+        id:id,
+        table:table
+    };
+
+    counselTextArea.value =
+    value || '';
+
+    counselModal.classList.add(
+        'show'
+    );
+
+    setTimeout(()=>{
+
+        counselTextArea.focus();
+
+    },50);
+}
+
+/* =========================
+   상담내용 창 닫기
+========================= */
+
+function closeCounselModal(){
+
+    counselModal.classList.remove(
+        'show'
+    );
+
+    counselTarget = {
+        id:null,
+        table:null
+    };
+
+    counselTextArea.value =
+    '';
+}
+
+/* =========================
+   상태 칸 클릭 → A4 1/4 창 열기
 ========================= */
 
 function bindStatusInputs(){
@@ -996,8 +1069,8 @@ function bindStatusInputs(){
 
     inputs.forEach(input=>{
 
-        input.onchange =
-        async function(){
+        input.onclick =
+        function(){
 
             const id =
             this.dataset.id;
@@ -1006,40 +1079,102 @@ function bindStatusInputs(){
             this.dataset.table;
 
             const value =
-            this.value.trim();
+            this.value;
 
-            const result =
-            await supabaseClient
-
-            .from(table)
-
-            .update({
-
-                memo:value
-
-            })
-
-            .eq(
-                'id',
-                id
+            openCounselModal(
+                id,
+                table,
+                value
             );
-
-            if(result.error){
-
-                console.log(
-                    result.error
-                );
-
-                alert(
-                    '상담내용 저장 실패'
-                );
-
-                return;
-            }
-
-            refreshCurrentMode();
         };
     });
+}
+
+/* =========================
+   상담내용 저장
+========================= */
+
+if(counselSaveBtn){
+
+    counselSaveBtn.onclick =
+    async function(){
+
+        if(!counselTarget.id || !counselTarget.table){
+
+            closeCounselModal();
+            return;
+        }
+
+        const value =
+        counselTextArea.value.trim();
+
+        const result =
+        await supabaseClient
+
+        .from(counselTarget.table)
+
+        .update({
+
+            memo:value
+
+        })
+
+        .eq(
+            'id',
+            counselTarget.id
+        );
+
+        if(result.error){
+
+            console.log(
+                result.error
+            );
+
+            alert(
+                '상담내용 저장 실패'
+            );
+
+            return;
+        }
+
+        closeCounselModal();
+
+        refreshCurrentMode();
+    };
+}
+
+/* =========================
+   상담내용 창 닫기 버튼
+========================= */
+
+if(counselCancelBtn){
+
+    counselCancelBtn.onclick =
+    function(){
+
+        closeCounselModal();
+    };
+}
+
+if(counselCloseBtn){
+
+    counselCloseBtn.onclick =
+    function(){
+
+        closeCounselModal();
+    };
+}
+
+if(counselModal){
+
+    counselModal.onclick =
+    function(e){
+
+        if(e.target === counselModal){
+
+            closeCounselModal();
+        }
+    };
 }
 
 /* =========================
@@ -1230,6 +1365,14 @@ supabaseClient
 
     ()=>{
 
+        if(
+            counselModal &&
+            counselModal.classList.contains('show')
+        ){
+
+            return;
+        }
+
         refreshCurrentMode();
     }
 )
@@ -1251,6 +1394,14 @@ supabaseClient
     },
 
     ()=>{
+
+        if(
+            counselModal &&
+            counselModal.classList.contains('show')
+        ){
+
+            return;
+        }
 
         if(currentMode === 'customer' || currentMode === 'reserve'){
 
