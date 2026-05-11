@@ -17,7 +17,7 @@ body{
 
     font-family:Arial, sans-serif;
 
-    background:#f2f2f2;
+    background:#d9d9d9;
 
     color:#222;
 
@@ -37,7 +37,7 @@ body{
     display:flex;
     flex-direction:column;
 
-    background:#f2f2f2;
+    background:#d9d9d9;
 }
 
 /* =====================================================
@@ -127,20 +127,23 @@ body{
     width:100%;
     height:calc(100vh - 72px);
 
-    padding:6px;
+    padding:15px 20px;
 
     overflow:auto;
 
-    background:#f2f2f2;
+    background:#d9d9d9;
 }
 
 /* =====================================================
    CRM 테이블 기본
+   중요:
+   width:100% 금지
+   red 박스처럼 필요한 폭만 차지하게 auto 적용
 ===================================================== */
 
 .crm-table,
 table:has(#crmBody){
-    width:100%;
+    width:auto;
 
     border-collapse:collapse;
 
@@ -159,11 +162,11 @@ table:has(#crmBody){
 .crm-table td,
 table:has(#crmBody) th,
 table:has(#crmBody) td{
-    border:1px solid #cfcfcf;
+    border:1px solid #bfbfbf;
 
-    padding:2px 3px;
+    padding:2px 4px;
 
-    height:24px;
+    height:28px;
 
     font-size:11px;
     font-weight:400;
@@ -179,28 +182,33 @@ table:has(#crmBody) td{
 /* 헤더 */
 .crm-table th,
 table:has(#crmBody) th{
-    background:#e7e7e7;
+    background:#222222;
+    color:#ffffff;
+
+    font-weight:400;
+}
+
+/* 본문 셀 */
+.crm-table td,
+table:has(#crmBody) td{
+    background:#f5efcc;
+    color:#000000;
 
     font-weight:400;
 }
 
 /* =====================================================
    컬럼 폭 조정
-   1 번호
-   2 이름      → 더 축소
-   3 연락처    → 더 축소
-   4 상담신청일 → 더 축소
-   5 상태      → 많이 확대
-   6 상담예정일 → 더 축소
-   7 종료
+   red 박스 기준 축소 적용
 ===================================================== */
 
-/* 번호 */
+/* ID */
 .crm-table th:nth-child(1),
 .crm-table td:nth-child(1),
 table:has(#crmBody) th:nth-child(1),
 table:has(#crmBody) td:nth-child(1){
     width:34px;
+    min-width:34px;
     max-width:34px;
 }
 
@@ -209,8 +217,9 @@ table:has(#crmBody) td:nth-child(1){
 .crm-table td:nth-child(2),
 table:has(#crmBody) th:nth-child(2),
 table:has(#crmBody) td:nth-child(2){
-    width:58px;
-    max-width:58px;
+    width:82px;
+    min-width:82px;
+    max-width:82px;
 }
 
 /* 연락처 */
@@ -218,8 +227,9 @@ table:has(#crmBody) td:nth-child(2){
 .crm-table td:nth-child(3),
 table:has(#crmBody) th:nth-child(3),
 table:has(#crmBody) td:nth-child(3){
-    width:76px;
-    max-width:76px;
+    width:170px;
+    min-width:170px;
+    max-width:170px;
 }
 
 /* 상담신청일 */
@@ -227,8 +237,9 @@ table:has(#crmBody) td:nth-child(3){
 .crm-table td:nth-child(4),
 table:has(#crmBody) th:nth-child(4),
 table:has(#crmBody) td:nth-child(4){
-    width:92px;
-    max-width:92px;
+    width:180px;
+    min-width:180px;
+    max-width:180px;
 }
 
 /* 상태 */
@@ -236,12 +247,9 @@ table:has(#crmBody) td:nth-child(4){
 .crm-table td:nth-child(5),
 table:has(#crmBody) th:nth-child(5),
 table:has(#crmBody) td:nth-child(5){
-    width:180px;
-    max-width:180px;
-
-    text-align:left;
-
-    padding-left:6px;
+    width:150px;
+    min-width:150px;
+    max-width:150px;
 }
 
 /* 상담예정일 */
@@ -249,8 +257,9 @@ table:has(#crmBody) td:nth-child(5){
 .crm-table td:nth-child(6),
 table:has(#crmBody) th:nth-child(6),
 table:has(#crmBody) td:nth-child(6){
-    width:88px;
-    max-width:88px;
+    width:150px;
+    min-width:150px;
+    max-width:150px;
 }
 
 /* 종료 */
@@ -258,8 +267,9 @@ table:has(#crmBody) td:nth-child(6){
 .crm-table td:nth-child(7),
 table:has(#crmBody) th:nth-child(7),
 table:has(#crmBody) td:nth-child(7){
-    width:42px;
-    max-width:42px;
+    width:72px;
+    min-width:72px;
+    max-width:72px;
 }
 
 /* =====================================================
@@ -281,7 +291,7 @@ table:has(#crmBody) td:nth-child(7){
 ===================================================== */
 
 .finish-btn{
-    width:36px;
+    width:42px;
     height:19px;
 
     padding:0;
