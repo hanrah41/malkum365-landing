@@ -89,6 +89,20 @@ function setActiveButton(target){
 }
 
 /* =========================
+   HTML 이스케이프
+========================= */
+
+function escapeHTML(value){
+
+    return String(value || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+/* =========================
    전화번호 자동 하이픈
 ========================= */
 
@@ -266,7 +280,7 @@ if(newBtn){
             created_at:
             getNowDateTime(),
 
-            status:'신규고객',
+            status:'',
 
             memo:'',
 
@@ -434,14 +448,9 @@ async function(){
 
 /* =========================
    상담예정 로드
-   1. 신규 소개고객: consult_done false
-   2. 고객명단에서 다시 상담예정일을 잡은 고객: consult_done true + status 상담예정
-   3. notes 고객
 ========================= */
 
 async function loadReserveList(){
-
-    /* 1. 아직 종료되지 않은 소개고객 */
 
     const newReserveResult =
     await supabaseClient
@@ -464,8 +473,6 @@ async function loadReserveList(){
         'reserve_date',
         ''
     );
-
-    /* 2. 고객명단에서 다시 상담예정일을 잡은 고객 */
 
     const reReserveResult =
     await supabaseClient
@@ -494,8 +501,6 @@ async function loadReserveList(){
         'reserve_date',
         ''
     );
-
-    /* 3. notes 고객 */
 
     const notesResult =
     await supabaseClient
@@ -774,6 +779,7 @@ async function completeConsult(id){
 
 /* =========================
    CRM 출력
+   상태 칸 = 상담내용 입력창
 ========================= */
 
 function renderCRMTable(data){
@@ -798,6 +804,9 @@ function renderCRMTable(data){
         item.reserve_date &&
         item.reserve_date !== '';
 
+        const counselText =
+        item.memo || item.status || '';
+
         const tr =
         document.createElement(
             'tr'
@@ -814,7 +823,7 @@ function renderCRMTable(data){
                 data-table="${tableName}"
                 data-field="name">
 
-                ${item.name || ''}
+                ${escapeHTML(item.name || '')}
 
             </td>
 
@@ -823,24 +832,28 @@ function renderCRMTable(data){
                 data-table="${tableName}"
                 data-field="phone">
 
-                ${formatPhoneNumber(
+                ${escapeHTML(formatPhoneNumber(
                     item.phone || ''
-                )}
+                ))}
 
             </td>
 
             <td>
 
-                ${createdDate}
+                ${escapeHTML(createdDate)}
 
             </td>
 
-            <td class="editable-cell"
-                data-id="${item.id}"
-                data-table="${tableName}"
-                data-field="status">
+            <td>
 
-                ${item.status || ''}
+                <input
+                    type="text"
+                    class="status-input"
+                    data-id="${item.id}"
+                    data-table="${tableName}"
+                    value="${escapeHTML(counselText)}"
+                    placeholder="상담내용 입력"
+                >
 
             </td>
 
@@ -848,7 +861,7 @@ function renderCRMTable(data){
                 data-id="${item.id}"
                 data-table="${tableName}">
 
-                ${item.reserve_date || ''}
+                ${escapeHTML(item.reserve_date || '')}
 
             </td>
 
@@ -887,6 +900,7 @@ function renderCRMTable(data){
     bindEditableCells();
     bindReserveDateEditor();
     bindFinishButtons();
+    bindStatusInputs();
 }
 
 /* =========================
@@ -969,6 +983,66 @@ function bindEditableCells(){
 }
 
 /* =========================
+   상태 칸 상담내용 저장
+   기본 저장 위치: memo
+========================= */
+
+function bindStatusInputs(){
+
+    const inputs =
+    document.querySelectorAll(
+        '.status-input'
+    );
+
+    inputs.forEach(input=>{
+
+        input.onchange =
+        async function(){
+
+            const id =
+            this.dataset.id;
+
+            const table =
+            this.dataset.table;
+
+            const value =
+            this.value.trim();
+
+            const result =
+            await supabaseClient
+
+            .from(table)
+
+            .update({
+
+                memo:value
+
+            })
+
+            .eq(
+                'id',
+                id
+            );
+
+            if(result.error){
+
+                console.log(
+                    result.error
+                );
+
+                alert(
+                    '상담내용 저장 실패'
+                );
+
+                return;
+            }
+
+            refreshCurrentMode();
+        };
+    });
+}
+
+/* =========================
    종료 버튼
 ========================= */
 
@@ -993,9 +1067,6 @@ function bindFinishButtons(){
 
 /* =========================
    상담예정일 수정
-   고객명단에서 기존 고객 상담예정일을 다시 잡으면
-   consult_done true 유지 + status 상담예정
-   그래서 고객명단에도 남고 상담예정에도 복사 표시됨
 ========================= */
 
 function bindReserveDateEditor(){
