@@ -89,21 +89,6 @@ document.getElementById(
     'counselTextArea'
 );
 
-const counselSaveBtn =
-document.getElementById(
-    'counselSaveBtn'
-);
-
-const counselCancelBtn =
-document.getElementById(
-    'counselCancelBtn'
-);
-
-const counselCloseBtn =
-document.getElementById(
-    'counselCloseBtn'
-);
-
 /* =========================
    활성 버튼
 ========================= */
@@ -774,9 +759,6 @@ async function loadCRMWithMemo(){
 
 /* =========================
    종료 처리
-   상담예정 목록에서 제거
-   고객명단으로 이동
-   상담예정일은 반드시 공백 처리
 ========================= */
 
 async function completeConsult(id, table){
@@ -1050,16 +1032,25 @@ function openCounselModal(id, table, value){
         table:table
     };
 
-    counselTextArea.value =
-    value || '';
+    if(counselTextArea){
 
-    counselModal.classList.add(
-        'show'
-    );
+        counselTextArea.value =
+        value || '';
+    }
+
+    if(counselModal){
+
+        counselModal.classList.add(
+            'show'
+        );
+    }
 
     setTimeout(()=>{
 
-        counselTextArea.focus();
+        if(counselTextArea){
+
+            counselTextArea.focus();
+        }
 
     },50);
 }
@@ -1070,17 +1061,72 @@ function openCounselModal(id, table, value){
 
 function closeCounselModal(){
 
-    counselModal.classList.remove(
-        'show'
-    );
+    if(counselModal){
+
+        counselModal.classList.remove(
+            'show'
+        );
+    }
 
     counselTarget = {
         id:null,
         table:null
     };
 
-    counselTextArea.value =
-    '';
+    if(counselTextArea){
+
+        counselTextArea.value =
+        '';
+    }
+}
+
+/* =========================
+   상담내용 저장
+========================= */
+
+async function saveCounselModal(){
+
+    if(!counselTarget.id || !counselTarget.table){
+
+        closeCounselModal();
+        return;
+    }
+
+    const value =
+    counselTextArea.value.trim();
+
+    const result =
+    await supabaseClient
+
+    .from(counselTarget.table)
+
+    .update({
+
+        memo:value
+
+    })
+
+    .eq(
+        'id',
+        counselTarget.id
+    );
+
+    if(result.error){
+
+        console.log(
+            result.error
+        );
+
+        alert(
+            '상담내용 저장 실패'
+        );
+
+        return;
+    }
+
+    closeCounselModal();
+
+    refreshCurrentMode();
 }
 
 /* =========================
@@ -1118,91 +1164,72 @@ function bindStatusInputs(){
 }
 
 /* =========================
-   상담내용 저장
+   상담창 버튼 이벤트
+   저장 / 취소 / X 강제 연결
 ========================= */
 
-if(counselSaveBtn){
-
-    counselSaveBtn.onclick =
-    async function(){
-
-        if(!counselTarget.id || !counselTarget.table){
-
-            closeCounselModal();
-            return;
-        }
-
-        const value =
-        counselTextArea.value.trim();
-
-        const result =
-        await supabaseClient
-
-        .from(counselTarget.table)
-
-        .update({
-
-            memo:value
-
-        })
-
-        .eq(
-            'id',
-            counselTarget.id
-        );
-
-        if(result.error){
-
-            console.log(
-                result.error
-            );
-
-            alert(
-                '상담내용 저장 실패'
-            );
-
-            return;
-        }
-
-        closeCounselModal();
-
-        refreshCurrentMode();
-    };
-}
-
-/* =========================
-   상담내용 창 닫기 버튼
-========================= */
-
-if(counselCancelBtn){
-
-    counselCancelBtn.onclick =
-    function(){
-
-        closeCounselModal();
-    };
-}
-
-if(counselCloseBtn){
-
-    counselCloseBtn.onclick =
-    function(){
-
-        closeCounselModal();
-    };
-}
-
-if(counselModal){
-
-    counselModal.onclick =
+document.addEventListener(
+    'click',
     function(e){
 
-        if(e.target === counselModal){
+        if(e.target.id === 'counselSaveBtn'){
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            saveCounselModal();
+            return;
+        }
+
+        if(e.target.id === 'counselCancelBtn'){
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            closeCounselModal();
+            return;
+        }
+
+        if(e.target.id === 'counselCloseBtn'){
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            closeCounselModal();
+            return;
+        }
+
+        if(e.target.id === 'counselModal'){
+
+            closeCounselModal();
+            return;
+        }
+    }
+);
+
+document.addEventListener(
+    'keydown',
+    function(e){
+
+        if(e.key === 'Escape'){
 
             closeCounselModal();
         }
-    };
-}
+
+        if(
+            e.ctrlKey
+            &&
+            e.key === 'Enter'
+            &&
+            counselModal
+            &&
+            counselModal.classList.contains('show')
+        ){
+
+            saveCounselModal();
+        }
+    }
+);
 
 /* =========================
    종료 버튼
