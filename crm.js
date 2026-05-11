@@ -180,7 +180,7 @@ function getCreatedDate(item){
 }
 
 /* =========================
-   소개등록 복구
+   소개등록
 ========================= */
 
 if(newBtn){
@@ -206,7 +206,7 @@ if(newBtn){
 
             phone:'',
 
-            created_at:'',
+            created_text:'',
 
             status:'신규고객',
 
@@ -550,22 +550,42 @@ function renderCRMTable(data){
                 ${item.id || ''}
             </td>
 
-            <td>
+            <td class="editable-cell"
+                data-id="${item.id}"
+                data-table="${tableName}"
+                data-field="name">
+
                 ${item.name || ''}
+
             </td>
 
-            <td>
+            <td class="editable-cell"
+                data-id="${item.id}"
+                data-table="${tableName}"
+                data-field="phone">
+
                 ${formatPhoneNumber(
                     item.phone || ''
                 )}
+
             </td>
 
-            <td>
+            <td class="editable-cell"
+                data-id="${item.id}"
+                data-table="${tableName}"
+                data-field="created_text">
+
                 ${createdDate}
+
             </td>
 
-            <td>
+            <td class="editable-cell"
+                data-id="${item.id}"
+                data-table="${tableName}"
+                data-field="status">
+
                 ${item.status || ''}
+
             </td>
 
             <td class="editable-reserve"
@@ -605,8 +625,74 @@ function renderCRMTable(data){
         );
     });
 
+    bindEditableCells();
     bindReserveDateEditor();
     bindFinishButtons();
+}
+
+/* =========================
+   일반 셀 수정
+========================= */
+
+function bindEditableCells(){
+
+    const cells =
+    document.querySelectorAll(
+        '.editable-cell'
+    );
+
+    cells.forEach(cell=>{
+
+        cell.onclick =
+        async function(){
+
+            const id =
+            this.dataset.id;
+
+            const table =
+            this.dataset.table;
+
+            const field =
+            this.dataset.field;
+
+            const current =
+            this.innerText.trim();
+
+            let value =
+            prompt(
+                `${field} 입력`,
+                current
+            );
+
+            if(value === null)
+            return;
+
+            if(field === 'phone'){
+
+                value =
+                formatPhoneNumber(
+                    value
+                );
+            }
+
+            await supabaseClient
+
+            .from(table)
+
+            .update({
+
+                [field]:value
+
+            })
+
+            .eq(
+                'id',
+                id
+            );
+
+            refreshCurrentMode();
+        };
+    });
 }
 
 /* =========================
