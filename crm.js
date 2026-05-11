@@ -3,13 +3,13 @@
    파일: C:\malkum365-landing\crm.js
 
    수정 내용:
-   - index.html 건드리지 않음
-   - notes 중복 INSERT 방어 표시
-   - 1~10초 이내 같은 이름+전화번호 중복 데이터는 CRM 화면에서 1건만 표시
-   - 전화번호 01086949600 -> 010-8694-9600 화면 표시
+   - 메모 저장 시 crm_customers에 insert 하지 않음
+   - 메모는 localStorage에만 저장
+   - 메모 데이터가 소개명단/고객명단에 나타나지 않도록 필터 적용
    - notes 데이터는 고객명단에 표시
    - 상담예정 종료 버튼 클릭 시 고객명단으로 이동
    - 상담내용 줄바꿈 저장 보존 유지
+   - 전화번호 01086949600 -> 010-8694-9600 화면 표시
 ===================================================== */
 
 
@@ -45,6 +45,14 @@ null;
 
 let currentEditTable =
 'notes';
+
+
+/* =========================
+   메모 localStorage key
+========================= */
+
+const MEMO_STORAGE_KEY =
+'malkum365_customer_memo';
 
 
 /* =========================
@@ -244,8 +252,8 @@ function getSortTime(item){
 
     const value =
     item.reserve_date ||
-    item.created_at ||
     item.created_text ||
+    item.created_at ||
     '';
 
     const time =
@@ -257,6 +265,43 @@ function getSortTime(item){
     }
 
     return time;
+}
+
+
+/* =========================
+   메모 행 제거 필터
+   - 과거에 잘못 저장된 name='메모', status='메모' 행 숨김
+========================= */
+
+function removeMemoRows(list){
+
+    if(!Array.isArray(list)){
+
+        return [];
+    }
+
+    return list.filter(item=>{
+
+        const name =
+        String(item.name ?? '')
+        .trim();
+
+        const status =
+        String(item.status ?? '')
+        .trim();
+
+        if(name === '메모'){
+
+            return false;
+        }
+
+        if(status === '메모'){
+
+            return false;
+        }
+
+        return true;
+    });
 }
 
 
@@ -277,8 +322,13 @@ function removeDuplicateSubmissions(list){
         return [];
     }
 
+    const noMemoList =
+    removeMemoRows(
+        list
+    );
+
     const sorted =
-    [...list].sort((a,b)=>{
+    [...noMemoList].sort((a,b)=>{
 
         return getSortTime(b) - getSortTime(a);
     });
@@ -678,6 +728,7 @@ if(newBtn){
 /* =========================
    소개명단
    - crm_customers 데이터만 표시
+   - 메모 행은 표시하지 않음
 ========================= */
 
 if(introduceBtn){
@@ -703,6 +754,7 @@ if(introduceBtn){
    고객명단
    - notes 데이터 표시
    - crm_customers 데이터도 함께 표시
+   - 메모 행은 표시하지 않음
 ========================= */
 
 if(customerBtn){
@@ -749,12 +801,14 @@ if(reserveBtn){
 
 /* =========================
    메모
+   - 별도 DB 저장 없음
+   - 이 화면 안에서만 저장/조회
 ========================= */
 
 if(memoBtn){
 
     memoBtn.onclick =
-    async function(){
+    function(){
 
         currentMode =
         'memo';
@@ -841,14 +895,21 @@ async function loadIntroduceList(){
         'crm_customers',
 
         created_text:
-        item.created_at || ''
+        item.created_text ||
+        item.created_at ||
+        ''
 
     }));
 
-    renderTable(
-        removeDuplicateSubmissions(
+    const filtered =
+    removeDuplicateSubmissions(
+        removeMemoRows(
             data
         )
+    );
+
+    renderTable(
+        filtered
     );
 }
 
@@ -857,6 +918,7 @@ async function loadIntroduceList(){
    고객명단 로드
    - notes + crm_customers 통합
    - notes에서 넘어온 데이터는 고객명단에 표시
+   - 메모 행은 표시하지 않음
    - 중복 신청은 화면에서 1건만 표시
 ========================= */
 
@@ -932,7 +994,9 @@ async function loadCustomers(){
 
     const filtered =
     removeDuplicateSubmissions(
-        merged
+        removeMemoRows(
+            merged
+        )
     );
 
     filtered.sort((a,b)=>{
@@ -948,6 +1012,7 @@ async function loadCustomers(){
 
 /* =========================
    상담예정 통합 로드
+   - 메모 행은 표시하지 않음
 ========================= */
 
 async function loadReserveList(){
@@ -1034,7 +1099,9 @@ async function loadReserveList(){
 
     const filtered =
     removeDuplicateSubmissions(
-        merged
+        removeMemoRows(
+            merged
+        )
     );
 
     filtered.sort((a,b)=>{
@@ -1548,121 +1615,49 @@ function bindFinishButtons(){
 
 /* =========================
    메모 로드
+   - DB에서 불러오지 않음
+   - localStorage에서만 불러옴
 ========================= */
 
-async function loadMemo(){
+function loadMemo(){
 
     if(!memoTextArea){
 
         return;
     }
 
-    const result =
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .select('*')
-
-    .not(
-        'memo',
-        'is',
-        null
-    )
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    )
-
-    .limit(
-        1
+    const savedMemo =
+    localStorage.getItem(
+        MEMO_STORAGE_KEY
     );
 
-    if(result.error){
-
-        console.error(
-            result.error
-        );
-
-        memoTextArea.value =
-        '';
-
-        return;
-    }
-
-    if(result.data && result.data.length > 0){
-
-        memoTextArea.value =
-        normalizeMultiline(
-            result.data[0].memo || ''
-        );
-
-    }else{
-
-        memoTextArea.value =
-        '';
-    }
+    memoTextArea.value =
+    normalizeMultiline(
+        savedMemo || ''
+    );
 }
 
 
 /* =========================
    메모 저장
+   - DB insert 없음
+   - 소개명단/고객명단에 절대 표시 안 됨
 ========================= */
 
 if(memoSaveBtn){
 
     memoSaveBtn.onclick =
-    async function(){
+    function(){
 
         const value =
         normalizeMultiline(
             memoTextArea ? memoTextArea.value : ''
         );
 
-        const result =
-        await supabaseClient
-
-        .from('crm_customers')
-
-        .insert([{
-
-            name:
-            '메모',
-
-            phone:
-            '',
-
-            created_at:
-            new Date().toISOString(),
-
-            status:
-            '메모',
-
-            memo:
-            value,
-
-            reserve_date:
-            null
-
-        }])
-
-        .select();
-
-        if(result.error){
-
-            console.error(
-                result.error
-            );
-
-            alert(
-                '메모 저장 실패'
-            );
-
-            return;
-        }
+        localStorage.setItem(
+            MEMO_STORAGE_KEY,
+            value
+        );
 
         alert(
             '메모 저장 완료'
@@ -1774,7 +1769,14 @@ supabaseClient
 
     ()=>{
 
-        refreshCurrentMode();
+        if(
+            currentMode === 'introduce' ||
+            currentMode === 'customer' ||
+            currentMode === 'reserve'
+        ){
+
+            refreshCurrentMode();
+        }
     }
 )
 
