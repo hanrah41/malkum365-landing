@@ -26,6 +26,9 @@ let counselTarget = {
     table:null
 };
 
+const MEMO_STORAGE_KEY =
+'malkum365_customer_memo_text';
+
 /* =========================
    버튼
 ========================= */
@@ -76,6 +79,30 @@ document.querySelector(
 );
 
 /* =========================
+   영역
+========================= */
+
+const crmTableArea =
+document.getElementById(
+    'crmTableArea'
+);
+
+const memoArea =
+document.getElementById(
+    'memoArea'
+);
+
+const memoTextArea =
+document.getElementById(
+    'memoTextArea'
+);
+
+const memoSaveBtn =
+document.getElementById(
+    'memoSaveBtn'
+);
+
+/* =========================
    상담내용 창 요소
 ========================= */
 
@@ -108,6 +135,90 @@ function setActiveButton(target){
             'active'
         );
     }
+}
+
+/* =========================
+   테이블 화면 표시
+========================= */
+
+function showTableArea(){
+
+    if(crmTableArea){
+
+        crmTableArea.style.display =
+        'block';
+    }
+
+    if(memoArea){
+
+        memoArea.classList.remove(
+            'show'
+        );
+    }
+}
+
+/* =========================
+   메모 화면 표시
+========================= */
+
+function showMemoArea(){
+
+    if(crmTableArea){
+
+        crmTableArea.style.display =
+        'none';
+    }
+
+    if(memoArea){
+
+        memoArea.classList.add(
+            'show'
+        );
+    }
+
+    if(memoTextArea){
+
+        memoTextArea.value =
+        localStorage.getItem(
+            MEMO_STORAGE_KEY
+        ) || '';
+
+        setTimeout(()=>{
+
+            memoTextArea.focus();
+
+        },50);
+    }
+}
+
+/* =========================
+   메모 저장
+========================= */
+
+function saveMemoText(){
+
+    if(!memoTextArea){
+
+        return;
+    }
+
+    localStorage.setItem(
+        MEMO_STORAGE_KEY,
+        memoTextArea.value
+    );
+
+    alert(
+        '메모 저장 완료'
+    );
+}
+
+if(memoSaveBtn){
+
+    memoSaveBtn.onclick =
+    function(){
+
+        saveMemoText();
+    };
 }
 
 /* =========================
@@ -277,6 +388,8 @@ if(newBtn){
         currentMode =
         'new';
 
+        showTableArea();
+
         setActiveButton(
             newBtn
         );
@@ -348,6 +461,8 @@ if(introduceBtn){
         currentMode =
         'introduce';
 
+        showTableArea();
+
         setActiveButton(
             introduceBtn
         );
@@ -387,6 +502,8 @@ if(customerBtn){
 
         currentMode =
         'customer';
+
+        showTableArea();
 
         setActiveButton(
             customerBtn
@@ -470,11 +587,33 @@ if(reserveBtn){
         currentMode =
         'reserve';
 
+        showTableArea();
+
         setActiveButton(
             reserveBtn
         );
 
         loadReserveList();
+    };
+}
+
+/* =========================
+   메모
+========================= */
+
+if(memoBtn){
+
+    memoBtn.onclick =
+    function(){
+
+        currentMode =
+        'memo';
+
+        setActiveButton(
+            memoBtn
+        );
+
+        showMemoArea();
     };
 }
 
@@ -608,7 +747,7 @@ async function loadReserveList(){
 }
 
 /* =========================
-   진행중
+   진행중 / 완료 기존 호환용
 ========================= */
 
 if(processBtn){
@@ -618,6 +757,8 @@ if(processBtn){
 
         currentMode =
         'process';
+
+        showTableArea();
 
         setActiveButton(
             processBtn
@@ -629,10 +770,6 @@ if(processBtn){
     };
 }
 
-/* =========================
-   완료
-========================= */
-
 if(doneBtn){
 
     doneBtn.onclick =
@@ -640,6 +777,8 @@ if(doneBtn){
 
         currentMode =
         'done';
+
+        showTableArea();
 
         setActiveButton(
             doneBtn
@@ -667,26 +806,6 @@ if(doneBtn){
         renderCRMTable(
             result.data || []
         );
-    };
-}
-
-/* =========================
-   고객메모
-========================= */
-
-if(memoBtn){
-
-    memoBtn.onclick =
-    function(){
-
-        currentMode =
-        'memo';
-
-        setActiveButton(
-            memoBtn
-        );
-
-        loadCRMWithMemo();
     };
 }
 
@@ -743,39 +862,12 @@ async function loadCRMByStatus(status){
 }
 
 /* =========================
-   메모 로드
+   메모 로드 기존 호환
 ========================= */
 
 async function loadCRMWithMemo(){
 
-    const result =
-    await supabaseClient
-
-    .from('crm_customers')
-
-    .select('*')
-
-    .not(
-        'memo',
-        'is',
-        null
-    )
-
-    .neq(
-        'memo',
-        ''
-    )
-
-    .order(
-        'id',
-        {
-            ascending:false
-        }
-    );
-
-    renderCRMTable(
-        result.data || []
-    );
+    showMemoArea();
 }
 
 /* =========================
@@ -843,6 +935,8 @@ async function completeConsult(id, table){
 ========================= */
 
 function renderCRMTable(data){
+
+    showTableArea();
 
     const body =
     document.getElementById(
@@ -1214,7 +1308,6 @@ function bindStatusInputs(){
 
 /* =========================
    상담창 버튼 이벤트
-   null 오류 방지 안전 연결
 ========================= */
 
 document.addEventListener(
@@ -1425,6 +1518,12 @@ function bindReserveDateEditor(){
 
 function refreshCurrentMode(){
 
+    if(currentMode === 'memo'){
+
+        showMemoArea();
+        return;
+    }
+
     if(currentMode === 'reserve'){
 
         loadReserveList();
@@ -1457,12 +1556,6 @@ function refreshCurrentMode(){
             '진행중'
         );
 
-        return;
-    }
-
-    if(currentMode === 'memo'){
-
-        loadCRMWithMemo();
         return;
     }
 
@@ -1500,7 +1593,10 @@ supabaseClient
             return;
         }
 
-        refreshCurrentMode();
+        if(currentMode !== 'memo'){
+
+            refreshCurrentMode();
+        }
     }
 )
 
@@ -1530,7 +1626,11 @@ supabaseClient
             return;
         }
 
-        if(currentMode === 'customer' || currentMode === 'reserve'){
+        if(
+            currentMode === 'customer'
+            ||
+            currentMode === 'reserve'
+        ){
 
             refreshCurrentMode();
         }
