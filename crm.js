@@ -206,11 +206,6 @@ function getNowDateTime(){
 
 function getCreatedDate(item){
 
-    if(item.created_text){
-
-        return item.created_text;
-    }
-
     if(item.created_at){
 
         return item.created_at;
@@ -246,9 +241,7 @@ if(newBtn){
 
             phone:'',
 
-            /* 자동 날짜 입력 */
-
-            created_text:
+            created_at:
             getNowDateTime(),
 
             status:'신규고객',
@@ -262,6 +255,10 @@ if(newBtn){
         }]);
 
         if(result.error){
+
+            console.log(
+                result.error
+            );
 
             alert(
                 '등록 실패'
@@ -612,8 +609,6 @@ function renderCRMTable(data){
                 )}
 
             </td>
-
-            <!-- 수정불가 -->
 
             <td>
 
