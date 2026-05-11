@@ -3,10 +3,12 @@
    파일: C:\malkum365-landing\crm.js
 
    수정 내용:
+   - index.html 건드리지 않음
+   - notes 중복 INSERT 방어 표시
+   - 1~10초 이내 같은 이름+전화번호 중복 데이터는 CRM 화면에서 1건만 표시
+   - 전화번호 01086949600 -> 010-8694-9600 화면 표시
    - notes 데이터는 고객명단에 표시
-   - 소개명단은 crm_customers 데이터만 표시
    - 상담예정 종료 버튼 클릭 시 고객명단으로 이동
-   - 종료 후 소개명단으로 들어가는 버그 수정
    - 상담내용 줄바꿈 저장 보존 유지
 ===================================================== */
 
@@ -184,6 +186,57 @@ function normalizeMultiline(value){
 
 
 /* =========================
+   전화번호 숫자만 추출
+========================= */
+
+function onlyPhoneDigits(value){
+
+    return String(value ?? '')
+    .replace(/[^0-9]/g, '');
+}
+
+
+/* =========================
+   전화번호 표시 형식
+   01086949600 -> 010-8694-9600
+========================= */
+
+function formatPhone(value){
+
+    const digits =
+    onlyPhoneDigits(
+        value
+    );
+
+    if(digits.length === 11){
+
+        return digits.replace(
+            /(\d{3})(\d{4})(\d{4})/,
+            '$1-$2-$3'
+        );
+    }
+
+    if(digits.length === 10){
+
+        if(digits.startsWith('02')){
+
+            return digits.replace(
+                /(\d{2})(\d{4})(\d{4})/,
+                '$1-$2-$3'
+            );
+        }
+
+        return digits.replace(
+            /(\d{3})(\d{3})(\d{4})/,
+            '$1-$2-$3'
+        );
+    }
+
+    return String(value ?? '');
+}
+
+
+/* =========================
    날짜 정렬용 값
 ========================= */
 
@@ -204,6 +257,98 @@ function getSortTime(item){
     }
 
     return time;
+}
+
+
+/* =========================
+   중복 신청 표시 제거
+   기준:
+   - 같은 이름
+   - 같은 전화번호 숫자
+   - 같은 테이블
+   - created_at 차이 10초 이내
+   => 최신 1건만 화면 표시
+========================= */
+
+function removeDuplicateSubmissions(list){
+
+    if(!Array.isArray(list)){
+
+        return [];
+    }
+
+    const sorted =
+    [...list].sort((a,b)=>{
+
+        return getSortTime(b) - getSortTime(a);
+    });
+
+    const result =
+    [];
+
+    sorted.forEach(item=>{
+
+        const name =
+        String(item.name ?? '')
+        .trim();
+
+        const phone =
+        onlyPhoneDigits(
+            item.phone
+        );
+
+        const tableName =
+        item.source_table || '';
+
+        const itemTime =
+        getSortTime(
+            item
+        );
+
+        const isDuplicate =
+        result.some(existing=>{
+
+            const existingName =
+            String(existing.name ?? '')
+            .trim();
+
+            const existingPhone =
+            onlyPhoneDigits(
+                existing.phone
+            );
+
+            const existingTable =
+            existing.source_table || '';
+
+            const existingTime =
+            getSortTime(
+                existing
+            );
+
+            const diff =
+            Math.abs(
+                existingTime - itemTime
+            );
+
+            return (
+                name !== '' &&
+                phone !== '' &&
+                name === existingName &&
+                phone === existingPhone &&
+                tableName === existingTable &&
+                diff <= 10000
+            );
+        });
+
+        if(!isDuplicate){
+
+            result.push(
+                item
+            );
+        }
+    });
+
+    return result;
 }
 
 
@@ -341,8 +486,6 @@ function closeCounselEditor(){
 
 /* =========================
    상담내용 저장
-   - textarea.value 그대로 저장
-   - 줄바꿈 보존
 ========================= */
 
 if(counselSaveBtn){
@@ -430,8 +573,6 @@ if(counselCancelBtn){
 /* =========================
    소개등록
    - 소개등록에서 수동 등록한 데이터는 crm_customers에 저장
-   - 따라서 소개명단에 표시됨
-   - notes로 들어온 외부 데이터와 분리
 ========================= */
 
 if(newBtn){
@@ -470,10 +611,15 @@ if(newBtn){
             return;
         }
 
-        const phone =
+        const phoneInput =
         prompt(
             '연락처 입력'
         ) || '';
+
+        const phone =
+        formatPhone(
+            phoneInput
+        );
 
         const result =
         await supabaseClient
@@ -532,7 +678,6 @@ if(newBtn){
 /* =========================
    소개명단
    - crm_customers 데이터만 표시
-   - notes 데이터는 여기 표시하지 않음
 ========================= */
 
 if(introduceBtn){
@@ -660,7 +805,6 @@ if(alarmBtn){
 
 /* =========================
    소개명단 로드
-   - crm_customers 전용
 ========================= */
 
 async function loadIntroduceList(){
@@ -702,7 +846,9 @@ async function loadIntroduceList(){
     }));
 
     renderTable(
-        data
+        removeDuplicateSubmissions(
+            data
+        )
     );
 }
 
@@ -711,6 +857,7 @@ async function loadIntroduceList(){
    고객명단 로드
    - notes + crm_customers 통합
    - notes에서 넘어온 데이터는 고객명단에 표시
+   - 중복 신청은 화면에서 1건만 표시
 ========================= */
 
 async function loadCustomers(){
@@ -756,7 +903,9 @@ async function loadCustomers(){
         'notes',
 
         created_text:
-        item.created_at || ''
+        item.created_text ||
+        item.created_at ||
+        ''
 
     }));
 
@@ -769,7 +918,9 @@ async function loadCustomers(){
         'crm_customers',
 
         created_text:
-        item.created_at || ''
+        item.created_text ||
+        item.created_at ||
+        ''
 
     }));
 
@@ -779,20 +930,24 @@ async function loadCustomers(){
         ...crmData
     ];
 
-    merged.sort((a,b)=>{
+    const filtered =
+    removeDuplicateSubmissions(
+        merged
+    );
+
+    filtered.sort((a,b)=>{
 
         return getSortTime(b) - getSortTime(a);
     });
 
     renderTable(
-        merged
+        filtered
     );
 }
 
 
 /* =========================
    상담예정 통합 로드
-   - notes + crm_customers 중 reserve_date 있는 것만 표시
 ========================= */
 
 async function loadReserveList(){
@@ -850,7 +1005,9 @@ async function loadReserveList(){
         'notes',
 
         created_text:
-        item.created_at || ''
+        item.created_text ||
+        item.created_at ||
+        ''
 
     }));
 
@@ -863,7 +1020,9 @@ async function loadReserveList(){
         'crm_customers',
 
         created_text:
-        item.created_at || ''
+        item.created_text ||
+        item.created_at ||
+        ''
 
     }));
 
@@ -873,13 +1032,18 @@ async function loadReserveList(){
         ...crmData
     ];
 
-    merged.sort((a,b)=>{
+    const filtered =
+    removeDuplicateSubmissions(
+        merged
+    );
+
+    filtered.sort((a,b)=>{
 
         return getSortTime(a) - getSortTime(b);
     });
 
     renderTable(
-        merged
+        filtered
     );
 }
 
@@ -940,6 +1104,11 @@ function renderTable(data){
         item.created_at ||
         '';
 
+        const phoneDisplay =
+        formatPhone(
+            item.phone || ''
+        );
+
         const finishButton =
         currentMode === 'reserve'
         ?
@@ -964,7 +1133,7 @@ function renderTable(data){
                 data-id="${escapeHTML(id)}"
                 data-table="${escapeHTML(tableName)}"
                 data-field="phone">
-                ${escapeHTML(item.phone || '')}
+                ${escapeHTML(phoneDisplay)}
             </td>
 
             <td>
@@ -1054,6 +1223,17 @@ function bindNormalCellEditor(){
                 return;
             }
 
+            let saveValue =
+            value;
+
+            if(field === 'phone'){
+
+                saveValue =
+                formatPhone(
+                    value
+                );
+            }
+
             const result =
             await supabaseClient
 
@@ -1062,7 +1242,7 @@ function bindNormalCellEditor(){
             .update({
 
                 [field]:
-                value
+                saveValue
 
             })
 
@@ -1294,11 +1474,6 @@ function bindReserveDateEditor(){
 
 /* =========================
    상담예정 종료 버튼
-   핵심 수정:
-   - reserve_date 삭제
-   - currentMode를 customer로 변경
-   - 고객명단 버튼 활성화
-   - 고객명단 목록으로 이동
 ========================= */
 
 function bindFinishButtons(){
@@ -1544,7 +1719,6 @@ function refreshCurrentMode(){
 /* =========================
    실시간 notes
    - notes 변경 시 고객명단/상담예정에서만 갱신
-   - 소개명단으로 보내지 않음
 ========================= */
 
 supabaseClient
@@ -1609,8 +1783,6 @@ supabaseClient
 
 /* =========================
    시작
-   - 기본 시작 화면을 고객명단으로 변경
-   - notes 데이터가 소개명단으로 뜨지 않도록 함
 ========================= */
 
 if(customerBtn){
