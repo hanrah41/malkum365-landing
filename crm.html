@@ -16,10 +16,6 @@
 /* =====================================================
    CUSTOMER CRM
    파일: C:\malkum365-landing\crm.html
-
-   - index.html 수정 금지
-   - CRM 전용 화면
-   - 상태 칸 클릭 시 A4 1/4 크기 상담내용 창 표시
 ===================================================== */
 
 *{
@@ -36,7 +32,7 @@ body{
 
     font-family:Arial, sans-serif;
 
-    background:#d9d9d9;
+    background:#9a9a9a;
 
     color:#111;
 
@@ -53,7 +49,7 @@ body{
 
     display:flex;
 
-    background:#d9d9d9;
+    background:#9a9a9a;
 }
 
 /* =====================================================
@@ -61,22 +57,22 @@ body{
 ===================================================== */
 
 .crm-sidebar{
-    width:120px;
-    min-width:120px;
-    max-width:120px;
+    width:130px;
+    min-width:130px;
+    max-width:130px;
 
     height:100vh;
 
-    background:#11141c;
+    background:#080c12;
 
     overflow:hidden;
 }
 
 .crm-logo{
-    width:120px;
+    width:130px;
 
     padding-top:8px;
-    padding-left:7px;
+    padding-left:8px;
     padding-bottom:13px;
 
     color:#ffffff;
@@ -109,7 +105,7 @@ body{
 .menu-btn{
     display:block;
 
-    width:114px;
+    width:124px;
     height:29px;
 
     margin-left:6px;
@@ -119,7 +115,7 @@ body{
 
     border:none;
 
-    background:#171b25;
+    background:#111722;
     color:#ffffff;
 
     font-size:12px;
@@ -150,7 +146,7 @@ body{
 
     height:100vh;
 
-    background:#d9d9d9;
+    background:#9a9a9a;
 
     overflow:hidden;
 }
@@ -186,11 +182,11 @@ body{
 
     overflow:auto;
 
-    background:#d9d9d9;
+    background:#9a9a9a;
 }
 
 /* =====================================================
-   CRM 테이블 기본
+   CRM 테이블
 ===================================================== */
 
 .crm-table{
@@ -207,17 +203,13 @@ body{
     font-size:12px;
 }
 
-/* =====================================================
-   테이블 셀 공통
-===================================================== */
-
 .crm-table th,
 .crm-table td{
     height:29px !important;
 
     padding:2px 4px !important;
 
-    border:1px solid #bfbfbf !important;
+    border:1px solid #8f8f8f !important;
 
     font-size:12px !important;
     font-weight:400 !important;
@@ -230,25 +222,19 @@ body{
     text-overflow:ellipsis;
 }
 
-/* 헤더 */
 .crm-table th{
-    background:#242424 !important;
+    background:#1f1f1f !important;
     color:#ffffff !important;
 
     font-weight:400 !important;
 }
 
-/* 본문 */
 .crm-table td{
     background:#f5efcc !important;
     color:#000000 !important;
 
     font-weight:400 !important;
 }
-
-/* =====================================================
-   컬럼 폭 강제 지정
-===================================================== */
 
 /* ID */
 .crm-table th:nth-child(1),
@@ -282,7 +268,7 @@ body{
     max-width:150px !important;
 }
 
-/* 상태 = 상담내용 입력창 */
+/* 상태 */
 .crm-table th:nth-child(5),
 .crm-table td:nth-child(5){
     width:285px !important;
@@ -309,7 +295,7 @@ body{
 }
 
 /* =====================================================
-   상태 칸 상담내용 입력창
+   상태 입력창
 ===================================================== */
 
 .status-input{
@@ -318,7 +304,7 @@ body{
 
     padding:2px 5px;
 
-    border:1px solid #c7c7c7;
+    border:1px solid #a9a9a9;
     border-radius:2px;
 
     background:#ffffff;
@@ -539,7 +525,7 @@ body{
 }
 
 /* =====================================================
-   전체 bold 제거
+   bold 제거
 ===================================================== */
 
 button,
@@ -561,10 +547,6 @@ td,
 <body>
 
 <div class="crm-app">
-
-    <!-- =================================================
-         좌측 메뉴
-    ================================================== -->
 
     <aside class="crm-sidebar">
 
@@ -596,6 +578,14 @@ td,
             상담예정
         </button>
 
+        <button class="menu-btn" data-mode="process">
+            진행중
+        </button>
+
+        <button class="menu-btn" data-mode="done">
+            완료
+        </button>
+
         <button class="menu-btn" data-mode="memo">
             고객메모
         </button>
@@ -605,10 +595,6 @@ td,
         </button>
 
     </aside>
-
-    <!-- =================================================
-         우측 CRM 본문
-    ================================================== -->
 
     <main class="crm-content">
 
@@ -643,10 +629,6 @@ td,
     </main>
 
 </div>
-
-<!-- =====================================================
-     상담내용 A4 1/4 별도 창
-====================================================== -->
 
 <div id="counselModal" class="counsel-modal">
 
