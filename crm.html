@@ -1,113 +1,340 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CUSTOMER MANAGEMENT</title>
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
 
-<link rel="stylesheet" href="crm.css">
+<title>CUSTOMER CRM</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<style>
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    width:100%;
+    height:100vh;
+
+    overflow:hidden;
+
+    font-family:
+    'Malgun Gothic',
+    sans-serif;
+
+    background:#dcdcdc;
+}
+
+/* =========================
+   전체
+========================= */
+
+.crm-wrap{
+
+    display:flex;
+
+    width:100%;
+    height:100vh;
+}
+
+/* =========================
+   좌측 메뉴
+========================= */
+
+.sidebar{
+
+    width:120px;
+
+    background:#17181d;
+
+    border-right:
+    1px solid #2d2d2d;
+
+    padding:10px 6px;
+}
+
+.logo{
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    line-height:1.2;
+
+    margin-bottom:14px;
+}
+
+.logo small{
+
+    display:block;
+
+    font-size:10px;
+
+    color:#ffffff;
+
+    letter-spacing:2px;
+
+    margin-top:3px;
+}
+
+.menu-btn{
+
+    width:100%;
+
+    height:28px;
+
+    margin-bottom:4px;
+
+    border:none;
+
+    background:#23252c;
+
+    color:#fff;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.menu-btn.active{
+
+    background:#bdb79d;
+
+    color:#000;
+}
+
+/* =========================
+   우측 영역
+========================= */
+
+.content{
+
+    flex:1;
+
+    background:#dcdcdc;
+
+    overflow:auto;
+}
+
+.top-title{
+
+    height:24px;
+
+    background:#ffffff;
+
+    border-bottom:
+    1px solid #cfcfcf;
+
+    display:flex;
+
+    align-items:center;
+
+    padding-left:10px;
+
+    font-size:12px;
+
+    font-weight:bold;
+}
+
+/* =========================
+   테이블
+========================= */
+
+.table-wrap{
+
+    padding:26px 20px;
+}
+
+table{
+
+    border-collapse:collapse;
+
+    width:100%;
+}
+
+thead th{
+
+    background:#2a2929;
+
+    color:#fff;
+
+    border:
+    1px solid #4a4a4a;
+
+    font-size:12px;
+
+    height:28px;
+
+    text-align:center;
+}
+
+tbody td{
+
+    background:#ece7c9;
+
+    border:
+    1px solid #c7c0a0;
+
+    height:30px;
+
+    text-align:center;
+
+    font-size:12px;
+}
+
+/* =========================
+   종료 버튼
+========================= */
+
+.finish-btn{
+
+    width:54px;
+
+    height:24px;
+
+    border:none;
+
+    background:#111;
+
+    color:#fff;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+/* =========================
+   예약일 셀
+========================= */
+
+.editable-reserve{
+
+    cursor:pointer;
+}
+
+</style>
+
 </head>
 
 <body>
 
 <div class="crm-wrap">
 
+    <!-- 좌측 -->
+
     <div class="sidebar">
 
-        <div class="logo-box">
-            <h1>CUSTOMER</h1>
-            <p>MANAGEMENT</p>
-        </div>
+        <div class="logo">
 
-        <div class="menu-list">
+            CUSTOMER
 
-            <button class="menu-btn active" data-mode="new">
-                소개등록
-            </button>
-
-            <button class="menu-btn" data-mode="introduce">
-                소개명단
-            </button>
-
-            <button class="menu-btn" data-mode="customer">
-                고객명단
-            </button>
-
-            <button class="menu-btn" data-mode="reserve">
-                상담예정
-            </button>
-
-            <button class="menu-btn" data-mode="process">
-                진행중
-            </button>
-
-            <button class="menu-btn" data-mode="done">
-                완료
-            </button>
-
-            <button class="menu-btn" data-mode="memo">
-                고객메모
-            </button>
-
-            <button class="menu-btn" data-mode="alarm">
-                알람설정
-            </button>
+            <small>
+                MANAGEMENT
+            </small>
 
         </div>
+
+        <button
+        class="menu-btn active"
+        data-mode="introduce">
+
+            소개명단
+
+        </button>
+
+        <button
+        class="menu-btn"
+        data-mode="customer">
+
+            고객명단
+
+        </button>
+
+        <button
+        class="menu-btn"
+        data-mode="reserve">
+
+            상담예정
+
+        </button>
+
+        <button
+        class="menu-btn"
+        data-mode="process">
+
+            진행중
+
+        </button>
+
+        <button
+        class="menu-btn"
+        data-mode="done">
+
+            완료
+
+        </button>
 
     </div>
 
-    <div class="main-area">
+    <!-- 우측 -->
 
-        <div class="top-bar">
-            <div class="top-title">CUSTOMER CRM</div>
+    <div class="content">
+
+        <div class="top-title">
+
+            CUSTOMER CRM
+
         </div>
 
         <div class="table-wrap">
 
             <table>
+
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>이름</th>
-                        <th>연락처</th>
-                        <th>상담신청일</th>
-                        <th>상태</th>
-                        <th>상담 예정일</th>
-                    </tr>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>이름</th>
+
+                    <th>연락처</th>
+
+                    <th>상담신청일</th>
+
+                    <th>상태</th>
+
+                    <th>상담 예정일</th>
+
+                    <th>종료</th>
+
+                </tr>
+
                 </thead>
 
-                <tbody id="crmBody"></tbody>
+                <tbody id="crmBody">
+
+                </tbody>
+
             </table>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div id="editorModal">
-
-    <div id="editorBox">
-
-        <div id="editorTitle">
-            CRM 편집창
-        </div>
-
-        <textarea id="editorTextarea"></textarea>
-
-        <div id="editorButtons">
-
-            <button id="saveEditorBtn">
-                저장
-            </button>
-
-            <button id="closeEditorBtn">
-                닫기
-            </button>
 
         </div>
 
@@ -118,4 +345,5 @@
 <script src="crm.js"></script>
 
 </body>
+
 </html>
