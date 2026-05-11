@@ -14,22 +14,12 @@
 <style>
 
 /* =====================================================
-   무료서체 설정
-   경로:
-   C:\malkum365-landing\assets\fonts\NotoSerifKR-Regular.woff2
-===================================================== */
-
-@font-face{
-    font-family:'NotoSerifKRLocal';
-    src:url('./assets/fonts/NotoSerifKR-Regular.woff2') format('woff2');
-    font-weight:400;
-    font-style:normal;
-    font-display:block;
-}
-
-/* =====================================================
    CUSTOMER CRM
    파일: C:\malkum365-landing\crm.html
+
+   수정 내용:
+   - 서버폰트 @font-face 제거
+   - 메모 입력창 / 상담내용 입력창을 PC 기본서체로 변경
 ===================================================== */
 
 *{
@@ -44,7 +34,7 @@ body{
     width:100%;
     height:100%;
 
-    font-family:Arial, sans-serif;
+    font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif;
 
     background:#9a9a9a;
 
@@ -142,6 +132,8 @@ body{
 
     overflow:hidden;
     white-space:nowrap;
+
+    font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif;
 }
 
 .menu-btn:hover{
@@ -238,6 +230,8 @@ body{
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+
+    font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif;
 }
 
 .crm-table th{
@@ -336,6 +330,8 @@ body{
     text-align:left;
 
     cursor:pointer;
+
+    font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif;
 }
 
 .status-input:focus{
@@ -428,6 +424,8 @@ body{
         transform 0.05s ease,
         box-shadow 0.05s ease,
         background 0.05s ease;
+
+    font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif;
 }
 
 .memo-save-btn:hover{
@@ -452,7 +450,7 @@ body{
 
 /* =====================================================
    메모지 텍스트 입력창
-   무료 NotoSerifKR-Regular.woff2 적용
+   PC 기본서체 적용
 ===================================================== */
 
 #memoTextArea{
@@ -468,7 +466,7 @@ body{
     background:#ffffff;
     color:#000000;
 
-    font-family:'NotoSerifKRLocal', serif !important;
+    font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif !important;
 
     font-size:13px;
     font-weight:400;
@@ -559,6 +557,8 @@ body{
     font-weight:400;
 
     cursor:pointer;
+
+    font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif;
 }
 
 .counsel-close:hover{
@@ -575,7 +575,7 @@ body{
 
 /* =====================================================
    상담내용 입력창
-   무료 NotoSerifKR-Regular.woff2 적용
+   PC 기본서체 적용
 ===================================================== */
 
 #counselTextArea{
@@ -591,7 +591,7 @@ body{
     background:#ffffff;
     color:#000000;
 
-    font-family:'NotoSerifKRLocal', serif !important;
+    font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif !important;
 
     font-size:13px;
     font-weight:400;
@@ -635,6 +635,8 @@ body{
     font-weight:400;
 
     cursor:pointer;
+
+    font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif;
 }
 
 /* =====================================================
@@ -706,6 +708,8 @@ body{
     font-weight:400 !important;
 
     cursor:pointer;
+
+    font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif;
 }
 
 .finish-btn:hover{
