@@ -60,6 +60,16 @@ document.querySelector(
     '[data-mode="done"]'
 );
 
+const memoBtn =
+document.querySelector(
+    '[data-mode="memo"]'
+);
+
+const alarmBtn =
+document.querySelector(
+    '[data-mode="alarm"]'
+);
+
 /* =========================
    활성 버튼
 ========================= */
@@ -228,6 +238,13 @@ if(newBtn){
     newBtn.onclick =
     async function(){
 
+        currentMode =
+        'new';
+
+        setActiveButton(
+            newBtn
+        );
+
         const name =
         prompt(
             '성명 입력'
@@ -282,6 +299,7 @@ if(newBtn){
 
 /* =========================
    소개명단
+   종료된 고객은 제외
 ========================= */
 
 introduceBtn.onclick =
@@ -301,6 +319,10 @@ async function(){
 
     .select('*')
 
+    .or(
+        'consult_done.is.null,consult_done.eq.false'
+    )
+
     .order(
         'id',
         {
@@ -315,6 +337,7 @@ async function(){
 
 /* =========================
    고객명단
+   종료된 소개고객 + notes 고객
 ========================= */
 
 customerBtn.onclick =
@@ -337,6 +360,13 @@ async function(){
     .eq(
         'consult_done',
         true
+    )
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
     );
 
     const notesResult =
@@ -344,7 +374,14 @@ async function(){
 
     .from('notes')
 
-    .select('*');
+    .select('*')
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
 
     const crmData =
     (crmResult.data || []).map(item=>({
@@ -397,6 +434,7 @@ async function(){
 
 /* =========================
    상담예정 로드
+   종료된 고객은 제외
 ========================= */
 
 async function loadReserveList(){
@@ -408,9 +446,8 @@ async function loadReserveList(){
 
     .select('*')
 
-    .eq(
-        'consult_done',
-        false
+    .or(
+        'consult_done.is.null,consult_done.eq.false'
     )
 
     .not(
@@ -494,6 +531,10 @@ function(){
     setActiveButton(
         processBtn
     );
+
+    loadCRMByStatus(
+        '진행중'
+    );
 };
 
 /* =========================
@@ -535,7 +576,117 @@ async function(){
 };
 
 /* =========================
+   고객메모
+========================= */
+
+if(memoBtn){
+
+    memoBtn.onclick =
+    function(){
+
+        currentMode =
+        'memo';
+
+        setActiveButton(
+            memoBtn
+        );
+
+        loadCRMWithMemo();
+    };
+}
+
+/* =========================
+   알람설정
+========================= */
+
+if(alarmBtn){
+
+    alarmBtn.onclick =
+    function(){
+
+        currentMode =
+        'alarm';
+
+        setActiveButton(
+            alarmBtn
+        );
+
+        alert(
+            '알람 시스템 준비중'
+        );
+    };
+}
+
+/* =========================
+   상태별 로드
+========================= */
+
+async function loadCRMByStatus(status){
+
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .eq(
+        'status',
+        status
+    )
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    renderCRMTable(
+        result.data || []
+    );
+}
+
+/* =========================
+   메모 로드
+========================= */
+
+async function loadCRMWithMemo(){
+
+    const result =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .not(
+        'memo',
+        'is',
+        null
+    )
+
+    .neq(
+        'memo',
+        ''
+    )
+
+    .order(
+        'id',
+        {
+            ascending:false
+        }
+    );
+
+    renderCRMTable(
+        result.data || []
+    );
+}
+
+/* =========================
    종료 처리
+   상담예정 / 소개명단에서 사라짐
+   고객명단에만 표시됨
 ========================= */
 
 async function completeConsult(id){
@@ -822,6 +973,8 @@ function bindReserveDateEditor(){
 
 예:
 2505121030
+또는
+202505121030
 
 ↓
 
@@ -895,6 +1048,21 @@ function refreshCurrentMode(){
         return;
     }
 
+    if(currentMode === 'process'){
+
+        loadCRMByStatus(
+            '진행중'
+        );
+
+        return;
+    }
+
+    if(currentMode === 'memo'){
+
+        loadCRMWithMemo();
+        return;
+    }
+
     introduceBtn.click();
 }
 
@@ -919,6 +1087,31 @@ supabaseClient
     ()=>{
 
         refreshCurrentMode();
+    }
+)
+
+.subscribe();
+
+supabaseClient
+
+.channel('realtime-notes')
+
+.on(
+
+    'postgres_changes',
+
+    {
+        event:'*',
+        schema:'public',
+        table:'notes'
+    },
+
+    ()=>{
+
+        if(currentMode === 'customer' || currentMode === 'reserve'){
+
+            refreshCurrentMode();
+        }
     }
 )
 
