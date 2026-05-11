@@ -435,17 +435,24 @@ async function(){
 /* =========================
    상담예정 로드
    1. 신규 소개고객: consult_done false
-   2. 기존 고객 재상담: status 상담예정
+   2. 고객명단에서 다시 상담예정일을 잡은 고객: consult_done true + status 상담예정
+   3. notes 고객
 ========================= */
 
 async function loadReserveList(){
 
-    const crmResult =
+    /* 1. 아직 종료되지 않은 소개고객 */
+
+    const newReserveResult =
     await supabaseClient
 
     .from('crm_customers')
 
     .select('*')
+
+    .or(
+        'consult_done.is.null,consult_done.eq.false'
+    )
 
     .not(
         'reserve_date',
@@ -456,11 +463,39 @@ async function loadReserveList(){
     .neq(
         'reserve_date',
         ''
+    );
+
+    /* 2. 고객명단에서 다시 상담예정일을 잡은 고객 */
+
+    const reReserveResult =
+    await supabaseClient
+
+    .from('crm_customers')
+
+    .select('*')
+
+    .eq(
+        'consult_done',
+        true
     )
 
-    .or(
-        'consult_done.is.null,consult_done.eq.false,status.eq.상담예정'
+    .eq(
+        'status',
+        '상담예정'
+    )
+
+    .not(
+        'reserve_date',
+        'is',
+        null
+    )
+
+    .neq(
+        'reserve_date',
+        ''
     );
+
+    /* 3. notes 고객 */
 
     const notesResult =
     await supabaseClient
@@ -480,8 +515,18 @@ async function loadReserveList(){
         ''
     );
 
-    const crmData =
-    (crmResult.data || []).map(item=>({
+    const newReserveData =
+    (newReserveResult.data || []).map(item=>({
+
+        ...item,
+
+        source_table:
+        'crm_customers'
+
+    }));
+
+    const reReserveData =
+    (reReserveResult.data || []).map(item=>({
 
         ...item,
 
@@ -502,7 +547,8 @@ async function loadReserveList(){
 
     const merged = [
 
-        ...crmData,
+        ...newReserveData,
+        ...reReserveData,
         ...notesData
 
     ];
