@@ -5,375 +5,107 @@
 
 <meta charset="UTF-8">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>CUSTOMER CRM</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<link rel="stylesheet" href="style.css">
 
-<style>
-
-*{
-
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-
-    width:100%;
-    height:100vh;
-
-    overflow:hidden;
-
-    font-family:
-    'Malgun Gothic',
-    sans-serif;
-
-    background:#dcdcdc;
-
-    font-weight:normal;
-}
-
-/* =========================
-   전체
-========================= */
-
-.crm-wrap{
-
-    display:flex;
-
-    width:100%;
-    height:100vh;
-}
-
-/* =========================
-   좌측 메뉴
-========================= */
-
-.sidebar{
-
-    width:120px;
-
-    background:#17181d;
-
-    border-right:
-    1px solid #2d2d2d;
-
-    padding:10px 6px;
-}
-
-.logo{
-
-    color:#fff;
-
-    font-size:15px;
-
-    font-weight:normal;
-
-    line-height:1.2;
-
-    margin-bottom:14px;
-}
-
-.logo small{
-
-    display:block;
-
-    font-size:10px;
-
-    color:#ffffff;
-
-    letter-spacing:2px;
-
-    margin-top:3px;
-
-    font-weight:normal;
-}
-
-.menu-btn{
-
-    width:100%;
-
-    height:28px;
-
-    margin-bottom:4px;
-
-    border:none;
-
-    background:#23252c;
-
-    color:#fff;
-
-    font-size:12px;
-
-    font-weight:normal;
-
-    cursor:pointer;
-}
-
-.menu-btn.active{
-
-    background:#bdb79d;
-
-    color:#000;
-
-    font-weight:normal;
-}
-
-/* =========================
-   우측 영역
-========================= */
-
-.content{
-
-    flex:1;
-
-    background:#dcdcdc;
-
-    overflow:auto;
-}
-
-.top-title{
-
-    height:24px;
-
-    background:#ffffff;
-
-    border-bottom:
-    1px solid #cfcfcf;
-
-    display:flex;
-
-    align-items:center;
-
-    padding-left:10px;
-
-    font-size:12px;
-
-    font-weight:normal;
-}
-
-/* =========================
-   테이블
-========================= */
-
-.table-wrap{
-
-    padding:26px 20px;
-}
-
-table{
-
-    border-collapse:collapse;
-
-    width:100%;
-}
-
-thead th{
-
-    background:#2a2929;
-
-    color:#fff;
-
-    border:
-    1px solid #4a4a4a;
-
-    font-size:12px;
-
-    height:28px;
-
-    text-align:center;
-
-    font-weight:normal;
-}
-
-tbody td{
-
-    background:#ece7c9;
-
-    border:
-    1px solid #c7c0a0;
-
-    height:30px;
-
-    text-align:center;
-
-    font-size:12px;
-
-    font-weight:normal;
-}
-
-/* =========================
-   종료 버튼
-========================= */
-
-.finish-btn{
-
-    width:54px;
-
-    height:24px;
-
-    border:none;
-
-    background:#111;
-
-    color:#fff;
-
-    font-size:12px;
-
-    font-weight:normal;
-
-    cursor:pointer;
-}
-
-/* =========================
-   예약일 셀
-========================= */
-
-.editable-reserve{
-
-    cursor:pointer;
-}
-
-.editable-cell{
-
-    cursor:pointer;
-}
-
-</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 </head>
 
 <body>
 
-<div class="crm-wrap">
+<div class="app">
 
-    <div class="sidebar">
+    <!-- =========================
+         좌측 메뉴
+    ========================== -->
 
-        <div class="logo">
+    <aside class="sidebar">
 
-            CUSTOMER
+        <div class="brand">
 
-            <small>
+            <div class="brand-main">
+                CUSTOMER
+            </div>
+
+            <div class="brand-sub">
                 MANAGEMENT
-            </small>
+            </div>
 
         </div>
 
-        <button
-        class="menu-btn"
-        data-mode="new">
-
+        <button class="menu-btn" data-mode="new">
             소개등록
-
         </button>
 
-        <button
-        class="menu-btn active"
-        data-mode="introduce">
-
+        <button class="menu-btn active" data-mode="introduce">
             소개명단
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="customer">
-
+        <button class="menu-btn" data-mode="customer">
             고객명단
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="reserve">
-
+        <button class="menu-btn" data-mode="reserve">
             상담예정
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="process">
-
+        <button class="menu-btn" data-mode="process">
             진행중
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="done">
-
+        <button class="menu-btn" data-mode="done">
             완료
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="memo">
-
+        <button class="menu-btn" data-mode="memo">
             고객메모
-
         </button>
 
-        <button
-        class="menu-btn"
-        data-mode="alarm">
-
+        <button class="menu-btn" data-mode="alarm">
             알람설정
-
         </button>
 
-    </div>
+    </aside>
 
-    <div class="content">
+    <!-- =========================
+         우측 본문
+    ========================== -->
+
+    <main class="content">
 
         <div class="top-title">
-
             CUSTOMER CRM
-
         </div>
 
-        <div class="table-wrap">
+        <div class="table-area">
 
-            <table>
+            <table class="crm-table">
 
                 <thead>
 
-                <tr>
-
-                    <th>ID</th>
-
-                    <th>이름</th>
-
-                    <th>연락처</th>
-
-                    <th>상담신청일</th>
-
-                    <th>상태</th>
-
-                    <th>상담 예정일</th>
-
-                    <th>종료</th>
-
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>이름</th>
+                        <th>연락처</th>
+                        <th>상담신청일</th>
+                        <th>상태</th>
+                        <th>상담 예정일</th>
+                        <th>종료</th>
+                    </tr>
 
                 </thead>
 
-                <tbody id="crmBody">
-
-                </tbody>
+                <tbody id="crmBody"></tbody>
 
             </table>
 
         </div>
 
-    </div>
+    </main>
 
 </div>
 
