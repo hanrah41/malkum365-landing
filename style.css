@@ -1,5 +1,5 @@
 /* =====================================================
-   MALKUM365 CRM STYLE
+   CUSTOMER CRM STYLE
    경로: C:\malkum365-landing\style.css
 ===================================================== */
 
@@ -19,115 +19,148 @@ body{
 
     background:#d9d9d9;
 
-    color:#222;
-
-    font-size:12px;
+    color:#111;
 
     overflow:hidden;
 }
 
 /* =====================================================
-   전체 화면
+   전체 구조
 ===================================================== */
 
-.wrapper{
+.app{
     width:100%;
     height:100vh;
 
     display:flex;
-    flex-direction:column;
 
     background:#d9d9d9;
 }
 
 /* =====================================================
-   상단 제목
+   좌측 메뉴
 ===================================================== */
 
-.header{
-    width:100%;
-    height:38px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:#2f2f2f;
-    color:#ffffff;
-
-    font-size:15px;
-    font-weight:400;
+.sidebar{
+    width:120px;
+    height:100vh;
 
     flex-shrink:0;
+
+    background:#11141c;
+
+    padding-top:7px;
+
+    overflow:hidden;
 }
 
-.header-title{
-    font-size:15px;
+.brand{
+    width:100%;
+
+    padding:8px 4px 12px 4px;
+
+    color:#ffffff;
+
+    text-align:left;
+}
+
+.brand-main{
+    font-size:14px;
     font-weight:400;
+
     letter-spacing:0.5px;
+
+    line-height:16px;
+}
+
+.brand-sub{
+    margin-top:4px;
+
+    font-size:10px;
+    font-weight:400;
+
+    letter-spacing:3px;
+
+    line-height:12px;
 }
 
 /* =====================================================
-   메뉴 버튼 영역
+   메뉴 버튼
 ===================================================== */
 
-.menu{
-    width:100%;
-    height:34px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    gap:4px;
-
-    background:#3a3a3a;
-
-    padding:3px 6px;
-
-    flex-shrink:0;
-}
-
 .menu-btn{
-    min-width:58px;
-    height:24px;
+    width:114px;
+    height:29px;
 
-    padding:2px 6px;
+    margin:0 0 3px 6px;
 
-    border:1px solid #777;
-    border-radius:3px;
+    padding:0;
 
-    background:#eeeeee;
-    color:#222;
+    border:none;
 
-    font-size:11px;
+    background:#171b25;
+    color:#ffffff;
+
+    font-size:12px;
     font-weight:400;
+
+    text-align:center;
 
     cursor:pointer;
 
-    white-space:nowrap;
+    display:block;
 }
 
 .menu-btn:hover{
-    background:#ffffff;
+    background:#2a2f3c;
 }
 
 .menu-btn.active{
-    background:#f5d545;
-    border-color:#c8a900;
-    color:#000;
+    background:#d8d2b5;
+    color:#000000;
+
     font-weight:400;
 }
 
 /* =====================================================
-   본문 영역
+   우측 본문
 ===================================================== */
 
-.main{
-    width:100%;
-    height:calc(100vh - 72px);
+.content{
+    flex:1;
 
-    padding:15px 20px;
+    height:100vh;
+
+    background:#d9d9d9;
+
+    overflow:hidden;
+}
+
+.top-title{
+    height:27px;
+
+    padding-left:10px;
+
+    display:flex;
+    align-items:center;
+
+    background:#eeeeee;
+    color:#000000;
+
+    font-size:12px;
+    font-weight:400;
+}
+
+/* =====================================================
+   테이블 영역
+===================================================== */
+
+.table-area{
+    width:100%;
+    height:calc(100vh - 27px);
+
+    padding-top:28px;
+    padding-left:20px;
 
     overflow:auto;
 
@@ -137,13 +170,12 @@ body{
 /* =====================================================
    CRM 테이블 기본
    중요:
-   width:100% 금지
-   red 박스처럼 필요한 폭만 차지하게 auto 적용
+   width:auto 고정
+   전체 화면으로 늘어나는 현상 차단
 ===================================================== */
 
-.crm-table,
-table:has(#crmBody){
-    width:auto;
+.crm-table{
+    width:auto !important;
 
     border-collapse:collapse;
 
@@ -151,24 +183,22 @@ table:has(#crmBody){
 
     background:#ffffff;
 
-    font-size:11px;
+    font-size:12px;
 }
 
 /* =====================================================
-   테이블 헤더 / 셀 공통
+   테이블 공통
 ===================================================== */
 
 .crm-table th,
-.crm-table td,
-table:has(#crmBody) th,
-table:has(#crmBody) td{
+.crm-table td{
     border:1px solid #bfbfbf;
+
+    height:29px;
 
     padding:2px 4px;
 
-    height:28px;
-
-    font-size:11px;
+    font-size:12px;
     font-weight:400;
 
     text-align:center;
@@ -180,17 +210,15 @@ table:has(#crmBody) td{
 }
 
 /* 헤더 */
-.crm-table th,
-table:has(#crmBody) th{
-    background:#222222;
+.crm-table th{
+    background:#242424;
     color:#ffffff;
 
     font-weight:400;
 }
 
-/* 본문 셀 */
-.crm-table td,
-table:has(#crmBody) td{
+/* 본문 */
+.crm-table td{
     background:#f5efcc;
     color:#000000;
 
@@ -198,78 +226,64 @@ table:has(#crmBody) td{
 }
 
 /* =====================================================
-   컬럼 폭 조정
-   red 박스 기준 축소 적용
+   컬럼 폭 고정
+   red 박스 기준
 ===================================================== */
 
 /* ID */
 .crm-table th:nth-child(1),
-.crm-table td:nth-child(1),
-table:has(#crmBody) th:nth-child(1),
-table:has(#crmBody) td:nth-child(1){
-    width:34px;
-    min-width:34px;
-    max-width:34px;
+.crm-table td:nth-child(1){
+    width:32px !important;
+    min-width:32px !important;
+    max-width:32px !important;
 }
 
 /* 이름 */
 .crm-table th:nth-child(2),
-.crm-table td:nth-child(2),
-table:has(#crmBody) th:nth-child(2),
-table:has(#crmBody) td:nth-child(2){
-    width:82px;
-    min-width:82px;
-    max-width:82px;
+.crm-table td:nth-child(2){
+    width:85px !important;
+    min-width:85px !important;
+    max-width:85px !important;
 }
 
 /* 연락처 */
 .crm-table th:nth-child(3),
-.crm-table td:nth-child(3),
-table:has(#crmBody) th:nth-child(3),
-table:has(#crmBody) td:nth-child(3){
-    width:170px;
-    min-width:170px;
-    max-width:170px;
+.crm-table td:nth-child(3){
+    width:150px !important;
+    min-width:150px !important;
+    max-width:150px !important;
 }
 
 /* 상담신청일 */
 .crm-table th:nth-child(4),
-.crm-table td:nth-child(4),
-table:has(#crmBody) th:nth-child(4),
-table:has(#crmBody) td:nth-child(4){
-    width:180px;
-    min-width:180px;
-    max-width:180px;
+.crm-table td:nth-child(4){
+    width:190px !important;
+    min-width:190px !important;
+    max-width:190px !important;
 }
 
 /* 상태 */
 .crm-table th:nth-child(5),
-.crm-table td:nth-child(5),
-table:has(#crmBody) th:nth-child(5),
-table:has(#crmBody) td:nth-child(5){
-    width:150px;
-    min-width:150px;
-    max-width:150px;
+.crm-table td:nth-child(5){
+    width:225px !important;
+    min-width:225px !important;
+    max-width:225px !important;
 }
 
-/* 상담예정일 */
+/* 상담 예정일 */
 .crm-table th:nth-child(6),
-.crm-table td:nth-child(6),
-table:has(#crmBody) th:nth-child(6),
-table:has(#crmBody) td:nth-child(6){
-    width:150px;
-    min-width:150px;
-    max-width:150px;
+.crm-table td:nth-child(6){
+    width:130px !important;
+    min-width:130px !important;
+    max-width:130px !important;
 }
 
 /* 종료 */
 .crm-table th:nth-child(7),
-.crm-table td:nth-child(7),
-table:has(#crmBody) th:nth-child(7),
-table:has(#crmBody) td:nth-child(7){
-    width:72px;
-    min-width:72px;
-    max-width:72px;
+.crm-table td:nth-child(7){
+    width:72px !important;
+    min-width:72px !important;
+    max-width:72px !important;
 }
 
 /* =====================================================
@@ -292,7 +306,7 @@ table:has(#crmBody) td:nth-child(7){
 
 .finish-btn{
     width:42px;
-    height:19px;
+    height:20px;
 
     padding:0;
 
@@ -300,7 +314,7 @@ table:has(#crmBody) td:nth-child(7){
     border-radius:3px;
 
     background:#eeeeee;
-    color:#222;
+    color:#222222;
 
     font-size:10px;
     font-weight:400;
@@ -313,7 +327,7 @@ table:has(#crmBody) td:nth-child(7){
 }
 
 /* =====================================================
-   텍스트 굵기 제거
+   bold 제거
 ===================================================== */
 
 button,
@@ -321,5 +335,5 @@ th,
 td,
 .menu-btn,
 .finish-btn{
-    font-weight:400;
+    font-weight:400 !important;
 }
