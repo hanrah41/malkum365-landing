@@ -20,8 +20,8 @@
    중요:
    - index.html 수정 금지
    - CRM 전용 화면
-   - crm.js는 그대로 사용
-   - 종료 버튼 배경색 #7BE8B8 적용
+   - crm.js와 연동
+   - 상태 칸에는 상담내용 입력창 표시
 ===================================================== */
 
 *{
@@ -224,12 +224,12 @@ body{
     font-size:12px !important;
     font-weight:400 !important;
 
-    text-align:center !important;
+    text-align:center;
     vertical-align:middle !important;
 
-    white-space:nowrap !important;
-    overflow:hidden !important;
-    text-overflow:ellipsis !important;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
 /* 헤더 */
@@ -284,12 +284,14 @@ body{
     max-width:150px !important;
 }
 
-/* 상태 */
+/* 상태 = 상담내용 입력창 */
 .crm-table th:nth-child(5),
 .crm-table td:nth-child(5){
     width:285px !important;
     min-width:285px !important;
     max-width:285px !important;
+
+    padding:2px 4px !important;
 }
 
 /* 상담 예정일 */
@@ -309,6 +311,35 @@ body{
 }
 
 /* =====================================================
+   상태 칸 상담내용 입력창
+===================================================== */
+
+.status-input{
+    width:100%;
+    height:23px;
+
+    padding:2px 5px;
+
+    border:1px solid #c7c7c7;
+    border-radius:2px;
+
+    background:#ffffff;
+    color:#000000;
+
+    font-size:11px;
+    font-weight:400;
+
+    outline:none;
+
+    text-align:left;
+}
+
+.status-input:focus{
+    border-color:#7BE8B8;
+    background:#ffffff;
+}
+
+/* =====================================================
    수정 가능 셀
 ===================================================== */
 
@@ -324,7 +355,7 @@ body{
 
 /* =====================================================
    종료 버튼
-   배경색 #7BE8B8 적용
+   배경색 #7BE8B8
 ===================================================== */
 
 .finish-btn{
@@ -358,7 +389,8 @@ button,
 th,
 td,
 .menu-btn,
-.finish-btn{
+.finish-btn,
+.status-input{
     font-weight:400 !important;
 }
 
