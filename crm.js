@@ -434,7 +434,8 @@ async function(){
 
 /* =========================
    상담예정 로드
-   종료된 고객은 제외
+   1. 신규 소개고객: consult_done false
+   2. 기존 고객 재상담: status 상담예정
 ========================= */
 
 async function loadReserveList(){
@@ -446,10 +447,6 @@ async function loadReserveList(){
 
     .select('*')
 
-    .or(
-        'consult_done.is.null,consult_done.eq.false'
-    )
-
     .not(
         'reserve_date',
         'is',
@@ -459,6 +456,10 @@ async function loadReserveList(){
     .neq(
         'reserve_date',
         ''
+    )
+
+    .or(
+        'consult_done.is.null,consult_done.eq.false,status.eq.상담예정'
     );
 
     const notesResult =
@@ -685,8 +686,8 @@ async function loadCRMWithMemo(){
 
 /* =========================
    종료 처리
-   상담예정 / 소개명단에서 사라짐
-   고객명단에만 표시됨
+   상담예정 목록에서 제거
+   고객명단에는 유지
 ========================= */
 
 async function completeConsult(id){
@@ -698,7 +699,9 @@ async function completeConsult(id){
 
     .update({
 
-        consult_done:true
+        consult_done:true,
+
+        status:'상담완료'
 
     })
 
@@ -944,6 +947,9 @@ function bindFinishButtons(){
 
 /* =========================
    상담예정일 수정
+   고객명단에서 기존 고객 상담예정일을 다시 잡으면
+   consult_done true 유지 + status 상담예정
+   그래서 고객명단에도 남고 상담예정에도 복사 표시됨
 ========================= */
 
 function bindReserveDateEditor(){
@@ -990,16 +996,37 @@ function bindReserveDateEditor(){
                 value
             );
 
+            let updateData = {
+
+                reserve_date:value
+
+            };
+
+            if(
+                currentMode === 'customer'
+                &&
+                table === 'crm_customers'
+                &&
+                value !== current
+            ){
+
+                updateData = {
+
+                    reserve_date:value,
+
+                    consult_done:true,
+
+                    status:'상담예정'
+
+                };
+            }
+
             const result =
             await supabaseClient
 
             .from(table)
 
-            .update({
-
-                reserve_date:value
-
-            })
+            .update(updateData)
 
             .eq(
                 'id',
