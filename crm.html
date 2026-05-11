@@ -17,11 +17,9 @@
    CUSTOMER CRM
    파일: C:\malkum365-landing\crm.html
 
-   중요:
    - index.html 수정 금지
    - CRM 전용 화면
-   - crm.js와 연동
-   - 상태 칸에는 상담내용 입력창 표시
+   - 상태 칸 클릭 시 A4 1/4 크기 상담내용 창 표시
 ===================================================== */
 
 *{
@@ -332,11 +330,171 @@ body{
     outline:none;
 
     text-align:left;
+
+    cursor:pointer;
 }
 
 .status-input:focus{
     border-color:#7BE8B8;
     background:#ffffff;
+}
+
+/* =====================================================
+   상담내용 A4 1/4 창
+===================================================== */
+
+.counsel-modal{
+    display:none;
+
+    position:fixed;
+
+    left:0;
+    top:0;
+
+    width:100vw;
+    height:100vh;
+
+    background:rgba(0,0,0,0.35);
+
+    z-index:9999;
+
+    align-items:center;
+    justify-content:center;
+}
+
+.counsel-modal.show{
+    display:flex;
+}
+
+.counsel-panel{
+    width:105mm;
+    height:148.5mm;
+
+    background:#ffffff;
+
+    border:1px solid #555;
+
+    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+
+    display:flex;
+    flex-direction:column;
+}
+
+.counsel-header{
+    height:32px;
+
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 8px;
+
+    background:#242424;
+    color:#ffffff;
+
+    font-size:12px;
+    font-weight:400;
+}
+
+.counsel-title{
+    font-size:12px;
+    font-weight:400;
+}
+
+.counsel-close{
+    width:24px;
+    height:24px;
+
+    border:none;
+
+    background:#444;
+    color:#ffffff;
+
+    font-size:14px;
+    font-weight:400;
+
+    cursor:pointer;
+}
+
+.counsel-close:hover{
+    background:#666;
+}
+
+.counsel-body{
+    flex:1;
+
+    padding:8px;
+
+    background:#f7f7f7;
+}
+
+#counselTextArea{
+    width:100%;
+    height:100%;
+
+    resize:none;
+
+    padding:8px;
+
+    border:1px solid #bfbfbf;
+
+    background:#ffffff;
+    color:#000000;
+
+    font-size:13px;
+    font-weight:400;
+
+    line-height:1.55;
+
+    outline:none;
+}
+
+#counselTextArea:focus{
+    border-color:#7BE8B8;
+}
+
+.counsel-footer{
+    height:38px;
+
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+
+    gap:6px;
+
+    padding:6px 8px;
+
+    background:#eeeeee;
+
+    border-top:1px solid #cfcfcf;
+}
+
+.counsel-save-btn,
+.counsel-cancel-btn{
+    width:58px;
+    height:24px;
+
+    border:1px solid #999;
+    border-radius:3px;
+
+    font-size:11px;
+    font-weight:400;
+
+    cursor:pointer;
+}
+
+.counsel-save-btn{
+    background:#7BE8B8;
+    color:#000000;
+}
+
+.counsel-cancel-btn{
+    background:#ffffff;
+    color:#000000;
 }
 
 /* =====================================================
@@ -355,7 +513,6 @@ body{
 
 /* =====================================================
    종료 버튼
-   배경색 #7BE8B8
 ===================================================== */
 
 .finish-btn{
@@ -390,7 +547,10 @@ th,
 td,
 .menu-btn,
 .finish-btn,
-.status-input{
+.status-input,
+.counsel-save-btn,
+.counsel-cancel-btn,
+.counsel-close{
     font-weight:400 !important;
 }
 
@@ -489,6 +649,48 @@ td,
         </div>
 
     </main>
+
+</div>
+
+<!-- =====================================================
+     상담내용 A4 1/4 별도 창
+====================================================== -->
+
+<div id="counselModal" class="counsel-modal">
+
+    <div class="counsel-panel">
+
+        <div class="counsel-header">
+
+            <div class="counsel-title">
+                상담내용 입력
+            </div>
+
+            <button id="counselCloseBtn" class="counsel-close">
+                ×
+            </button>
+
+        </div>
+
+        <div class="counsel-body">
+
+            <textarea id="counselTextArea"></textarea>
+
+        </div>
+
+        <div class="counsel-footer">
+
+            <button id="counselCancelBtn" class="counsel-cancel-btn">
+                취소
+            </button>
+
+            <button id="counselSaveBtn" class="counsel-save-btn">
+                저장
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
 
