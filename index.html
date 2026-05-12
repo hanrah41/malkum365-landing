@@ -69,18 +69,14 @@ body{
 
     text-align:center;
 
-    font-size:50px;
+    font-size:64px;
     font-weight:800;
 
     color:#003b4d;
 
-    line-height:1.15;
+    line-height:1.2;
 
     margin-bottom:40px;
-
-    white-space:nowrap;
-    word-break:keep-all;
-    letter-spacing:-2px;
 }
 
 /* =========================================
@@ -153,6 +149,32 @@ body{
 }
 
 /* =========================================
+   개인정보 자세히 보기 버튼
+   기존 체크박스 구조 보존
+========================================= */
+
+.privacy-detail-btn{
+
+    margin-left:6px;
+
+    border:none;
+    background:transparent;
+
+    color:#6f7480;
+
+    font-size:16px;
+    font-weight:400;
+
+    cursor:pointer;
+
+    text-decoration:underline;
+}
+
+.privacy-detail-btn:hover{
+    color:#003b4d;
+}
+
+/* =========================================
    버튼
 ========================================= */
 
@@ -199,111 +221,128 @@ body{
 }
 
 /* =========================================
-   모바일 보정
+   개인정보 수집·이용 동의 팝업
+   기존 무료상담신청 기능과 분리
 ========================================= */
 
-@media (max-width:520px){
+.privacy-modal{
 
-    body{
-        align-items:center;
-    }
+    display:none;
 
-    .consult-wrap{
+    position:fixed;
 
-        width:calc(100% - 48px);
+    left:0;
+    top:0;
 
-        padding:
-        36px
-        22px
-        36px;
+    width:100%;
+    height:100%;
 
-        border-radius:32px;
-    }
-
-    .title{
-
-        font-size:42px;
-
-        line-height:1.12;
-
-        margin-bottom:36px;
-
-        white-space:nowrap;
-        word-break:keep-all;
-        letter-spacing:-2.5px;
-    }
-
-    .input-box input{
-
-        height:70px;
-
-        font-size:24px;
-
-        border-radius:22px;
-
-        padding:0 22px;
-    }
-
-    .check-item{
-
-        font-size:18px;
-
-        gap:12px;
-    }
-
-    .check-item input{
-
-        width:22px;
-        height:22px;
-    }
-
-    .submit-btn{
-
-        height:96px;
-
-        font-size:28px;
-
-        border-radius:28px;
-    }
-
-    .bottom-text{
-
-        font-size:17px;
-
-        margin-top:28px;
-    }
+    z-index:9999;
 }
 
-/* =========================================
-   작은 모바일 추가 보정
-========================================= */
+.privacy-modal.show{
+    display:block;
+}
 
-@media (max-width:390px){
+.privacy-modal-bg{
 
-    .consult-wrap{
+    position:absolute;
 
-        width:calc(100% - 36px);
+    left:0;
+    top:0;
 
-        padding:
-        34px
-        18px
-        34px;
-    }
+    width:100%;
+    height:100%;
 
-    .title{
+    background:rgba(0,0,0,0.35);
+}
 
-        font-size:36px;
+.privacy-modal-box{
 
-        letter-spacing:-2.8px;
+    position:absolute;
 
-        white-space:nowrap;
-        word-break:keep-all;
-    }
+    left:50%;
+    top:50%;
 
-    .submit-btn{
+    transform:translate(-50%, -50%);
 
-        font-size:25px;
-    }
+    width:86%;
+    max-width:390px;
+
+    background:#ffffff;
+
+    border-radius:18px;
+
+    padding:
+    26px
+    26px
+    24px;
+
+    box-shadow:
+    0 18px 45px rgba(0,0,0,0.25);
+}
+
+.privacy-modal-title{
+
+    margin-bottom:22px;
+
+    padding-right:34px;
+
+    font-size:20px;
+    font-weight:700;
+
+    color:#111;
+
+    line-height:1.4;
+}
+
+.privacy-modal-close{
+
+    position:absolute;
+
+    right:20px;
+    top:18px;
+
+    width:30px;
+    height:30px;
+
+    border:none;
+
+    background:transparent;
+
+    color:#999;
+
+    font-size:30px;
+    line-height:30px;
+
+    cursor:pointer;
+}
+
+.privacy-modal-close:hover{
+    color:#333;
+}
+
+.privacy-modal-content{
+
+    color:#111;
+
+    font-size:15px;
+
+    line-height:1.8;
+}
+
+.privacy-modal-content p{
+
+    margin-bottom:4px;
+}
+
+.privacy-modal-content .notice{
+
+    margin-top:20px;
+
+    color:#111;
+
+    line-height:1.75;
 }
 
 </style>
@@ -323,12 +362,7 @@ body{
         <input
             type="text"
             id="name"
-            name="consult_name_no_autofill"
             placeholder="이름 입력"
-            autocomplete="new-password"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
         >
 
     </div>
@@ -338,12 +372,7 @@ body{
         <input
             type="tel"
             id="phone"
-            name="consult_phone_no_autofill"
             placeholder="전화번호 입력"
-            autocomplete="new-password"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
         >
 
     </div>
@@ -354,6 +383,7 @@ body{
 
             <input
                 type="checkbox"
+                checked
             >
 
             <span>
@@ -367,16 +397,28 @@ body{
 
             <input
                 type="checkbox"
+                checked
             >
 
             <span>
                 개인정보 수집·이용 동의
                 <span class="required">[필수]</span>
+
+                <button
+                    type="button"
+                    id="privacyDetailBtn"
+                    class="privacy-detail-btn"
+                >
+                    자세히 보기
+                </button>
             </span>
 
         </label>
 
     </div>
+
+    <!-- 핵심 수정 완료 -->
+    <!-- onclick 삭제 -->
 
     <button
         type="button"
@@ -391,6 +433,134 @@ body{
     </div>
 
 </div>
+
+
+<!-- 개인정보 수집·이용 동의 상세 팝업 -->
+<div
+    id="privacyModal"
+    class="privacy-modal"
+>
+
+    <div
+        id="privacyModalBg"
+        class="privacy-modal-bg"
+    ></div>
+
+    <div class="privacy-modal-box">
+
+        <button
+            type="button"
+            id="privacyModalClose"
+            class="privacy-modal-close"
+        >
+            ×
+        </button>
+
+        <div class="privacy-modal-title">
+            개인정보 수집 및 이용 동의
+        </div>
+
+        <div class="privacy-modal-content">
+
+            <p>
+                • 수집·이용 목적 : 무료상담 신청 확인 및 상담 연락
+            </p>
+
+            <p>
+                • 수집 항목 : 이름, 전화번호
+            </p>
+
+            <p>
+                • 보유·이용기간 : 상담 신청일로부터 3개월까지 보관 후 파기
+            </p>
+
+            <p class="notice">
+                ※ 개인정보 수집 및 이용에 대한 동의를 거부할 권리가 있습니다.<br>
+                다만, 동의를 거부할 경우 무료상담 신청 및 상담 연락이 제한될 수 있습니다.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- 개인정보 자세히 보기 팝업 기능 -->
+<script>
+/* =========================================
+   개인정보 수집·이용 동의 자세히 보기
+   script.js / crm.js / crm.html 건드리지 않음
+========================================= */
+
+(function(){
+
+    const privacyDetailBtn =
+    document.getElementById(
+        'privacyDetailBtn'
+    );
+
+    const privacyModal =
+    document.getElementById(
+        'privacyModal'
+    );
+
+    const privacyModalClose =
+    document.getElementById(
+        'privacyModalClose'
+    );
+
+    const privacyModalBg =
+    document.getElementById(
+        'privacyModalBg'
+    );
+
+    if(!privacyDetailBtn || !privacyModal){
+
+        return;
+    }
+
+    privacyDetailBtn.addEventListener(
+        'click',
+        function(event){
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            privacyModal.classList.add(
+                'show'
+            );
+        }
+    );
+
+    if(privacyModalClose){
+
+        privacyModalClose.addEventListener(
+            'click',
+            function(){
+
+                privacyModal.classList.remove(
+                    'show'
+                );
+            }
+        );
+    }
+
+    if(privacyModalBg){
+
+        privacyModalBg.addEventListener(
+            'click',
+            function(){
+
+                privacyModal.classList.remove(
+                    'show'
+                );
+            }
+        );
+    }
+
+})();
+</script>
 
 
 <!-- Supabase CDN -->
