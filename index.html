@@ -73,12 +73,21 @@ body{
 .consult-wrap{
     width:100%;
 
-    background:#ffffff;
+    background:
+    linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #fbfdff 100%
+    );
 
-    border-radius:18px;
+    border:
+    1px solid rgba(155,180,205,0.38);
+
+    border-radius:20px;
 
     box-shadow:
-    0 8px 24px rgba(0,0,0,0.07);
+    0 8px 22px rgba(45,70,95,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
 
@@ -121,51 +130,129 @@ body{
     margin-bottom:18px;
 }
 
+
+/* =====================================================
+   주요 증상 예시 그룹
+===================================================== */
+
 .symptom-example-box{
     width:100%;
 
-    background:#f5f8fa;
+    background:
+    linear-gradient(
+        135deg,
+        #f6fbff 0%,
+        #eef6ff 100%
+    );
 
     border:
-    1px solid #dce3e8;
+    1.5px solid #b9d3ef;
 
-    border-radius:13px;
+    border-radius:16px;
 
     padding:
-    15px
-    16px
-    14px;
+    17px
+    17px
+    16px;
 
-    margin-bottom:14px;
+    margin-bottom:15px;
+
+    box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    0 5px 12px rgba(40,100,160,0.08);
 }
 
 .symptom-example-title{
     display:flex;
     align-items:center;
 
-    color:#111;
+    margin-bottom:14px;
+}
 
-    font-size:18px;
-    font-weight:700;
+.symptom-icon-wrap{
+    width:38px;
+    height:38px;
 
-    margin-bottom:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-right:10px;
+
+    border-radius:50%;
+
+    background:
+    linear-gradient(
+        135deg,
+        #e5f2ff 0%,
+        #ffffff 100%
+    );
+
+    border:
+    1px solid #c9e0f8;
+
+    box-shadow:
+    0 4px 10px rgba(60,120,180,0.12);
 }
 
 .symptom-icon{
-    width:27px;
-    height:27px;
+    width:25px;
+    height:25px;
 
-    margin-right:8px;
-
-    color:#5aa4ff;
+    color:#4c9cff;
 }
+
+.symptom-title-badge{
+    display:inline-flex;
+    align-items:center;
+
+    min-height:30px;
+
+    padding:
+    4px
+    12px;
+
+    border-radius:999px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #e8f3ff 0%,
+        #f7fbff 100%
+    );
+
+    color:#0b5ea8;
+
+    font-size:17px;
+    font-weight:800;
+
+    box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+
+/* =====================================================
+   주요 증상 예시 목록 정렬
+   - red 박스 안쪽 기준 정렬
+   - 목 이물감을 기침 첫 텍스트 시작선과 동일하게 정렬
+===================================================== */
 
 .symptom-list{
     display:grid;
-    grid-template-columns:1fr 1fr 1fr;
 
-    row-gap:9px;
-    column-gap:6px;
+    grid-template-columns:
+    1fr
+    1fr
+    1fr;
+
+    row-gap:10px;
+    column-gap:8px;
+
+    width:100%;
+
+    padding:
+    0
+    2px;
 
     color:#111;
 
@@ -176,18 +263,72 @@ body{
 }
 
 .symptom-list span{
-    text-align:center;
-}
+    position:relative;
 
-.symptom-list .wide{
-    grid-column:1 / 4;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+
+    min-height:24px;
 
     text-align:left;
 
-    padding-left:30px;
+    white-space:nowrap;
 }
 
+.symptom-list span::before{
+    content:"";
+
+    width:5px;
+    height:5px;
+
+    flex:0 0 auto;
+
+    margin-right:8px;
+
+    border-radius:50%;
+
+    background:#2b7ed0;
+}
+
+/* 목 이물감: 기침과 같은 첫 번째 열 기준 */
+.symptom-list .wide{
+    grid-column:1 / 2;
+
+    justify-content:flex-start;
+
+    text-align:left;
+
+    padding-left:0;
+}
+
+
+/* =====================================================
+   증상 안내문 그룹
+===================================================== */
+
 .symptom-notice{
+    display:flex;
+    align-items:flex-start;
+
+    width:100%;
+
+    padding:
+    12px
+    13px;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #fbfcfe 0%,
+        #f2f6fb 100%
+    );
+
+    border:
+    1px solid #e1e8ef;
+
     color:#111;
 
     font-size:14px;
@@ -196,6 +337,29 @@ body{
     line-height:1.75;
 
     text-align:left;
+}
+
+.notice-icon{
+    width:22px;
+    height:22px;
+
+    flex:0 0 auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-right:8px;
+    margin-top:2px;
+
+    border-radius:50%;
+
+    background:#eaf4ff;
+
+    color:#1e73be;
+
+    font-size:14px;
+    font-weight:800;
 }
 
 
@@ -238,36 +402,123 @@ body{
     margin-bottom:18px;
 }
 
+
+/* =====================================================
+   무료상담 안내 목록 그룹
+===================================================== */
+
 .guide-list-box{
     width:100%;
 
-    background:#f5f8fa;
+    background:
+    linear-gradient(
+        135deg,
+        #f7fbff 0%,
+        #eef6ff 100%
+    );
 
-    border-radius:13px;
+    border:
+    1.5px solid #b9d3ef;
+
+    border-radius:16px;
 
     padding:
-    15px
+    16px
     16px;
 
-    margin-bottom:14px;
+    margin-bottom:15px;
+
+    box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    0 5px 12px rgba(40,100,160,0.08);
 }
 
-.guide-list-box p{
+/* 번호 / 항목명 / 내용 정렬 안정화 */
+.guide-list-row{
+    display:grid;
+
+    grid-template-columns:
+    28px
+    72px
+    minmax(0, 1fr);
+
+    column-gap:8px;
+
+    align-items:start;
+
+    min-height:32px;
+
+    margin-bottom:12px;
+
     color:#111;
 
     font-size:15px;
     font-weight:500;
 
-    line-height:1.85;
-
-    margin-bottom:7px;
+    line-height:1.55;
 }
 
-.guide-list-box p:last-child{
+.guide-list-row:last-child{
     margin-bottom:0;
 }
 
+.guide-list-icon{
+    width:28px;
+    height:28px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:
+    linear-gradient(
+        135deg,
+        #2d8ff0 0%,
+        #1d6fc2 100%
+    );
+
+    color:#ffffff;
+
+    font-size:14px;
+    font-weight:800;
+
+    box-shadow:
+    0 4px 10px rgba(29,111,194,0.22);
+}
+
+.guide-label{
+    color:#0a4f8f;
+
+    font-weight:800;
+
+    white-space:nowrap;
+
+    padding-top:3px;
+}
+
+.guide-value{
+    color:#111;
+
+    font-weight:500;
+
+    padding-top:3px;
+
+    min-width:0;
+
+    word-break:keep-all;
+    overflow-wrap:break-word;
+}
+
+
+/* =====================================================
+   무료상담 안내문 그룹
+===================================================== */
+
 .guide-notice{
+    width:100%;
+
     color:#111;
 
     font-size:14px;
@@ -276,6 +527,41 @@ body{
     line-height:1.75;
 
     text-align:left;
+}
+
+.guide-notice-row{
+    display:flex;
+    align-items:flex-start;
+
+    padding:
+    8px
+    0;
+}
+
+.guide-notice-icon{
+    width:20px;
+    height:20px;
+
+    flex:0 0 auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-right:8px;
+    margin-top:2px;
+
+    border-radius:50%;
+
+    background:#eaf4ff;
+
+    border:
+    1px solid #d2e6fb;
+
+    color:#1e73be;
+
+    font-size:12px;
+    font-weight:800;
 }
 
 
@@ -290,7 +576,12 @@ body{
     22px
     26px;
 
-    background:#f4f4f4;
+    background:
+    linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f7f9fb 100%
+    );
 }
 
 .consult-title{
@@ -422,10 +713,10 @@ body{
 
     background:transparent;
 
-    color:#6f7480;
+    color:#536170;
 
     font-size:11px;
-    font-weight:400;
+    font-weight:500;
 
     cursor:pointer;
 
@@ -451,7 +742,12 @@ body{
 
     border-radius:15px;
 
-    background:#ff8a00;
+    background:
+    linear-gradient(
+        135deg,
+        #ff9800 0%,
+        #ff7a00 100%
+    );
 
     color:#ffffff;
 
@@ -459,6 +755,9 @@ body{
     font-weight:800;
 
     cursor:pointer;
+
+    box-shadow:
+    0 8px 18px rgba(255,130,0,0.25);
 
     transition:opacity 0.2s ease;
 }
@@ -473,6 +772,10 @@ body{
 ===================================================== */
 
 .notice-text{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
     margin-top:18px;
 
     text-align:center;
@@ -483,6 +786,26 @@ body{
     font-weight:500;
 
     line-height:1.7;
+}
+
+.notice-text::before{
+    content:"";
+
+    width:20px;
+    height:20px;
+
+    display:inline-block;
+
+    margin-right:8px;
+
+    border-radius:50%;
+
+    background:
+    radial-gradient(circle at center, #ffffff 0 34%, transparent 36%),
+    linear-gradient(135deg, #eaf4ff 0%, #d9ecff 100%);
+
+    border:
+    1px solid #c9e0f8;
 }
 
 
@@ -634,8 +957,8 @@ body{
         font-size:16px;
     }
 
-    .symptom-example-title{
-        font-size:17px;
+    .symptom-title-badge{
+        font-size:16px;
     }
 
     .symptom-list{
@@ -651,7 +974,12 @@ body{
         font-size:16px;
     }
 
-    .guide-list-box p{
+    .guide-list-row{
+        grid-template-columns:
+        28px
+        72px
+        minmax(0, 1fr);
+
         font-size:14px;
     }
 
@@ -695,39 +1023,43 @@ body{
 
             <div class="symptom-example-title">
 
-                <svg
-                    class="symptom-icon"
-                    viewBox="0 0 64 64"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M31 9V31"
-                        stroke="currentColor"
-                        stroke-width="3"
-                        stroke-linecap="round"
-                    />
-                    <path
-                        d="M33 9V31"
-                        stroke="currentColor"
-                        stroke-width="3"
-                        stroke-linecap="round"
-                    />
-                    <path
-                        d="M31 31C24 21 14 20 10 28C6 36 7 51 14 53C21 55 25 47 28 39C29 36 30 33 31 31Z"
-                        stroke="currentColor"
-                        stroke-width="3"
-                        stroke-linejoin="round"
-                    />
-                    <path
-                        d="M33 31C40 21 50 20 54 28C58 36 57 51 50 53C43 55 39 47 36 39C35 36 34 33 33 31Z"
-                        stroke="currentColor"
-                        stroke-width="3"
-                        stroke-linejoin="round"
-                    />
-                </svg>
+                <div class="symptom-icon-wrap">
 
-                <span>
+                    <svg
+                        class="symptom-icon"
+                        viewBox="0 0 64 64"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M31 9V31"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                        />
+                        <path
+                            d="M33 9V31"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                        />
+                        <path
+                            d="M31 31C24 21 14 20 10 28C6 36 7 51 14 53C21 55 25 47 28 39C29 36 30 33 31 31Z"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linejoin="round"
+                        />
+                        <path
+                            d="M33 31C40 21 50 20 54 28C58 36 57 51 50 53C43 55 39 47 36 39C35 36 34 33 33 31Z"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+
+                </div>
+
+                <span class="symptom-title-badge">
                     주요 증상 예시
                 </span>
 
@@ -736,19 +1068,19 @@ body{
             <div class="symptom-list">
 
                 <span>
-                    • 기침
+                    기침
                 </span>
 
                 <span>
-                    • 가래
+                    가래
                 </span>
 
                 <span>
-                    • 목 불편감
+                    목 불편감
                 </span>
 
                 <span class="wide">
-                    • 목 이물감
+                    목 이물감
                 </span>
 
             </div>
@@ -756,8 +1088,16 @@ body{
         </div>
 
         <div class="symptom-notice">
-            ※ 본 상담은 일반적인 안내 및 정보 제공을 목적으로 하며,<br>
-            의학적 진단이나 치료를 대체하지 않습니다.
+
+            <span class="notice-icon">
+                i
+            </span>
+
+            <span>
+                본 상담은 일반적인 안내 및 정보 제공을 목적으로 하며,<br>
+                의학적 진단이나 치료를 대체하지 않습니다.
+            </span>
+
         </div>
 
     </section>
@@ -780,23 +1120,82 @@ body{
 
         <div class="guide-list-box">
 
-            <p>
-                • 상담 목적 : 무료상담 신청 확인 및 상담 연락
-            </p>
+            <div class="guide-list-row">
 
-            <p>
-                • 입력 항목 : 이름, 전화번호
-            </p>
+                <span class="guide-list-icon">
+                    1
+                </span>
 
-            <p>
-                • 상담 방식 : 입력하신 연락처로 담당자 연락
-            </p>
+                <span class="guide-label">
+                    상담 목적 :
+                </span>
+
+                <span class="guide-value">
+                    무료상담 신청 확인 및 상담 연락
+                </span>
+
+            </div>
+
+            <div class="guide-list-row">
+
+                <span class="guide-list-icon">
+                    2
+                </span>
+
+                <span class="guide-label">
+                    수집 항목 :
+                </span>
+
+                <span class="guide-value">
+                    이름, 전화번호
+                </span>
+
+            </div>
+
+            <div class="guide-list-row">
+
+                <span class="guide-list-icon">
+                    3
+                </span>
+
+                <span class="guide-label">
+                    상담 방식 :
+                </span>
+
+                <span class="guide-value">
+                    입력하신 연락처로 담당자 연락
+                </span>
+
+            </div>
 
         </div>
 
         <div class="guide-notice">
-            ※ 본 신청은 상담 접수를 위한 절차이며, 특정 결과를 보장하지 않습니다.<br>
-            ※ 입력하신 정보는 상담 목적 범위 내에서만 사용됩니다.
+
+            <div class="guide-notice-row">
+
+                <span class="guide-notice-icon">
+                    i
+                </span>
+
+                <span>
+                    본 신청은 상담 접수를 위한 절차이며, 특정 결과를 보장하지 않습니다.
+                </span>
+
+            </div>
+
+            <div class="guide-notice-row">
+
+                <span class="guide-notice-icon">
+                    ✓
+                </span>
+
+                <span>
+                    입력하신 정보는 상담 목적 범위 내에서만 사용됩니다.
+                </span>
+
+            </div>
+
         </div>
 
     </section>
@@ -1007,7 +1406,7 @@ body{
 
     if(privacyModalBg){
 
-        modalBg.addEventListener(
+        privacyModalBg.addEventListener(
             'click',
             function(){
 
