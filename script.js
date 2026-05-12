@@ -26,6 +26,9 @@ document.getElementById('name');
 const phoneInput =
 document.getElementById('phone');
 
+const requiredChecks =
+document.querySelectorAll('.check-area input[type="checkbox"]');
+
 
 
 // ============================================
@@ -41,6 +44,12 @@ async function(){
     const phone =
     phoneInput.value.trim();
 
+
+
+    // =====================================
+    // 이름 / 전화번호 검증
+    // =====================================
+
     if(!name || !phone){
 
         alert(
@@ -49,6 +58,38 @@ async function(){
 
         return;
     }
+
+
+
+    // =====================================
+    // 필수 체크박스 검증
+    // - 만 14세 이상
+    // - 개인정보 수집·이용 동의
+    // 두 개 모두 체크해야 저장 진행
+    // =====================================
+
+    let allRequiredChecked =
+    true;
+
+    requiredChecks.forEach(function(check){
+
+        if(!check.checked){
+
+            allRequiredChecked =
+            false;
+        }
+    });
+
+    if(!allRequiredChecked){
+
+        alert(
+            '필수 항목을 체크하세요.'
+        );
+
+        return;
+    }
+
+
 
     const createdText =
     new Date()
