@@ -5,16 +5,16 @@
    수정 내용:
    - 소개등록 시 성명만 입력하면 바로 저장
    - 연락처 입력창 제거
-   - 성명 입력 후 확인하면 prompt 즉시 종료
    - crm_customers 저장 시 created_text 사용
-   - 소개등록 → 소개명단 표시
+   - 소개명단에서 상담내용 저장 시 status를 변경하지 않음
+   - 상담내용은 crm_customers.memo 컬럼에 저장
+   - status='소개등록' 유지 → 상담내용 저장 후에도 소개명단에서 사라지지 않음
    - 소개명단에서 상담예정일 입력해도 소개명단에 계속 유지
    - 상담예정일 입력된 소개등록자는 상담예정에도 함께 표시
    - 상담예정에서 종료 버튼 클릭 시 고객명단으로 이동
    - 종료 후 소개명단에서는 사라짐
-   - 메모는 localStorage에만 저장
+   - 메모 메뉴는 localStorage에만 저장
    - 메모 행은 소개명단/고객명단/상담예정에 표시하지 않음
-   - 상담내용 줄바꿈 저장 보존
    - 전화번호 하이픈 표시
    - 상담신청일 표시 형식: 2026-05-12   10:30
 ===================================================== */
@@ -711,9 +711,8 @@ if(counselCancelBtn){
 
 /* =========================
    소개등록
-   핵심 수정:
    - 성명 입력 후 확인하면 바로 저장
-   - 연락처 입력창 제거
+   - 연락처 입력창 없음
    - phone은 빈 값으로 저장
 ========================= */
 
@@ -810,6 +809,9 @@ if(newBtn){
 
                 status:
                 '소개등록',
+
+                memo:
+                '',
 
                 reserve_date:
                 null
@@ -1285,15 +1287,34 @@ function renderTable(data){
         const tableName =
         item.source_table || 'notes';
 
-        const statusRaw =
-        normalizeMultiline(
-            item.status || ''
-        );
+        const isCrmCustomer =
+        tableName === 'crm_customers';
+
+        const editField =
+        isCrmCustomer
+        ?
+        'memo'
+        :
+        'status';
+
+        const rawCounselValue =
+        isCrmCustomer
+        ?
+        normalizeMultiline(item.memo || '')
+        :
+        normalizeMultiline(item.status || '');
 
         const statusDisplay =
-        toDisplayText(
-            item.status || '상담내용'
-        ) || '상담내용';
+        isCrmCustomer
+        ?
+        (
+            toDisplayText(item.memo || '') ||
+            toDisplayText(item.status || '상담내용')
+        )
+        :
+        (
+            toDisplayText(item.status || '상담내용')
+        );
 
         const createdText =
         item.created_text || '';
@@ -1342,7 +1363,7 @@ function renderTable(data){
             <td class="editable-cell editable-status"
                 data-id="${escapeHTML(id)}"
                 data-table="${escapeHTML(tableName)}"
-                data-field="status">
+                data-field="${escapeHTML(editField)}">
                 ${escapeHTML(statusDisplay)}
             </td>
 
@@ -1365,7 +1386,7 @@ function renderTable(data){
         if(statusCell){
 
             statusCell.dataset.rawValue =
-            statusRaw;
+            rawCounselValue;
         }
 
         crmBody.appendChild(
