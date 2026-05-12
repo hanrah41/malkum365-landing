@@ -8,9 +8,9 @@
    - crm_customers 저장 시 created_text 사용
    - 소개명단에서 상담내용 저장 시 status를 변경하지 않음
    - 상담내용은 crm_customers.memo 컬럼에 저장
-   - status='소개등록' 유지 → 상담내용 저장 후에도 소개명단에서 사라지지 않음
-   - 소개명단에서 상담예정일 입력해도 소개명단에 계속 유지
-   - 상담예정일 입력된 소개등록자는 상담예정에도 함께 표시
+   - status='소개등록' 유지
+   - 소개명단에서 상담예정일 입력 시 소개명단에서는 사라짐
+   - 상담예정일 입력된 소개등록자는 상담예정에 표시
    - 상담예정에서 종료 버튼 클릭 시 고객명단으로 이동
    - 종료 후 소개명단에서는 사라짐
    - 메모 메뉴는 localStorage에만 저장
@@ -714,6 +714,9 @@ if(counselCancelBtn){
    - 성명 입력 후 확인하면 바로 저장
    - 연락처 입력창 없음
    - phone은 빈 값으로 저장
+   - status='소개등록'
+   - reserve_date=null
+   - 저장 후 소개명단으로 이동
 ========================= */
 
 if(newBtn){
@@ -991,6 +994,11 @@ if(alarmBtn){
 
 /* =========================
    소개명단 로드
+
+   핵심 수정:
+   - status='소개등록'
+   - reserve_date가 null인 데이터만 표시
+   - 상담예정일이 입력된 데이터는 소개명단에서 사라짐
 ========================= */
 
 async function loadIntroduceList(){
@@ -1005,6 +1013,11 @@ async function loadIntroduceList(){
     .eq(
         'status',
         '소개등록'
+    )
+
+    .is(
+        'reserve_date',
+        null
     )
 
     .order(
