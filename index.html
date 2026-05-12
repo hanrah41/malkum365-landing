@@ -180,12 +180,25 @@ body{
 
 
 /* =====================================================
-   개인정보 자세히 보기 버튼
+   개인정보 동의 줄 전용 위치 보정
+   자세히 보기 버튼을 빨간 박스 위치로 이동
 ===================================================== */
 
-.privacy-detail-btn{
-    margin-left:6px;
+.privacy-line{
+    position:relative;
 
+    padding-bottom:26px;
+
+    margin-bottom:10px;
+}
+
+.privacy-line .privacy-detail-btn{
+    position:absolute;
+
+    left:238px;
+    top:31px;
+
+    margin:0;
     padding:0;
 
     border:none;
@@ -204,7 +217,7 @@ body{
     white-space:nowrap;
 }
 
-.privacy-detail-btn:hover{
+.privacy-line .privacy-detail-btn:hover{
     color:#003b4d;
 }
 
@@ -415,6 +428,11 @@ body{
         font-size:22px;
     }
 
+    .privacy-line .privacy-detail-btn{
+        left:238px;
+        top:31px;
+    }
+
     .submit-btn{
         height:112px;
 
@@ -476,7 +494,7 @@ body{
 
         </label>
 
-        <label class="agree-line">
+        <label class="agree-line privacy-line">
 
             <input
                 type="checkbox"
@@ -486,15 +504,15 @@ body{
             <span class="agree-text">
                 개인정보 수집·이용 동의
                 <span class="required">[필수]</span>
-
-                <button
-                    type="button"
-                    id="privacyDetailBtn"
-                    class="privacy-detail-btn"
-                >
-                    자세히 보기
-                </button>
             </span>
+
+            <button
+                type="button"
+                id="privacyDetailBtn"
+                class="privacy-detail-btn"
+            >
+                자세히 보기
+            </button>
 
         </label>
 
