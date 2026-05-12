@@ -2,13 +2,14 @@
    CUSTOMER CRM
    파일: C:\malkum365-landing\crm.js
 
-   수정 내용:
-   - 소개등록 데이터가 고객명단으로 바로 표시되는 버그 차단
-   - 소개등록 → 소개명단
-   - 상담예정일 입력 → 소개명단에서 제외 / 상담예정 목록 표시
-   - 상담예정 종료 클릭 → 고객명단으로 이동
-   - 고객명단에서는 status='고객명단'만 표시
-   - 랜딩페이지 index.html / script.js 절대 수정 없음
+   핵심 수정:
+   - 소개등록 데이터는 status='소개명단'으로 저장
+   - 소개명단 메뉴에는 status='소개명단'만 표시
+   - 고객명단 메뉴에는 status='고객명단'만 표시
+   - 소개명단 데이터가 고객명단으로 바로 넘어가는 버그 차단
+   - 상담예정일 입력 시 상담예정으로만 이동
+   - 상담예정 종료 클릭 후에만 고객명단 이동
+   - index.html / script.js / 무료상담신청 버튼 절대 수정 없음
 ===================================================== */
 
 
@@ -701,7 +702,7 @@ if(counselCancelBtn){
    소개등록
    핵심:
    - crm_customers에만 저장
-   - status='소개등록'
+   - status='소개명단'
    - reserve_date=null
    - 저장 후 고객명단이 아니라 소개명단으로 이동
 ========================= */
@@ -798,7 +799,7 @@ if(newBtn){
                 getNowText(),
 
                 status:
-                '소개등록',
+                '소개명단',
 
                 memo:
                 '',
@@ -858,6 +859,9 @@ if(newBtn){
 
 /* =========================
    소개명단
+   핵심:
+   - status='소개명단'만 표시
+   - reserve_date=null만 표시
 ========================= */
 
 if(introduceBtn){
@@ -984,9 +988,9 @@ if(alarmBtn){
 /* =========================
    소개명단 로드
    핵심:
-   - status='소개등록'
+   - status='소개명단'
    - reserve_date=null
-   - 상담예정일이 입력되면 소개명단에서 제외
+   - 고객명단과 완전 분리
 ========================= */
 
 async function loadIntroduceList(){
@@ -1000,7 +1004,7 @@ async function loadIntroduceList(){
 
     .eq(
         'status',
-        '소개등록'
+        '소개명단'
     )
 
     .is(
@@ -1057,10 +1061,10 @@ async function loadIntroduceList(){
 /* =========================
    고객명단 로드
    핵심:
-   - 소개등록 데이터 절대 표시 금지
-   - 상담예정 데이터 절대 표시 금지
    - crm_customers는 status='고객명단'만 표시
-   - notes는 reserve_date 없는 일반 고객만 표시
+   - status='소개명단'은 고객명단에서 절대 표시 안 함
+   - status='소개등록'도 고객명단에서 절대 표시 안 함
+   - reserve_date 있는 데이터도 표시 안 함
 ========================= */
 
 async function loadCustomers(){
@@ -1150,6 +1154,11 @@ async function loadCustomers(){
             return false;
         }
 
+        if(status === '소개명단'){
+
+            return false;
+        }
+
         if(status === '상담예정'){
 
             return false;
@@ -1186,6 +1195,16 @@ async function loadCustomers(){
         item.reserve_date || null;
 
         if(status !== '고객명단'){
+
+            return false;
+        }
+
+        if(status === '소개명단'){
+
+            return false;
+        }
+
+        if(status === '소개등록'){
 
             return false;
         }
@@ -1624,7 +1643,7 @@ function bindStatusEditor(){
    상담예정일 입력
    핵심:
    - reserve_date만 저장
-   - status는 건드리지 않음
+   - status는 그대로 유지
    - 저장 후 상담예정 목록으로 이동
 ========================= */
 
@@ -1988,7 +2007,6 @@ function refreshCurrentMode(){
 
 /* =========================
    실시간 notes
-   랜딩페이지 상담신청용
 ========================= */
 
 supabaseClient
@@ -2025,7 +2043,8 @@ supabaseClient
 /* =========================
    실시간 CRM
    핵심:
-   - 소개등록 중에는 고객명단으로 새로고침하지 않음
+   - 소개등록 중에는 고객명단으로 새로고침 금지
+   - 소개명단 모드면 소개명단만 새로고침
 ========================= */
 
 supabaseClient
@@ -2051,13 +2070,25 @@ supabaseClient
             return;
         }
 
-        if(
-            currentMode === 'introduce' ||
-            currentMode === 'customer' ||
-            currentMode === 'reserve'
-        ){
+        if(currentMode === 'introduce'){
 
-            refreshCurrentMode();
+            loadIntroduceList();
+
+            return;
+        }
+
+        if(currentMode === 'customer'){
+
+            loadCustomers();
+
+            return;
+        }
+
+        if(currentMode === 'reserve'){
+
+            loadReserveList();
+
+            return;
         }
     }
 )
