@@ -3,14 +3,20 @@
    파일: C:\malkum365-landing\crm.js
 
    수정 내용:
-   - 소개등록 저장 실패 버그 수정
-   - crm_customers insert 시 created_at 사용 금지
-   - created_text 기준으로 저장
-   - 성명 입력 확인 후 prompt 반복/멈춤 방지
+   - 소개등록 시 성명만 입력하면 바로 저장
+   - 연락처 입력창 제거
+   - 성명 입력 후 확인하면 prompt 즉시 종료
+   - crm_customers 저장 시 created_text 사용
    - 소개등록 → 소개명단 표시
-   - 소개명단에서 상담예정일 입력해도 소개명단 유지
-   - 상담예정에서 종료 시 고객명단으로 이동
+   - 소개명단에서 상담예정일 입력해도 소개명단에 계속 유지
+   - 상담예정일 입력된 소개등록자는 상담예정에도 함께 표시
+   - 상담예정에서 종료 버튼 클릭 시 고객명단으로 이동
+   - 종료 후 소개명단에서는 사라짐
    - 메모는 localStorage에만 저장
+   - 메모 행은 소개명단/고객명단/상담예정에 표시하지 않음
+   - 상담내용 줄바꿈 저장 보존
+   - 전화번호 하이픈 표시
+   - 상담신청일 표시 형식: 2026-05-12   10:30
 ===================================================== */
 
 
@@ -706,9 +712,9 @@ if(counselCancelBtn){
 /* =========================
    소개등록
    핵심 수정:
-   - created_at 사용 금지
-   - created_text로 저장
-   - prompt 반복 실행 방지
+   - 성명 입력 후 확인하면 바로 저장
+   - 연락처 입력창 제거
+   - phone은 빈 값으로 저장
 ========================= */
 
 if(newBtn){
@@ -786,34 +792,6 @@ if(newBtn){
                 return;
             }
 
-            const phoneInput =
-            window.prompt(
-                '연락처 입력',
-                ''
-            );
-
-            if(phoneInput === null){
-
-                currentMode =
-                'introduce';
-
-                if(introduceBtn){
-
-                    setActiveButton(
-                        introduceBtn
-                    );
-                }
-
-                loadIntroduceList();
-
-                return;
-            }
-
-            const phone =
-            formatPhone(
-                phoneInput
-            );
-
             const result =
             await supabaseClient
 
@@ -825,7 +803,7 @@ if(newBtn){
                 name,
 
                 phone:
-                phone,
+                '',
 
                 created_text:
                 getNowText(),
