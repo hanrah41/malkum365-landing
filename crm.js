@@ -7,6 +7,7 @@
    - 소개등록 → 소개명단
    - 상담예정일 입력 → 소개명단에서 제외 / 상담예정 목록 표시
    - 상담예정 종료 클릭 → 고객명단으로 이동
+   - 고객명단에서는 status='고객명단'만 표시
    - 랜딩페이지 index.html / script.js 절대 수정 없음
 ===================================================== */
 
@@ -388,50 +389,6 @@ function removeMemoRows(list){
 
 
 /* =========================
-   고객명단 보호 필터
-   핵심:
-   - status='소개등록'은 고객명단에서 무조건 제외
-   - reserve_date가 있는 crm_customers도 고객명단에서 제외
-========================= */
-
-function filterCustomerList(list){
-
-    if(!Array.isArray(list)){
-
-        return [];
-    }
-
-    return list.filter(item=>{
-
-        const tableName =
-        item.source_table || '';
-
-        const status =
-        String(item.status ?? '')
-        .trim();
-
-        const reserveDate =
-        item.reserve_date || null;
-
-        if(tableName === 'crm_customers'){
-
-            if(status !== '고객명단'){
-
-                return false;
-            }
-
-            if(reserveDate){
-
-                return false;
-            }
-        }
-
-        return true;
-    });
-}
-
-
-/* =========================
    중복 신청 표시 제거
 ========================= */
 
@@ -794,7 +751,7 @@ if(newBtn){
                     );
                 }
 
-                loadIntroduceList();
+                await loadIntroduceList();
 
                 return;
             }
@@ -819,7 +776,7 @@ if(newBtn){
                     );
                 }
 
-                loadIntroduceList();
+                await loadIntroduceList();
 
                 return;
             }
@@ -878,7 +835,7 @@ if(newBtn){
 
             showTableArea();
 
-            loadIntroduceList();
+            await loadIntroduceList();
 
         }catch(error){
 
@@ -1100,8 +1057,10 @@ async function loadIntroduceList(){
 /* =========================
    고객명단 로드
    핵심:
+   - 소개등록 데이터 절대 표시 금지
+   - 상담예정 데이터 절대 표시 금지
    - crm_customers는 status='고객명단'만 표시
-   - status='소개등록'은 고객명단에서 절대 제외
+   - notes는 reserve_date 없는 일반 고객만 표시
 ========================= */
 
 async function loadCustomers(){
@@ -1111,7 +1070,12 @@ async function loadCustomers(){
 
     .from('notes')
 
-    .select('*');
+    .select('*')
+
+    .is(
+        'reserve_date',
+        null
+    );
 
     const crmResult =
     await supabaseClient
@@ -1123,12 +1087,21 @@ async function loadCustomers(){
     .eq(
         'status',
         '고객명단'
+    )
+
+    .is(
+        'reserve_date',
+        null
     );
 
     if(notesResult.error){
 
         console.error(
             notesResult.error
+        );
+
+        alert(
+            'notes 고객명단 불러오기 실패: ' + notesResult.error.message
         );
 
         return;
@@ -1140,11 +1113,56 @@ async function loadCustomers(){
             crmResult.error
         );
 
+        alert(
+            'crm_customers 고객명단 불러오기 실패: ' + crmResult.error.message
+        );
+
         return;
     }
 
     const notesData =
-    (notesResult.data || []).map(item=>({
+    (notesResult.data || [])
+    .filter(item=>{
+
+        const status =
+        String(item.status ?? '')
+        .trim();
+
+        const name =
+        String(item.name ?? '')
+        .trim();
+
+        const reserveDate =
+        item.reserve_date || null;
+
+        if(name === '메모'){
+
+            return false;
+        }
+
+        if(status === '메모'){
+
+            return false;
+        }
+
+        if(status === '소개등록'){
+
+            return false;
+        }
+
+        if(status === '상담예정'){
+
+            return false;
+        }
+
+        if(reserveDate){
+
+            return false;
+        }
+
+        return true;
+    })
+    .map(item=>({
 
         ...item,
 
@@ -1157,7 +1175,29 @@ async function loadCustomers(){
     }));
 
     const crmData =
-    (crmResult.data || []).map(item=>({
+    (crmResult.data || [])
+    .filter(item=>{
+
+        const status =
+        String(item.status ?? '')
+        .trim();
+
+        const reserveDate =
+        item.reserve_date || null;
+
+        if(status !== '고객명단'){
+
+            return false;
+        }
+
+        if(reserveDate){
+
+            return false;
+        }
+
+        return true;
+    })
+    .map(item=>({
 
         ...item,
 
@@ -1177,10 +1217,8 @@ async function loadCustomers(){
 
     const filtered =
     removeDuplicateSubmissions(
-        filterCustomerList(
-            removeMemoRows(
-                merged
-            )
+        removeMemoRows(
+            merged
         )
     );
 
