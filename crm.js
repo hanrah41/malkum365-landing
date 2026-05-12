@@ -3,20 +3,11 @@
    파일: C:\malkum365-landing\crm.js
 
    수정 내용:
-   - 소개등록 시 성명만 입력하면 바로 저장
-   - 연락처 입력창 제거
-   - crm_customers 저장 시 created_text 사용
-   - 소개명단에서 상담내용 저장 시 status를 변경하지 않음
-   - 상담내용은 crm_customers.memo 컬럼에 저장
-   - status='소개등록' 유지
-   - 소개명단에서 상담예정일 입력 시 소개명단에서는 사라짐
-   - 상담예정일 입력된 소개등록자는 상담예정에 표시
-   - 상담예정에서 종료 버튼 클릭 시 고객명단으로 이동
-   - 종료 후 소개명단에서는 사라짐
-   - 메모 메뉴는 localStorage에만 저장
-   - 메모 행은 소개명단/고객명단/상담예정에 표시하지 않음
-   - 전화번호 하이픈 표시
-   - 상담신청일 표시 형식: 2026-05-12   10:30
+   - 소개등록 데이터가 고객명단으로 바로 표시되는 버그 차단
+   - 소개등록 → 소개명단
+   - 상담예정일 입력 → 소개명단에서 제외 / 상담예정 목록 표시
+   - 상담예정 종료 클릭 → 고객명단으로 이동
+   - 랜딩페이지 index.html / script.js 절대 수정 없음
 ===================================================== */
 
 
@@ -42,7 +33,7 @@ window.supabase.createClient(
 ========================= */
 
 let currentMode =
-'customer';
+'introduce';
 
 let currentEditId =
 null;
@@ -177,8 +168,6 @@ function escapeHTML(value){
 
 /* =========================
    현재 시간 문자열
-   저장 형식:
-   2026-05-12 10:30
 ========================= */
 
 function getNowText(){
@@ -283,8 +272,6 @@ function formatPhone(value){
 
 /* =========================
    상담신청일 표시 형식
-   목표:
-   2026-05-12   10:30
 ========================= */
 
 function formatDateTimeDisplay(value){
@@ -393,6 +380,50 @@ function removeMemoRows(list){
         if(status === '메모'){
 
             return false;
+        }
+
+        return true;
+    });
+}
+
+
+/* =========================
+   고객명단 보호 필터
+   핵심:
+   - status='소개등록'은 고객명단에서 무조건 제외
+   - reserve_date가 있는 crm_customers도 고객명단에서 제외
+========================= */
+
+function filterCustomerList(list){
+
+    if(!Array.isArray(list)){
+
+        return [];
+    }
+
+    return list.filter(item=>{
+
+        const tableName =
+        item.source_table || '';
+
+        const status =
+        String(item.status ?? '')
+        .trim();
+
+        const reserveDate =
+        item.reserve_date || null;
+
+        if(tableName === 'crm_customers'){
+
+            if(status !== '고객명단'){
+
+                return false;
+            }
+
+            if(reserveDate){
+
+                return false;
+            }
         }
 
         return true;
@@ -711,12 +742,11 @@ if(counselCancelBtn){
 
 /* =========================
    소개등록
-   - 성명 입력 후 확인하면 바로 저장
-   - 연락처 입력창 없음
-   - phone은 빈 값으로 저장
+   핵심:
+   - crm_customers에만 저장
    - status='소개등록'
    - reserve_date=null
-   - 저장 후 소개명단으로 이동
+   - 저장 후 고객명단이 아니라 소개명단으로 이동
 ========================= */
 
 if(newBtn){
@@ -746,13 +776,13 @@ if(newBtn){
 
             showTableArea();
 
-            const nameInput =
+            const promptName =
             window.prompt(
                 '성명 입력',
                 ''
             );
 
-            if(nameInput === null){
+            if(promptName === null){
 
                 currentMode =
                 'introduce';
@@ -770,7 +800,7 @@ if(newBtn){
             }
 
             const name =
-            String(nameInput)
+            String(promptName)
             .trim();
 
             if(name === ''){
@@ -845,6 +875,8 @@ if(newBtn){
                     introduceBtn
                 );
             }
+
+            showTableArea();
 
             loadIntroduceList();
 
@@ -994,11 +1026,10 @@ if(alarmBtn){
 
 /* =========================
    소개명단 로드
-
-   핵심 수정:
+   핵심:
    - status='소개등록'
-   - reserve_date가 null인 데이터만 표시
-   - 상담예정일이 입력된 데이터는 소개명단에서 사라짐
+   - reserve_date=null
+   - 상담예정일이 입력되면 소개명단에서 제외
 ========================= */
 
 async function loadIntroduceList(){
@@ -1068,6 +1099,9 @@ async function loadIntroduceList(){
 
 /* =========================
    고객명단 로드
+   핵심:
+   - crm_customers는 status='고객명단'만 표시
+   - status='소개등록'은 고객명단에서 절대 제외
 ========================= */
 
 async function loadCustomers(){
@@ -1143,8 +1177,10 @@ async function loadCustomers(){
 
     const filtered =
     removeDuplicateSubmissions(
-        removeMemoRows(
-            merged
+        filterCustomerList(
+            removeMemoRows(
+                merged
+            )
         )
     );
 
@@ -1161,6 +1197,8 @@ async function loadCustomers(){
 
 /* =========================
    상담예정 통합 로드
+   핵심:
+   - reserve_date가 있는 데이터만 표시
 ========================= */
 
 async function loadReserveList(){
@@ -1546,6 +1584,10 @@ function bindStatusEditor(){
 
 /* =========================
    상담예정일 입력
+   핵심:
+   - reserve_date만 저장
+   - status는 건드리지 않음
+   - 저장 후 상담예정 목록으로 이동
 ========================= */
 
 function bindReserveDateEditor(){
@@ -1719,6 +1761,8 @@ function bindReserveDateEditor(){
 
 /* =========================
    상담예정 종료 버튼
+   핵심:
+   - 종료 클릭 후에만 고객명단 이동
 ========================= */
 
 function bindFinishButtons(){
@@ -1855,6 +1899,23 @@ if(memoSaveBtn){
 
 function refreshCurrentMode(){
 
+    if(currentMode === 'new'){
+
+        currentMode =
+        'introduce';
+
+        if(introduceBtn){
+
+            setActiveButton(
+                introduceBtn
+            );
+        }
+
+        loadIntroduceList();
+
+        return;
+    }
+
     if(currentMode === 'introduce'){
 
         loadIntroduceList();
@@ -1883,19 +1944,13 @@ function refreshCurrentMode(){
         return;
     }
 
-    if(currentMode === 'new'){
-
-        loadIntroduceList();
-
-        return;
-    }
-
-    loadCustomers();
+    loadIntroduceList();
 }
 
 
 /* =========================
    실시간 notes
+   랜딩페이지 상담신청용
 ========================= */
 
 supabaseClient
@@ -1931,6 +1986,8 @@ supabaseClient
 
 /* =========================
    실시간 CRM
+   핵심:
+   - 소개등록 중에는 고객명단으로 새로고침하지 않음
 ========================= */
 
 supabaseClient
@@ -1951,6 +2008,11 @@ supabaseClient
 
     ()=>{
 
+        if(currentMode === 'new'){
+
+            return;
+        }
+
         if(
             currentMode === 'introduce' ||
             currentMode === 'customer' ||
@@ -1967,15 +2029,17 @@ supabaseClient
 
 /* =========================
    시작
+   핵심:
+   CRM 시작 화면은 소개명단 기준
 ========================= */
 
-if(customerBtn){
+if(introduceBtn){
 
     setActiveButton(
-        customerBtn
+        introduceBtn
     );
 }
 
 showTableArea();
 
-loadCustomers();
+loadIntroduceList();
