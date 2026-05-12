@@ -32,6 +32,63 @@ document.querySelectorAll('.check-area input[type="checkbox"]');
 
 
 // ============================================
+// 신청 폼 초기화
+// - 이름 초기화
+// - 전화번호 초기화
+// - 체크박스 초기화
+// ============================================
+
+function resetConsultForm(){
+
+    if(nameInput){
+
+        nameInput.value =
+        '';
+    }
+
+    if(phoneInput){
+
+        phoneInput.value =
+        '';
+    }
+
+    requiredChecks.forEach(function(check){
+
+        check.checked =
+        false;
+    });
+}
+
+
+
+// ============================================
+// 페이지 진입 시 초기화
+// - 브라우저 자동완성 값이 남는 문제 방지
+// ============================================
+
+window.addEventListener(
+    'DOMContentLoaded',
+    function(){
+
+        resetConsultForm();
+
+        setTimeout(function(){
+
+            resetConsultForm();
+
+        }, 100);
+
+        setTimeout(function(){
+
+            resetConsultForm();
+
+        }, 500);
+    }
+);
+
+
+
+// ============================================
 // 버튼
 // ============================================
 
@@ -63,9 +120,6 @@ async function(){
 
     // =====================================
     // 필수 체크박스 검증
-    // - 만 14세 이상
-    // - 개인정보 수집·이용 동의
-    // 두 개 모두 체크해야 저장 진행
     // =====================================
 
     let allRequiredChecked =
@@ -167,6 +221,14 @@ async function(){
     alert(
         '무료 상담 신청 완료'
     );
+
+
+
+    // =====================================
+    // 신청 완료 후 즉시 초기화
+    // =====================================
+
+    resetConsultForm();
 };
 
 
