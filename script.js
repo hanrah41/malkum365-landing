@@ -156,12 +156,13 @@ async function(){
 
     // =====================================
     // leads 저장
+    // 보안 수정:
+    // - .select().single() 제거
+    // - RLS 적용 시 INSERT만 허용 가능하도록 변경
     // =====================================
 
-    const {
-        data,
-        error
-    } = await supabaseClient
+    const leadsResult =
+    await supabaseClient
 
     .from('leads')
 
@@ -170,21 +171,21 @@ async function(){
             created_text:
             createdText,
 
-            name:name,
+            name:
+            name,
 
-            phone:phone
+            phone:
+            phone
         }
-    ])
-
-    .select()
-
-    .single();
+    ]);
 
 
 
-    if(error){
+    if(leadsResult.error){
 
-        console.error(error);
+        console.error(
+            leadsResult.error
+        );
 
         alert(
             'DB 저장 실패'
@@ -197,24 +198,43 @@ async function(){
 
     // =====================================
     // notes 저장
+    // 보안 수정:
+    // - id:data.id 제거
+    // - notes.id는 Supabase에서 자동 생성되도록 사용
     // =====================================
 
+    const notesResult =
     await supabaseClient
 
     .from('notes')
 
     .insert([
         {
-            id:data.id,
-
             created_text:
             createdText,
 
-            name:name,
+            name:
+            name,
 
-            phone:phone
+            phone:
+            phone
         }
     ]);
+
+
+
+    if(notesResult.error){
+
+        console.error(
+            notesResult.error
+        );
+
+        alert(
+            '상담 메모 저장 실패'
+        );
+
+        return;
+    }
 
 
 
