@@ -92,6 +92,259 @@ body{
 
 
 /* =====================================================
+   기억력 테스트 카드
+   무료상담 폼 연결과 분리
+===================================================== */
+
+.memory-card{
+    width:100%;
+
+    padding:
+    25px
+    22px
+    22px;
+
+    margin-bottom:18px;
+
+    background:
+    linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f7fbff 100%
+    );
+
+    border:
+    1px solid rgba(155,180,205,0.42);
+
+    border-radius:20px;
+
+    box-shadow:
+    0 8px 22px rgba(45,70,95,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.memory-title{
+    color:#003b4d;
+
+    font-size:26px;
+    font-weight:800;
+
+    line-height:1.35;
+
+    text-align:center;
+
+    margin-bottom:13px;
+}
+
+.memory-desc{
+    color:#111;
+
+    font-size:15px;
+    font-weight:500;
+
+    line-height:1.7;
+
+    text-align:center;
+
+    margin-bottom:16px;
+}
+
+.memory-display{
+    width:100%;
+
+    min-height:66px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-bottom:14px;
+
+    border-radius:16px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #eef6ff 0%,
+        #f8fbff 100%
+    );
+
+    border:
+    1.5px solid #b9d3ef;
+
+    color:#0b5ea8;
+
+    font-size:34px;
+    font-weight:800;
+
+    letter-spacing:8px;
+
+    box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    0 5px 12px rgba(40,100,160,0.08);
+}
+
+.memory-display.hidden{
+    color:#9aa7b5;
+
+    font-size:17px;
+    font-weight:700;
+
+    letter-spacing:0;
+}
+
+.memory-input{
+    width:100%;
+    height:48px;
+
+    border:
+    2.5px solid #c8ccd4;
+
+    border-radius:13px;
+
+    background:#ffffff;
+
+    padding:
+    0
+    16px;
+
+    color:#111;
+
+    font-size:20px;
+    font-weight:600;
+
+    text-align:center;
+
+    outline:none;
+
+    margin-bottom:12px;
+}
+
+.memory-input::placeholder{
+    color:#777;
+    font-weight:400;
+}
+
+.memory-button-row{
+    display:grid;
+
+    grid-template-columns:
+    1fr
+    1fr;
+
+    gap:10px;
+
+    margin-bottom:12px;
+}
+
+.memory-btn{
+    height:46px;
+
+    border:none;
+
+    border-radius:13px;
+
+    color:#ffffff;
+
+    font-size:16px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 6px 14px rgba(30,115,190,0.18);
+}
+
+.memory-start-btn{
+    background:
+    linear-gradient(
+        135deg,
+        #2d8ff0 0%,
+        #1d6fc2 100%
+    );
+}
+
+.memory-check-btn{
+    background:
+    linear-gradient(
+        135deg,
+        #ff9800 0%,
+        #ff7a00 100%
+    );
+}
+
+.memory-result{
+    min-height:24px;
+
+    color:#111;
+
+    font-size:14px;
+    font-weight:700;
+
+    line-height:1.6;
+
+    text-align:center;
+
+    margin-bottom:10px;
+}
+
+.memory-notice{
+    display:flex;
+    align-items:flex-start;
+
+    width:100%;
+
+    padding:
+    10px
+    12px;
+
+    border-radius:13px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #fbfcfe 0%,
+        #f2f6fb 100%
+    );
+
+    border:
+    1px solid #e1e8ef;
+
+    color:#111;
+
+    font-size:12.5px;
+    font-weight:500;
+
+    line-height:1.6;
+
+    text-align:left;
+}
+
+.memory-notice-icon{
+    width:20px;
+    height:20px;
+
+    flex:0 0 auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-right:8px;
+    margin-top:1px;
+
+    border-radius:50%;
+
+    background:#eaf4ff;
+
+    color:#1e73be;
+
+    font-size:12px;
+    font-weight:800;
+}
+
+
+/* =====================================================
    1번 카드: 불편감 상담 안내
 ===================================================== */
 
@@ -984,9 +1237,28 @@ body{
         max-width:360px;
     }
 
+    .memory-title,
     .symptom-title,
     .guide-title{
         font-size:24px;
+    }
+
+    .memory-desc{
+        font-size:14px;
+    }
+
+    .memory-display{
+        min-height:62px;
+
+        font-size:31px;
+    }
+
+    .memory-display.hidden{
+        font-size:16px;
+    }
+
+    .memory-notice{
+        font-size:12px;
     }
 
     .consult-title{
@@ -1045,6 +1317,82 @@ body{
 <body>
 
 <div class="landing-wrap">
+
+    <!-- =====================================================
+         0. 기억력 테스트 카드
+         무료상담 저장 로직과 분리
+    ====================================================== -->
+
+    <section class="memory-card">
+
+        <div class="memory-title">
+            간단 기억력 테스트
+        </div>
+
+        <div class="memory-desc">
+            숫자가 잠깐 보이면 기억해두었다가<br>
+            아래 입력창에 그대로 입력해보세요.
+        </div>
+
+        <div
+            id="memoryDisplay"
+            class="memory-display hidden"
+        >
+            시작 버튼을 눌러주세요
+        </div>
+
+        <input
+            type="text"
+            id="memoryAnswer"
+            class="memory-input"
+            placeholder="숫자 입력"
+            inputmode="numeric"
+            autocomplete="off"
+            disabled
+        >
+
+        <div class="memory-button-row">
+
+            <button
+                type="button"
+                id="memoryStartBtn"
+                class="memory-btn memory-start-btn"
+            >
+                시작하기
+            </button>
+
+            <button
+                type="button"
+                id="memoryCheckBtn"
+                class="memory-btn memory-check-btn"
+            >
+                확인하기
+            </button>
+
+        </div>
+
+        <div
+            id="memoryResult"
+            class="memory-result"
+        >
+            3초 동안 숫자가 표시됩니다.
+        </div>
+
+        <div class="memory-notice">
+
+            <span class="memory-notice-icon">
+                i
+            </span>
+
+            <span>
+                본 테스트는 흥미와 참여를 위한 간단한 기억력 확인용이며,<br>
+                의학적 진단이나 검사 결과를 의미하지 않습니다.
+            </span>
+
+        </div>
+
+    </section>
+
 
     <!-- =====================================================
          1. 불편감 상담 안내 카드
@@ -1416,6 +1764,162 @@ body{
     </div>
 
 </div>
+
+
+<!-- =====================================================
+     기억력 테스트 기능
+     무료상담 저장 로직과 분리
+===================================================== -->
+
+<script>
+
+(function(){
+
+    const memoryDisplay =
+    document.getElementById(
+        'memoryDisplay'
+    );
+
+    const memoryAnswer =
+    document.getElementById(
+        'memoryAnswer'
+    );
+
+    const memoryStartBtn =
+    document.getElementById(
+        'memoryStartBtn'
+    );
+
+    const memoryCheckBtn =
+    document.getElementById(
+        'memoryCheckBtn'
+    );
+
+    const memoryResult =
+    document.getElementById(
+        'memoryResult'
+    );
+
+    if(
+        !memoryDisplay ||
+        !memoryAnswer ||
+        !memoryStartBtn ||
+        !memoryCheckBtn ||
+        !memoryResult
+    ){
+
+        return;
+    }
+
+    let currentNumber =
+    '';
+
+    let isReadyToCheck =
+    false;
+
+    function makeNumber(){
+
+        const value =
+        Math.floor(
+            10000 + Math.random() * 90000
+        );
+
+        return String(
+            value
+        );
+    }
+
+    memoryStartBtn.addEventListener(
+        'click',
+        function(){
+
+            currentNumber =
+            makeNumber();
+
+            isReadyToCheck =
+            false;
+
+            memoryAnswer.value =
+            '';
+
+            memoryAnswer.disabled =
+            true;
+
+            memoryDisplay.classList.remove(
+                'hidden'
+            );
+
+            memoryDisplay.textContent =
+            currentNumber;
+
+            memoryResult.textContent =
+            '숫자를 기억해 주세요.';
+
+            setTimeout(function(){
+
+                memoryDisplay.classList.add(
+                    'hidden'
+                );
+
+                memoryDisplay.textContent =
+                '이제 숫자를 입력하세요';
+
+                memoryAnswer.disabled =
+                false;
+
+                memoryAnswer.focus();
+
+                isReadyToCheck =
+                true;
+
+                memoryResult.textContent =
+                '기억한 숫자를 입력한 뒤 확인하기를 눌러주세요.';
+
+            }, 3000);
+        }
+    );
+
+    memoryCheckBtn.addEventListener(
+        'click',
+        function(){
+
+            if(!currentNumber || !isReadyToCheck){
+
+                memoryResult.textContent =
+                '먼저 시작하기를 눌러주세요.';
+
+                return;
+            }
+
+            const userAnswer =
+            memoryAnswer.value
+            .replace(/[^0-9]/g, '')
+            .trim();
+
+            if(userAnswer === ''){
+
+                memoryResult.textContent =
+                '숫자를 입력해 주세요.';
+
+                return;
+            }
+
+            if(userAnswer === currentNumber){
+
+                memoryResult.textContent =
+                '정답입니다. 잘 기억하셨습니다.';
+
+            }else{
+
+                memoryResult.textContent =
+                '괜찮습니다. 다시 한 번 도전해보세요.';
+            }
+        }
+    );
+
+})();
+
+</script>
 
 
 <!-- =====================================================
